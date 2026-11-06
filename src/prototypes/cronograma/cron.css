@@ -5336,3 +5336,21 @@
 .cr-select__lista[style*='fixed'] {
   z-index: 300;
 }
+
+/* vincular educadores */
+.pl-vinc__modos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pl-vinc__modo { display: flex; gap: 12px; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--linha); cursor: pointer; transition: border-color .15s, background .15s; }
+.pl-vinc__modo.is-on { border-color: var(--roxo); background: #faf7ff; }
+.pl-vinc__modo input { position: absolute; opacity: 0; pointer-events: none; }
+.pl-vinc__modo .pl-radio__bola { width: 22px; height: 22px; margin-top: 1px; }
+.pl-vinc__modo.is-on .pl-radio__bola { border-color: var(--roxo); }
+.pl-vinc__modo .pl-radio__bola i { width: 11px; height: 11px; border-radius: 50%; background: var(--roxo); }
+.pl-vinc__modo strong { display: block; font-size: 15.5px; color: var(--tinta); }
+.pl-vinc__modo small { font-size: 13.5px; color: var(--texto); }
+.pl-vinc__grupos { display: grid; gap: 8px; max-height: 340px; overflow-y: auto; padding-right: 2px; }
+.pl-vinc__cab { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 13px; font-weight: 600; color: var(--suave); padding: 0 4px; }
+.pl-vinc__linha { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--linha); }
+.pl-vinc__linha.is-ok { border-color: #b9e6c6; background: #f6fcf8; }
+.pl-vinc__onde strong { display: block; font-size: 15px; color: var(--tinta); }
+.pl-vinc__onde small { font-size: 13px; color: var(--texto); }
+@media (max-width: 900px) { .pl-vinc__modos, .pl-vinc__linha, .pl-vinc__cab { grid-template-columns: 1fr; } }

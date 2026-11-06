@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { AplicarPara, CamposProg, DuplicarModal, Etapas4, MesesProg, Num, PlanoCab, useDestaque, validarProg } from '../components/plano'
 import { Btn, Modal, Select, TIPO_ICONE } from '../components/ui'
 import { COMPONENTES, TIPOS, TIPO_LISTA, type TipoId } from '../data'
-import { EDUCADORES_SUGERIDOS, linhasExportacao, paraCSV, curta, nomeMesPlano, nomeRede, pendenciaDe, periodoProgs, textoAplicacao, turmasDaProg, type Pendencia, type Prog } from '../plano'
+import { chaveVinculo, educadoresDaEscola, linhasExportacao, paraCSV, curta, nomeMesPlano, nomeRede, pendenciaDe, periodoProgs, textoAplicacao, turmasDaProg, type Escopo, type Pendencia, type Prog } from '../plano'
 import { useCron } from '../store'
 
 type Aba = 'todas' | 'pendencias' | 'ajustadas'
@@ -21,7 +21,6 @@ export default function Ajustar() {
   const [fComp, setFComp] = useState('todos')
   const [editar, setEditar] = useState<Prog | null>(null)
   const [vinc, setVinc] = useState<Pendencia | null>(null)
-  const [educador, setEducador] = useState(EDUCADORES_SUGERIDOS[0])
   const [alerta, setAlerta] = useState(0)
   const [destaque, piscar] = useDestaque()
   const filtrosRef = useRef<HTMLDivElement>(null)
@@ -63,7 +62,7 @@ export default function Ajustar() {
 
   /** exporta no formato da planilha modelo: uma linha por turma, com rede, escola, educador e currículo */
   const exportar = () => {
-    const tabela = linhasExportacao(pl.progs, e, pl.resolvidos, (p) => (temPend(p) ? 'Pendência' : 'Válida'))
+    const tabela = linhasExportacao(pl.progs, e, pl.resolvidos, (p) => (temPend(p) ? 'Pendência' : 'Válida'), pl.vinculos)
     const url = URL.createObjectURL(new Blob([paraCSV(tabela)], { type: 'text/csv;charset=utf-8' }))
     const a = document.createElement('a')
     a.href = url
@@ -296,59 +295,153 @@ export default function Ajustar() {
       </Modal>
 
       {/* revisar vinculação de educador */}
-      <Modal
-        aberto={!!vinc}
+      <VinculoModal
+        pend={vinc}
+        escopo={e}
+        totalPend={pend.length}
         onFechar={() => setVinc(null)}
-        titulo="Revisar vinculação de educadores"
-        largura={600}
-        rodape={
-          <>
-            <Btn variante="contorno" onClick={() => setVinc(null)}>
-              Cancelar
-            </Btn>
-            <Btn
-              icone={<CheckCircle2 size={18} />}
-              onClick={() => {
-                if (!vinc) return
-                const alvo = e.autoVinculo ? [vinc.prog.id] : pend.map((p) => p.prog.id)
-                setPlano((x) => ({ ...x, resolvidos: [...new Set([...x.resolvidos, ...alvo])] }))
-                piscar(vinc.prog.id)
-                setVinc(null)
-                toast(e.autoVinculo ? `${educador} vinculado(a) a ${vinc.turmas.length} ${vinc.turmas.length === 1 ? 'turma' : 'turmas'}.` : 'Educadores vinculados a todas as programações.')
-              }}
-            >
-              {e.autoVinculo ? 'Vincular educador' : 'Vincular todos automaticamente'}
-            </Btn>
-          </>
-        }
-      >
-        {vinc && (
-          <div className="pl-vinc">
-            <p className="cr-texto">
-              <strong>
-                {TIPOS[vinc.prog.tipo].nome} – {vinc.prog.componente}
-              </strong>{' '}
-              · {vinc.prog.objeto} · {curta(vinc.prog.inicio)} a {curta(vinc.prog.fim)}
-            </p>
-            <div className="pl-vinc__turmas">
-              {vinc.turmas.slice(0, 12).map((t) => (
-                <span key={t.id} className="cr-turma">
-                  {t.nome} · {nomeRede(t.escola)}
-                </span>
-              ))}
-              {vinc.turmas.length > 12 && <span className="cr-turma cr-turma--mais">+{vinc.turmas.length - 12}</span>}
-            </div>
-            {e.autoVinculo ? (
-              <div className="cr-campo">
-                <span>Educador(a) de {vinc.prog.componente}</span>
-                <Select className="cr-select--bloco" valor={educador} onChange={setEducador} opcoes={EDUCADORES_SUGERIDOS.map((x, i) => ({ valor: x, texto: i === 0 ? `${x} — sugerido (leciona ${vinc.prog.componente} na rede)` : x }))} />
-              </div>
-            ) : (
-              <p className="cr-texto cr-texto--suave">Usaremos os vínculos existentes na rede (turma, componente e carga horária) para todas as programações.</p>
-            )}
-          </div>
-        )}
-      </Modal>
+        onAuto={() => {
+          if (!vinc) return
+          const alvo = e.autoVinculo ? [vinc.prog.id] : pend.map((p) => p.prog.id)
+          setPlano((x) => ({ ...x, resolvidos: [...new Set([...x.resolvidos, ...alvo])] }))
+          piscar(vinc.prog.id)
+          setVinc(null)
+          toast(alvo.length > 1 ? `Educadores vinculados automaticamente em ${alvo.length} programações.` : 'Educadores vinculados automaticamente.')
+        }}
+        onManual={(escolhas) => {
+          if (!vinc) return
+          setPlano((x) => ({ ...x, vinculos: { ...(x.vinculos ?? {}), ...escolhas }, resolvidos: [...new Set([...x.resolvidos, vinc.prog.id])] }))
+          piscar(vinc.prog.id)
+          setVinc(null)
+          toast(`Educadores definidos para ${vinc.turmas.length} ${vinc.turmas.length === 1 ? 'turma' : 'turmas'}.`)
+        }}
+      />
     </div>
+  )
+}
+
+/** vincular educadores: automático (vínculos da rede) ou escolha manual por escola e ano */
+function VinculoModal({
+  pend,
+  escopo,
+  totalPend,
+  onFechar,
+  onAuto,
+  onManual,
+}: {
+  pend: Pendencia | null
+  escopo: Escopo
+  totalPend: number
+  onFechar: () => void
+  onAuto: () => void
+  onManual: (escolhas: Record<string, string>) => void
+}) {
+  const [modo, setModo] = useState<'auto' | 'manual'>('auto')
+  const [escolhas, setEscolhas] = useState<Record<string, string>>({})
+  // grupos escola × ano das turmas pendentes
+  const grupos = useMemo(() => {
+    if (!pend) return []
+    const m = new Map<string, { escola: string; ano: string; turmas: string[] }>()
+    for (const t of pend.turmas) {
+      const k = chaveVinculo(pend.prog.id, t.escola, t.ano)
+      const g = m.get(k) ?? { escola: t.escola, ano: t.ano, turmas: [] }
+      g.turmas.push(t.nome)
+      m.set(k, g)
+    }
+    return [...m.entries()].map(([k, g]) => ({ k, ...g, opcoes: educadoresDaEscola(g.escola, g.ano, pend.prog.componente) }))
+  }, [pend])
+  useEffect(() => {
+    if (!pend) return
+    setModo('auto')
+    setEscolhas({})
+  }, [pend])
+  const faltam = grupos.filter((g) => !escolhas[g.k]).length
+
+  return (
+    <Modal
+      aberto={!!pend}
+      onFechar={onFechar}
+      titulo="Revisar vinculação de educadores"
+      largura={680}
+      rodape={
+        <>
+          <Btn variante="contorno" onClick={onFechar}>
+            Cancelar
+          </Btn>
+          {modo === 'auto' ? (
+            <Btn icone={<CheckCircle2 size={18} />} onClick={onAuto}>
+              {!escopo.autoVinculo && totalPend > 1 ? `Vincular automaticamente (${totalPend} programações)` : 'Vincular automaticamente'}
+            </Btn>
+          ) : (
+            <Btn icone={<CheckCircle2 size={18} />} disabled={faltam > 0} onClick={() => onManual(escolhas)}>
+              {faltam > 0 ? `Escolha ${faltam} educador${faltam > 1 ? 'es' : ''}` : 'Salvar vínculos'}
+            </Btn>
+          )}
+        </>
+      }
+    >
+      {pend && (
+        <div className="pl-vinc">
+          <p className="cr-texto">
+            <strong>
+              {TIPOS[pend.prog.tipo].nome} – {pend.prog.componente}
+            </strong>{' '}
+            · {pend.prog.objeto} · {curta(pend.prog.inicio)} a {curta(pend.prog.fim)} · {pend.turmas.length} {pend.turmas.length === 1 ? 'turma' : 'turmas'}
+          </p>
+          <div className="pl-vinc__modos" role="radiogroup">
+            {(
+              [
+                ['auto', 'Vincular automaticamente', 'Usa os vínculos existentes na rede (turma, componente e carga horária).'],
+                ['manual', 'Escolher educadores', 'Você seleciona o(a) educador(a) de cada escola e ano escolar.'],
+              ] as const
+            ).map(([id, t, d]) => (
+              <label key={id} className={`pl-vinc__modo ${modo === id ? 'is-on' : ''}`}>
+                <input type="radio" name="vinc-modo" checked={modo === id} onChange={() => setModo(id)} />
+                <span className="pl-radio__bola">{modo === id && <i />}</span>
+                <span>
+                  <strong>{t}</strong>
+                  <small>{d}</small>
+                </span>
+              </label>
+            ))}
+          </div>
+          {modo === 'manual' && (
+            <motion.div className="pl-vinc__grupos" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
+              <div className="pl-vinc__cab">
+                <span>Escola e ano escolar</span>
+                <span>Educador(a) de {pend.prog.componente}</span>
+              </div>
+              {grupos.map((g) => (
+                <div key={g.k} className={`pl-vinc__linha ${escolhas[g.k] ? 'is-ok' : ''}`}>
+                  <span className="pl-vinc__onde">
+                    <strong>{nomeRede(g.escola)}</strong>
+                    <small>
+                      {g.ano} · {g.turmas.length} {g.turmas.length === 1 ? 'turma' : 'turmas'} ({g.turmas.slice(0, 3).join(', ')}
+                      {g.turmas.length > 3 ? ` +${g.turmas.length - 3}` : ''})
+                    </small>
+                  </span>
+                  <Select
+                    className="cr-select--bloco"
+                    valor={escolhas[g.k] ?? ''}
+                    placeholder="Selecione o(a) educador(a)"
+                    onChange={(v) => setEscolhas((x) => ({ ...x, [g.k]: v }))}
+                    opcoes={g.opcoes.map((n, i) => ({ valor: n, texto: i === 0 ? `${n} — sugerido` : n }))}
+                  />
+                </div>
+              ))}
+              {grupos.length > 1 && (
+                <button
+                  type="button"
+                  className="cr-link"
+                  onClick={() => setEscolhas(Object.fromEntries(grupos.map((g) => [g.k, escolhas[g.k] ?? g.opcoes[0]])))}
+                >
+                  Preencher as vazias com os sugeridos
+                </button>
+              )}
+            </motion.div>
+          )}
+        </div>
+      )}
+    </Modal>
   )
 }

@@ -239,7 +239,20 @@ const PROFESSORES: Record<string, string[]> = {
 const hash = (s: string) => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7)
 
 /** educador(a) vinculado à turma no componente (dados de exemplo, sempre o mesmo para a mesma turma) */
-export function educadorDe(t: Turma, p: Prog, e: Escopo, resolvidos: string[]) {
+/** chave do vínculo manual: programação + escola + ano */
+export const chaveVinculo = (progId: string, escola: string, ano: string) => `${progId}|${escola}|${ano}`
+
+/** educadores que lecionam o componente naquela escola e ano (o primeiro é o sugerido pela rede) */
+export function educadoresDaEscola(escola: string, ano: string, componente: string) {
+  const base = parseInt(ano) <= 5 ? ['Ana Paula Reis', 'Márcia Teixeira', 'Joana Duarte', 'Cristina Melo', 'Patrícia Souza'] : PROFESSORES[componente] ?? ['Educador(a) da turma']
+  const i = hash(`${escola}-${ano}-${componente}`) % base.length
+  const lista = [...base.slice(i), ...base.slice(0, i)].slice(0, 3)
+  return escola === ESCOLA_SEM_EDUCADOR && ano === '8º ano' && componente === 'Matemática' ? [...EDUCADORES_SUGERIDOS] : lista
+}
+
+export function educadorDe(t: Turma, p: Prog, e: Escopo, resolvidos: string[], vinculos: Record<string, string> = {}) {
+  const manual = vinculos[chaveVinculo(p.id, t.escola, t.ano)]
+  if (manual) return manual
   if (!e.autoVinculo && !resolvidos.includes(p.id)) return 'A vincular'
   const semVinculo = t.escola === ESCOLA_SEM_EDUCADOR && t.ano === '8º ano' && p.componente === 'Matemática'
   if (semVinculo) return resolvidos.includes(p.id) ? EDUCADORES_SUGERIDOS[0] : 'Sem educador vinculado'
@@ -249,7 +262,7 @@ export function educadorDe(t: Turma, p: Prog, e: Escopo, resolvidos: string[]) {
 }
 
 /** colunas e linhas do resumo exportado — uma linha por turma, como a planilha modelo */
-export function linhasExportacao(progs: Prog[], e: Escopo, resolvidos: string[], status: (p: Prog) => string) {
+export function linhasExportacao(progs: Prog[], e: Escopo, resolvidos: string[], status: (p: Prog) => string, vinculos: Record<string, string> = {}) {
   const cab = [
     'Rede',
     'Escola',
@@ -280,7 +293,7 @@ export function linhasExportacao(progs: Prog[], e: Escopo, resolvidos: string[],
           brPlano(p.fim),
           t.ano,
           t.nome,
-          educadorDe(t, p, e, resolvidos),
+          educadorDe(t, p, e, resolvidos, vinculos),
           t.ano,
           p.componente,
           p.unidade,

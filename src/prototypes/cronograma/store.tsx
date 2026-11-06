@@ -51,6 +51,8 @@ export type Plano = {
   progs: Prog[]
   /** programações com vinculação de educador revisada */
   resolvidos: string[]
+  /** educadores escolhidos manualmente (programação|escola|ano → nome) */
+  vinculos?: Record<string, string>
   modelos: Modelo[]
   publicacao: { modo: 'agora' | 'agendar'; data: string; hora: string }
 }
