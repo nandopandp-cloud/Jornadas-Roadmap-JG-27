@@ -588,7 +588,7 @@ function ArvoreTurmas({
       {turmas.length > 12 && (
         <label className="pl-esc__busca pl-arvore__busca">
           <Search size={16} />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar turma ou escola (ex.: 6º A, Monteiro)" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar turma ou escola (ex.: 801, Turma B, Monteiro)" />
           {q && (
             <button type="button" onClick={() => setQ('')} aria-label="Limpar busca">
               <X size={14} />
@@ -640,7 +640,7 @@ function ArvoreTurmas({
                               const ok = !excl.includes(t.id)
                               return (
                                 <button key={t.id} type="button" className={`pl-mini ${ok ? 'is-on' : ''}`} onClick={() => onTurma(t.id)} title={`${t.nome} · ${e.nome} — ${ok ? 'clique para remover' : 'clique para incluir'}`}>
-                                  {t.nome.replace(`${parseInt(a)}º `, '')}
+                                  {t.nome}
                                 </button>
                               )
                             })}

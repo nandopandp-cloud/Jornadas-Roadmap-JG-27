@@ -38,7 +38,7 @@ const LETRAS = 'ABCDEFGH'
 export const TURMAS_REDE: Turma[] = ANOS_ESCOPO.flatMap((ano) => {
   const n = parseInt(ano)
   return OFERTA[ano].flatMap((escola) =>
-    Array.from({ length: TURMAS_POR_ANO[escola] ?? 1 }, (_, j) => ({ id: `${ano}-${escola}-${j}`, ano, escola, nome: `${n}º ${LETRAS[j]}` })),
+    Array.from({ length: TURMAS_POR_ANO[escola] ?? 1 }, (_, j) => ({ id: `${ano}-${escola}-${j}`, ano, escola, nome: `${n * 100 + j + 1} - Turma ${LETRAS[j]}` })), // ex.: 801 - Turma A
   )
 })
 

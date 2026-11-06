@@ -5290,6 +5290,7 @@
   min-width: 30px;
   height: 26px;
   padding: 0 8px !important;
+  white-space: nowrap;
   border-radius: 6px !important;
   border: 1px dashed #cfc8de !important;
   background: #fff !important;
