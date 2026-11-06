@@ -99,7 +99,7 @@ export const SUGESTOES: Sugestao[] = [
 ]
 
 /* ---------------- escolas da rede ---------------- */
-export type StatusEscola = 'publicado' | 'rascunho' | 'nao-iniciado'
+export type StatusEscola = 'publicado' | 'agendado' | 'rascunho' | 'nao-iniciado'
 export type Escola = { id: string; nome: string; periodo: string | null; atualizado: string | null; status: StatusEscola; minha?: boolean }
 
 export const ESCOLAS: Escola[] = [

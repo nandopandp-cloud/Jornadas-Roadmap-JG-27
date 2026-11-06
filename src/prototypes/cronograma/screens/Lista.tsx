@@ -17,9 +17,9 @@ export default function Lista({ aba: abaInicial }: { aba?: 'rede' | 'meus' }) {
   const semCronograma = s.escolas.filter((e) => e.status === 'nao-iniciado')
 
   const acao = (e: Escola) => {
-    if (e.status === 'publicado') ir({ id: 'calendario', escola: e.id })
+    if (e.status === 'publicado' || e.status === 'agendado') ir({ id: 'calendario', escola: e.id })
     else if (e.status === 'rascunho') continuar(e.id)
-    else iniciar(e.id)
+    else ir({ id: 'escolha', escola: e.id })
   }
 
   return (
@@ -32,13 +32,7 @@ export default function Lista({ aba: abaInicial }: { aba?: 'rede' | 'meus' }) {
           <h1>Cronograma de Uso</h1>
           <p>Planeje, acompanhe e gerencie o uso da plataforma na sua rede ou escola.</p>
         </div>
-        <Btn
-          icone={<Plus size={20} />}
-          onClick={() => {
-            setEscolhida(semCronograma[0]?.id ?? '')
-            setNovo(true)
-          }}
-        >
+        <Btn icone={<Plus size={20} />} onClick={() => ir({ id: 'escolha' })}>
           Criar novo cronograma
         </Btn>
       </header>
@@ -111,7 +105,7 @@ export default function Lista({ aba: abaInicial }: { aba?: 'rede' | 'meus' }) {
                     </td>
                     <td className="cr-tabela__acoes">
                       <Btn variante="contorno" pequeno className="cr-acao" onClick={() => acao(e)}>
-                        {e.status === 'publicado' ? 'Abrir' : e.status === 'rascunho' ? 'Continuar' : 'Criar'}
+                        {e.status === 'publicado' || e.status === 'agendado' ? 'Abrir' : e.status === 'rascunho' ? 'Continuar' : 'Criar'}
                       </Btn>
                       <MenuEscola
                         escola={e}

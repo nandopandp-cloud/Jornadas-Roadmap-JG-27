@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from 'react'
+import { MODELOS_PADRAO, escopoInicial, formInicial, periodoListaPlano, progsIniciais, progsParaAtividades, type Escopo, type Modelo, type Prog } from './plano'
 import {
   ATIVIDADES_ESCOLA_F,
   ESCOLAS,
@@ -25,6 +26,11 @@ export type View =
   | { id: 'revisar'; escola: string }
   | { id: 'publicar'; escola: string }
   | { id: 'calendario'; escola?: string; dia?: string }
+  | { id: 'escolha'; escola?: string }
+  | { id: 'escopo' }
+  | { id: 'configurar' }
+  | { id: 'ajustar' }
+  | { id: 'finalizar' }
 
 export type Perfil = 'gestor' | 'professor'
 export type Modo = 'aceitar' | 'outra' | 'manter'
@@ -37,6 +43,16 @@ type Wizard = {
   arquivo: Arquivo | null
   resolucoes: Record<string, Resolucao>
   atividades: Atividade[]
+}
+
+/** fluxo “Criar na plataforma” */
+export type Plano = {
+  escopo: Escopo
+  progs: Prog[]
+  /** programações com vinculação de educador revisada */
+  resolvidos: string[]
+  modelos: Modelo[]
+  publicacao: { modo: 'agora' | 'agendar'; data: string; hora: string }
 }
 
 type Toast = { id: number; texto: string; tipo?: 'ok' | 'info' | 'erro'; acao?: { rotulo: string; fn: () => void } }
@@ -52,6 +68,7 @@ type State = {
   /** atividades criadas/dispensadas pelo professor */
   professor: Record<string, 'pendente' | 'criada' | 'dispensada'>
   sidebarFechada: boolean
+  plano: Plano | null
 }
 
 /* ---------------- aplicar valores da planilha ---------------- */
@@ -103,7 +120,18 @@ function agoraTexto() {
 }
 
 /* ---------------- estado inicial ---------------- */
-export type Inicio = 'lista' | 'importar' | 'inconsistencias' | 'revisar' | 'publicar' | 'calendario' | 'professor' | 'inicio'
+export type Inicio = 'lista' | 'importar' | 'inconsistencias' | 'revisar' | 'publicar' | 'calendario' | 'professor' | 'inicio' | 'escolha' | 'escopo' | 'configurar' | 'ajustar' | 'finalizar'
+
+const novoPlano = (escola?: string, comExemplo = true): Plano => {
+  const escopo = escopoInicial(escola)
+  return {
+    escopo,
+    progs: comExemplo ? progsIniciais(escopo.escolas) : [],
+    resolvidos: [],
+    modelos: [...MODELOS_PADRAO],
+    publicacao: { modo: 'agora', data: '2027-03-01', hora: '08:00' },
+  }
+}
 
 function inicial(start: Inicio): State {
   const escolas = ESCOLAS.map((e) => ({ ...e }))
@@ -112,7 +140,16 @@ function inicial(start: Inicio): State {
   const professor: State['professor'] = {}
   for (const at of ATIVIDADES_ESCOLA_F) if (at.professor) professor[at.id] = at.professor
 
-  const s: State = { perfil: 'gestor', view: { id: 'lista' }, dir: 1, escolas, wizard: null, publicados, professor, sidebarFechada: false }
+  const s: State = { perfil: 'gestor', view: { id: 'lista' }, dir: 1, escolas, wizard: null, publicados, professor, sidebarFechada: false, plano: null }
+  if (start === 'escolha') return { ...s, view: { id: 'escolha' } }
+  if (start === 'escopo') return { ...s, plano: novoPlano(), view: { id: 'escopo' } }
+  if (start === 'configurar') return { ...s, plano: novoPlano(), view: { id: 'configurar' } }
+  if (start === 'ajustar' || start === 'finalizar') {
+    const p = novoPlano()
+    p.progs = [{ ...formInicial(p.escopo.escolas), id: 'p1' }, ...p.progs]
+    if (start === 'finalizar') p.resolvidos = ['p3']
+    return { ...s, plano: p, view: { id: start } }
+  }
   const wizardF = (resolvido: boolean): Wizard => ({
     escola: 'f',
     arquivo: { nome: 'cronograma_escola_f.csv', tamanho: 34 * 1024, enviadoEm: new Date(2025, 10, 6, 10, 24), exemplo: true },
@@ -242,12 +279,35 @@ function useCronState(start: Inicio) {
     })
   }, [])
 
+  /* ----- criar na plataforma ----- */
+  const iniciarPlano = useCallback((escola?: string) => set((st) => ({ ...st, dir: 1, plano: novoPlano(escola), view: { id: 'escopo' } })), [])
+  const setPlano = useCallback((fn: (p: Plano) => Plano) => set((st) => (st.plano ? { ...st, plano: fn(st.plano) } : st)), [])
+  /** publica (ou agenda / salva rascunho) o plano em todas as escolas do escopo que aparecem na lista */
+  const publicarPlano = useCallback((modo: 'publicado' | 'agendado' | 'rascunho') => {
+    set((st) => {
+      if (!st.plano) return st
+      const p = st.plano
+      // só as escolas que recebem pelo menos uma programação
+      const alvo = p.escopo.escolas.filter((id) => progsParaAtividades(p.progs, p.escopo, id).length > 0)
+      const escolas = st.escolas.map((e) =>
+        alvo.includes(e.id) ? { ...e, status: modo as Escola['status'], periodo: periodoListaPlano(), atualizado: agoraTexto(), minha: true } : e,
+      )
+      const publicados = { ...st.publicados }
+      if (modo !== 'rascunho')
+        for (const id of alvo) {
+          const novas = progsParaAtividades(p.progs, p.escopo, id)
+          if (novas.length) publicados[id] = [...(publicados[id] ?? []).filter((a) => !a.id.startsWith('p')), ...novas]
+        }
+      return { ...st, escolas, publicados }
+    })
+  }, [])
+
   /* ----- professor ----- */
   const setProfessor = useCallback((id: string, v: 'pendente' | 'criada' | 'dispensada') => set((st) => ({ ...st, professor: { ...st.professor, [id]: v } })), [])
 
   const acoes = useMemo(
-    () => ({ toast, fecharToast, ir, setPerfil, toggleSidebar, iniciar, continuar, setArquivo, concluirAnalise, resolver, resolverPendentes, salvarAtividade, removerAtividades, publicar, setProfessor }),
-    [toast, fecharToast, ir, setPerfil, toggleSidebar, iniciar, continuar, setArquivo, concluirAnalise, resolver, resolverPendentes, salvarAtividade, removerAtividades, publicar, setProfessor],
+    () => ({ toast, fecharToast, ir, setPerfil, toggleSidebar, iniciarPlano, setPlano, publicarPlano, iniciar, continuar, setArquivo, concluirAnalise, resolver, resolverPendentes, salvarAtividade, removerAtividades, publicar, setProfessor }),
+    [toast, fecharToast, ir, setPerfil, toggleSidebar, iniciarPlano, setPlano, publicarPlano, iniciar, continuar, setArquivo, concluirAnalise, resolver, resolverPendentes, salvarAtividade, removerAtividades, publicar, setProfessor],
   )
   return { s, toasts, ...acoes }
 }

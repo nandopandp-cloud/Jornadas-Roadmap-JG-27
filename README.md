@@ -47,7 +47,8 @@ A voz oficial do Luno vem da ElevenLabs. A chave **nunca vai para o navegador**:
 
 Independente da Alfabetização e **sem áudio** (não usa ElevenLabs nem narração).
 
-- **Gestor:** lista de escolas da rede (busca, status, Abrir/Criar/Continuar) → importar CSV (arrastar e soltar, modelo oficial para baixar, arquivo de exemplo) → análise animada → revisão das 12 inconsistências (aceitar, escolher outra correspondência ou manter; obrigatórias bloqueiam o avanço) → revisão do cronograma por mês (filtros, busca, ordenação, editar, excluir com desfazer, nova atividade) → resumo e publicação.
+- **Como criar:** ao criar um cronograma, o gestor escolhe entre **Criar na plataforma** (fluxo guiado em 4 etapas: definir escopo → configurar programações com aplicação em massa → revisar e ajustar pendências → finalizar e publicar/agendar) ou **Usar planilha (CSV)**, descrito abaixo.
+- **Gestor (planilha):** lista de escolas da rede (busca, status, Abrir/Criar/Continuar) → importar CSV (arrastar e soltar, modelo oficial para baixar, arquivo de exemplo) → análise animada → revisão das 12 inconsistências (aceitar, escolher outra correspondência ou manter; obrigatórias bloqueiam o avanço) → revisão do cronograma por mês (filtros, busca, ordenação, editar, excluir com desfazer, nova atividade) → resumo e publicação.
 - **Calendário escolar:** grade mensal com atividades agendadas e sugeridas, painel do dia, filtros, visão em tabela e nova atividade no dia.
 - **Professor:** troque o perfil clicando no usuário (rodapé do menu). Início com banner, recomendações (Pendentes, Criadas, Todas), criar atividade/avaliação, minicalendário e próximos eventos.
 

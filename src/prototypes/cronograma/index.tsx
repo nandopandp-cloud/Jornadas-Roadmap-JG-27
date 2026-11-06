@@ -30,9 +30,14 @@ import Publicar from './screens/Publicar'
 import Calendario from './screens/Calendario'
 import InicioProfessor from './screens/InicioProfessor'
 import InicioGestor from './screens/InicioGestor'
+import Escolha from './screens/Escolha'
+import Escopo from './screens/Escopo'
+import Configurar from './screens/Configurar'
+import Ajustar from './screens/Ajustar'
+import Finalizar from './screens/Finalizar'
 import './cron.css'
 
-const ATALHOS: Inicio[] = ['lista', 'importar', 'inconsistencias', 'revisar', 'publicar', 'calendario', 'professor', 'inicio']
+const ATALHOS: Inicio[] = ['lista', 'importar', 'inconsistencias', 'revisar', 'publicar', 'calendario', 'professor', 'inicio', 'escolha', 'escopo', 'configurar', 'ajustar', 'finalizar']
 
 export default function Cronograma({ startScreen }: PrototypeProps) {
   const start = (ATALHOS.includes(startScreen as Inicio) ? startScreen : 'lista') as Inicio
@@ -44,9 +49,11 @@ export default function Cronograma({ startScreen }: PrototypeProps) {
 }
 
 const WIZARD = ['importar', 'analise', 'inconsistencias', 'revisar', 'publicar']
+/** fluxo “Criar na plataforma” (a partir da configuração já há trabalho a perder) */
+const PLANO = ['configurar', 'ajustar', 'finalizar']
 
 function Shell() {
-  const { s, ir, toggleSidebar, publicar, toast } = useCron()
+  const { s, ir, toggleSidebar, publicar, publicarPlano, toast } = useCron()
   const [gaveta, setGaveta] = useState(false)
   const [saida, setSaida] = useState<View | null>(null)
   const v = s.view
@@ -59,7 +66,7 @@ function Shell() {
   /** navegar; dentro do assistente (depois do upload) pergunta antes de sair */
   const navegar = (destino: View) => {
     setGaveta(false)
-    if (naWizard && v.id !== 'importar' && v.id !== 'analise' && destino.id !== v.id) {
+    if (((naWizard && v.id !== 'importar' && v.id !== 'analise') || PLANO.includes(v.id)) && destino.id !== v.id) {
       setSaida(destino)
       return
     }
@@ -74,7 +81,9 @@ function Shell() {
         ? [{ texto: 'Cronograma' }]
         : v.id === 'calendario'
           ? [{ texto: 'Cronograma', ir: s.perfil === 'gestor' ? { id: 'lista' } : undefined }, { texto: 'Calendário Escolar' }]
-          : [{ texto: 'Cronograma', ir: { id: 'lista' } }, { texto: `Criar cronograma — ${escola}` }]
+          : ['escolha', 'escopo', 'configurar', 'ajustar', 'finalizar'].includes(v.id)
+            ? [{ texto: 'Cronograma', ir: { id: 'lista' } }, { texto: 'Criar cronograma' }]
+            : [{ texto: 'Cronograma', ir: { id: 'lista' } }, { texto: `Criar cronograma — ${escola}` }]
 
   return (
     <div className={`cr ${s.sidebarFechada ? 'is-recolhida' : ''}`}>
@@ -118,6 +127,11 @@ function Shell() {
               {v.id === 'publicar' && <Publicar />}
               {v.id === 'calendario' && <Calendario escola={v.escola} dia={v.dia} />}
               {v.id === 'inicio' && (s.perfil === 'professor' ? <InicioProfessor /> : <InicioGestor />)}
+              {v.id === 'escolha' && <Escolha escola={v.escola} />}
+              {v.id === 'escopo' && <Escopo />}
+              {v.id === 'configurar' && <Configurar />}
+              {v.id === 'ajustar' && <Ajustar />}
+              {v.id === 'finalizar' && <Finalizar />}
             </motion.div>
           </AnimatePresence>
         </main>
@@ -135,8 +149,13 @@ function Shell() {
             </Btn>
             <Btn
               onClick={() => {
-                publicar(true)
-                toast(`Rascunho da ${escola} salvo. Você pode continuar depois.`)
+                if (PLANO.includes(v.id)) {
+                  publicarPlano('rascunho')
+                  toast('Rascunho do cronograma salvo para as escolas do escopo.')
+                } else {
+                  publicar(true)
+                  toast(`Rascunho da ${escola} salvo. Você pode continuar depois.`)
+                }
                 const d = saida!
                 setSaida(null)
                 ir(d, -1)

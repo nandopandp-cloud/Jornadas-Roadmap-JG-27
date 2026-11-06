@@ -372,8 +372,8 @@ export function IlustraCalendarioOk() {
 }
 
 /** rótulo de status da escola */
-export function StatusEscola({ status }: { status: 'publicado' | 'rascunho' | 'nao-iniciado' }) {
-  const txt = status === 'publicado' ? 'Publicado' : status === 'rascunho' ? 'Em rascunho' : 'Não iniciado'
+export function StatusEscola({ status }: { status: 'publicado' | 'agendado' | 'rascunho' | 'nao-iniciado' }) {
+  const txt = status === 'publicado' ? 'Publicado' : status === 'agendado' ? 'Agendado' : status === 'rascunho' ? 'Em rascunho' : 'Não iniciado'
   return (
     <motion.span key={status} className={`cr-status cr-status--${status}`} initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
       {status === 'publicado' ? (

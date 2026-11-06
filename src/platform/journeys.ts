@@ -66,7 +66,12 @@ export const journeys: Journey[] = [
     dominio: 'educadores.jovensgenios.com',
     flows: [
       { id: 'lista', label: 'Escolas da rede', icon: './3d/books.png' },
-      { id: 'importar', label: 'Importar CSV', icon: './3d/clipboard.png' },
+      { id: 'escolha', label: 'Como criar', icon: './3d/sparkles.png' },
+      { id: 'escopo', label: 'Plataforma: escopo', icon: './3d/bullseye.png' },
+      { id: 'configurar', label: 'Plataforma: programação', icon: './3d/palette.png' },
+      { id: 'ajustar', label: 'Plataforma: revisar', icon: './3d/bulb.png' },
+      { id: 'finalizar', label: 'Plataforma: publicar', icon: './3d/rocket.png' },
+      { id: 'importar', label: 'Planilha: importar CSV', icon: './3d/clipboard.png' },
       { id: 'inconsistencias', label: 'Inconsistências', icon: './3d/bulb.png' },
       { id: 'revisar', label: 'Revisar cronograma', icon: './3d/memo.png' },
       { id: 'publicar', label: 'Publicar', icon: './3d/rocket.png' },
