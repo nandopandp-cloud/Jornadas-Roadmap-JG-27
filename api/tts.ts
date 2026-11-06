@@ -2,7 +2,7 @@
  * Função serverless (Vercel) — POST /api/tts  { "text": "..." }  →  áudio MP3 com a voz do Luno.
  * Configure ELEVENLABS_API_KEY e ELEVENLABS_VOICE_ID em Project Settings → Environment Variables.
  */
-import { sameOrigin, synthesize } from '../server/elevenlabs'
+import { sameOrigin, synthesize } from '../server/elevenlabs.js'
 
 export async function POST(request: Request): Promise<Response> {
   if (!sameOrigin(request.headers.get('origin'), request.headers.get('host'))) return new Response('{"erro":"origem"}', { status: 403 })
