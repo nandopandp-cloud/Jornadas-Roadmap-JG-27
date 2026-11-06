@@ -1,10 +1,10 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { AlertCircle, AlertTriangle, ArrowLeft, ArrowRight, Building2, CalendarDays, CheckCircle2, Download, ExternalLink, Filter, Search, Users, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { AplicarPara, CamposProg, Etapas4, MesesProg, Num, PlanoCab, useDestaque, validarProg } from '../components/plano'
+import { AplicarPara, CamposProg, DuplicarModal, Etapas4, MesesProg, Num, PlanoCab, useDestaque, validarProg } from '../components/plano'
 import { Btn, Modal, Select, TIPO_ICONE } from '../components/ui'
 import { COMPONENTES, TIPOS, TIPO_LISTA, type TipoId } from '../data'
-import { EDUCADORES_SUGERIDOS, brPlano, curta, nomeRede, novoIdProg, pendenciaDe, periodoProgs, somarMeses, textoAplicacao, turmasDaProg, type Pendencia, type Prog } from '../plano'
+import { EDUCADORES_SUGERIDOS, brPlano, curta, nomeMesPlano, nomeRede, pendenciaDe, periodoProgs, textoAplicacao, turmasDaProg, type Pendencia, type Prog } from '../plano'
 import { useCron } from '../store'
 
 type Aba = 'todas' | 'pendencias' | 'ajustadas'
@@ -48,14 +48,13 @@ export default function Ajustar() {
   )
   const nFiltros = (fTipo !== 'todos' ? 1 : 0) + (fComp !== 'todos' ? 1 : 0)
 
-  const duplicar = (p: Prog) => {
-    const id = novoIdProg()
-    const ini = somarMeses(p.inicio, 1)
-    const fim = somarMeses(p.fim, 1)
-    const cabe = fim <= '2027-05-31'
-    setPlano((x) => ({ ...x, progs: [...x.progs, cabe ? { ...p, id, inicio: ini, fim } : { ...p, id }] }))
-    piscar(id)
-    toast(cabe ? `Duplicada para ${curta(ini)} a ${curta(fim)}.` : 'Programação duplicada.')
+  const [dup, setDup] = useState<string | null>(null)
+  const duplicar = (nova: Prog, mesNovo: boolean) => {
+    setPlano((x) => ({ ...x, progs: [...x.progs, nova] }))
+    setDup(null)
+    piscar(nova.id)
+    const mes = nomeMesPlano(nova.inicio.slice(0, 7)).split(' (')[0]
+    toast(mesNovo ? `${mes} criado com a programação duplicada.` : `Duplicada para ${curta(nova.inicio)} a ${curta(nova.fim)}.`)
   }
   const excluir = (p: Prog) => {
     setPlano((x) => ({ ...x, progs: x.progs.filter((y) => y.id !== p.id) }))
@@ -176,7 +175,7 @@ export default function Ajustar() {
         escopo={e}
         destaque={destaque}
         status={(p) => (temPend(p) ? 'pendencia' : 'valida')}
-        acoes={{ editar: (p) => setEditar({ ...p }), duplicar, excluir }}
+        acoes={{ editar: (p) => setEditar({ ...p }), duplicar: (p) => setDup(p.id), excluir }}
         vazio={q || nFiltros || aba !== 'todas' ? 'Nenhuma programação com esses filtros neste mês.' : undefined}
       />
 
@@ -256,6 +255,8 @@ export default function Ajustar() {
           </Btn>
         </div>
       </footer>
+
+      <DuplicarModal aberto={!!dup} inicial={dup} progs={pl.progs} escopo={e} onFechar={() => setDup(null)} onDuplicar={duplicar} />
 
       {/* editar programação */}
       <Modal

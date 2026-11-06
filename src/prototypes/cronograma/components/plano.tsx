@@ -1,12 +1,15 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { AlertTriangle, BookOpen, CalendarDays, Check, CheckCircle2, ChevronDown, Copy, Pencil, Search, Trash2, X } from 'lucide-react'
+import { AlertTriangle, BookOpen, CalendarDays, Check, CheckCircle2, ChevronDown, Copy, Pencil, Plus, Search, Trash2, X } from 'lucide-react'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { COMPONENTES, TIPOS, TIPO_LISTA, type TipoId } from '../data'
 import {
   ANOS_ESCOPO,
   CURRICULO,
   HABILIDADES,
-  MESES_PLANO,
+  ANO_LETIVO,
+  mesesDe,
+  novoIdProg,
+  somarMeses,
   PERIODO_FIM,
   PERIODO_INICIO,
   REDE,
@@ -22,7 +25,7 @@ import {
   type Turma,
   type Prog,
 } from '../plano'
-import { Select, TIPO_ICONE } from './ui'
+import { Btn, Modal, Select, TIPO_ICONE } from './ui'
 
 /* ---------------- cabeçalho com ilustração ---------------- */
 export function PlanoCab({ titulo, subtitulo, img }: { titulo: string; subtitulo: string; img: string }) {
@@ -105,7 +108,6 @@ export function MesesProg({
   acoes,
   vazio,
   destaque,
-  abertosPadrao = ['2027-03'],
 }: {
   progs: Prog[]
   escopo: Escopo
@@ -114,10 +116,10 @@ export function MesesProg({
   acoes?: { editar: (p: Prog) => void; duplicar: (p: Prog) => void; excluir: (p: Prog) => void }
   vazio?: ReactNode
   destaque?: string | null
-  abertosPadrao?: string[]
 }) {
   const [abertos, setAbertos] = useState<Record<string, boolean>>({})
-  const grupos = MESES_PLANO.map((k) => ({ k, l: progs.filter((p) => p.inicio.startsWith(k)).sort((a, b) => a.inicio.localeCompare(b.inicio)) }))
+  // só os meses que já têm programações lançadas
+  const grupos = mesesDe(progs).map((k) => ({ k, l: progs.filter((p) => p.inicio.startsWith(k)).sort((a, b) => a.inicio.localeCompare(b.inicio)) }))
   // ao chegar programação nova num mês fechado, abre o mês
   useEffect(() => {
     if (!destaque) return
@@ -125,10 +127,11 @@ export function MesesProg({
     if (p) setAbertos((a) => ({ ...a, [p.inicio.slice(0, 7)]: true }))
   }, [destaque, progs])
 
+  if (!grupos.length) return <div className="pl-mes__vazio pl-mes__vazio--solto">{vazio ?? 'Nenhuma programação encontrada.'}</div>
   return (
     <div className="pl-meses">
       {grupos.map(({ k, l }) => {
-        const aberto = abertos[k] ?? (abertosPadrao.includes(k) && l.length > 0)
+        const aberto = abertos[k] ?? true
         return (
           <section key={k} className={`pl-mes ${aberto ? 'is-aberto' : ''}`}>
             <button className="pl-mes__cab" onClick={() => setAbertos((a) => ({ ...a, [k]: !aberto }))} aria-expanded={aberto}>
@@ -312,10 +315,10 @@ export function validarProg(p: Prog): ErrosProg {
   if (!p.tipo) e.tipo = 'Escolha o tipo.'
   if (!p.componente) e.componente = 'Escolha o componente.'
   if (!p.inicio) e.inicio = 'Informe o início.'
-  else if (p.inicio < PERIODO_INICIO || p.inicio > PERIODO_FIM) e.inicio = 'Fora do período (mar–mai/2027).'
+  else if (p.inicio < PERIODO_INICIO || p.inicio > PERIODO_FIM) e.inicio = 'Fora do ano de 2027.'
   if (!p.fim) e.fim = 'Informe o término.'
   else if (p.fim < p.inicio) e.fim = 'Termina antes de começar.'
-  else if (p.fim > PERIODO_FIM) e.fim = 'Fora do período (mar–mai/2027).'
+  else if (p.fim > PERIODO_FIM) e.fim = 'Fora do ano de 2027.'
   if (!p.anos.length) e.anos = 'Escolha pelo menos um ano.'
   if (!p.escolas.length) e.escolas = 'Escolha pelo menos uma escola.'
   return e
@@ -677,3 +680,109 @@ export const useDestaque = () => {
   return [d, piscar] as const
 }
 
+
+/* ---------------- duplicar programação (modal compartilhado) ---------------- */
+export function DuplicarModal({
+  aberto,
+  progs,
+  inicial,
+  escopo,
+  onFechar,
+  onDuplicar,
+}: {
+  aberto: boolean
+  progs: Prog[]
+  /** programação já escolhida (botão da linha); sem ela, o usuário escolhe na lista */
+  inicial?: string | null
+  escopo: Escopo
+  onFechar: () => void
+  onDuplicar: (nova: Prog, mesNovo: boolean) => void
+}) {
+  const [id, setId] = useState('')
+  const [mes, setMes] = useState('')
+  const origem = progs.find((p) => p.id === id)
+  useEffect(() => {
+    if (!aberto) return
+    const p = progs.find((x) => x.id === inicial) ?? progs[0]
+    setId(p?.id ?? '')
+    const prox = p ? somarMeses(p.inicio, 1).slice(0, 7) : ANO_LETIVO[0]
+    setMes(ANO_LETIVO.includes(prox) ? prox : p?.inicio.slice(0, 7) ?? ANO_LETIVO[0])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [aberto, inicial])
+
+  const existentes = mesesDe(progs)
+  const desloc = origem && mes ? Number(mes.slice(5, 7)) - Number(origem.inicio.slice(5, 7)) : 0
+  const ini = origem ? somarMeses(origem.inicio, desloc) : ''
+  let fim = origem ? somarMeses(origem.fim, desloc) : ''
+  if (fim > PERIODO_FIM) fim = PERIODO_FIM
+  const mesNovo = !!mes && !existentes.includes(mes)
+  const nomeMes = mes ? nomeMesPlano(mes).split(' (')[0] : ''
+
+  return (
+    <Modal
+      aberto={aberto}
+      onFechar={onFechar}
+      titulo="Duplicar programação"
+      largura={560}
+      rodape={
+        <>
+          <Btn variante="contorno" onClick={onFechar}>
+            Cancelar
+          </Btn>
+          <Btn icone={<Copy size={18} />} disabled={!origem} onClick={() => origem && onDuplicar({ ...origem, id: novoIdProg(), inicio: ini, fim, turmasExcluidas: [...(origem.turmasExcluidas ?? [])] }, mesNovo)}>
+            {mesNovo ? `Duplicar e criar ${nomeMes}` : 'Duplicar'}
+          </Btn>
+        </>
+      }
+    >
+      <div className="pl-dup">
+        {inicial && origem ? (
+          <div className="pl-dup__origem">
+            <TipoPill tipo={origem.tipo} />
+            <span>
+              <strong>
+                {origem.componente} · {origem.objeto}
+              </strong>
+              <small>
+                {curta(origem.inicio)} a {curta(origem.fim)} · {textoAplicacao(origem, escopo)}
+              </small>
+            </span>
+          </div>
+        ) : (
+          <div className="cr-campo">
+            <span>Programação</span>
+            <Select className="cr-select--bloco" valor={id} onChange={setId} opcoes={progs.map((p) => ({ valor: p.id, texto: `${TIPOS[p.tipo].nome} · ${p.objeto} · ${curta(p.inicio)}` }))} />
+          </div>
+        )}
+        <div className="cr-campo">
+          <span>Para qual mês?</span>
+          <Select
+            className="cr-select--bloco"
+            valor={mes}
+            onChange={setMes}
+            opcoes={ANO_LETIVO.map((m) => {
+              const n = progs.filter((p) => p.inicio.startsWith(m)).length
+              return { valor: m, texto: `${nomeMesPlano(m)} — ${n ? `${n} ${n === 1 ? 'programação' : 'programações'}` : 'sem programações'}` }
+            })}
+          />
+        </div>
+        {origem && (
+          <motion.div key={mes + id} className="pl-dup__res" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
+            <CalendarDays size={20} />
+            <span>
+              Nova programação em <strong>{curta(ini)} a {curta(fim)}/2027</strong>, para as mesmas {textoAplicacao(origem, escopo)}.
+            </span>
+          </motion.div>
+        )}
+        {origem && mesNovo && (
+          <motion.div className="pl-dup__novo" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
+            <Plus size={18} />
+            <span>
+              <strong>{nomeMes}</strong> ainda não tem programações. O mês será criado no cronograma com esta atividade.
+            </span>
+          </motion.div>
+        )}
+      </div>
+    </Modal>
+  )
+}

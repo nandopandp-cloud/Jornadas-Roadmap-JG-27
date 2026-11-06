@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import { Etapas4, MesesProg, PlanoCab } from '../components/plano'
 import { Btn } from '../components/ui'
 import { MESES } from '../data'
-import { MESES_PLANO, PERIODO_FIM, brPlano, turmasDaProg } from '../plano'
+import { PERIODO_FIM, brPlano, mesesDe, turmasDaProg } from '../plano'
 import { useCron } from '../store'
 
 /** Etapa 4 — Finalizar e publicar */
@@ -17,8 +17,7 @@ export default function Finalizar() {
   const [feito, setFeito] = useState<null | 'publicado' | 'agendado'>(null)
   const turmas = useMemo(() => new Set(pl.progs.flatMap((p) => turmasDaProg(p, e).map((t) => t.id))).size, [pl.progs, e])
   const escolas = useMemo(() => new Set(pl.progs.flatMap((p) => turmasDaProg(p, e).map((t) => t.escola))).size, [pl.progs, e])
-  // período do cronograma (Março a Maio), como na referência
-  const meses = MESES_PLANO.map((m) => Number(m.slice(5, 7)) - 1)
+  const meses = mesesDe(pl.progs).map((m) => Number(m.slice(5, 7)) - 1)
   const faixa = meses.length ? `${cap(MESES[meses[0]])} a ${cap(MESES[meses.at(-1)!])}` : '—'
   const setPub = (p: Partial<typeof pub>) => setPlano((x) => ({ ...x, publicacao: { ...x.publicacao, ...p } }))
   const dataInvalida = !pub.data || pub.data > PERIODO_FIM

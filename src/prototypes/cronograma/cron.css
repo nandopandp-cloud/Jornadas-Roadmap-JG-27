@@ -5320,3 +5320,15 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* duplicar */
+.pl-dup { display: grid; gap: 4px; }
+.pl-dup__origem { display: flex; align-items: center; gap: 12px; padding: 12px 14px; margin-bottom: 12px; border-radius: 12px; background: #f8f6fd; border: 1px solid var(--linha); }
+.pl-dup__origem strong { display: block; color: var(--tinta); }
+.pl-dup__origem small { color: var(--texto); font-size: 13.5px; }
+.pl-dup__res, .pl-dup__novo { display: flex; gap: 10px; padding: 12px 14px; border-radius: 12px; font-size: 15px; line-height: 1.4; }
+.pl-dup__res { background: #f1ecfc; color: var(--tinta); }
+.pl-dup__res svg { color: var(--roxo); flex: none; }
+.pl-dup__novo { margin-top: 8px; background: #e9f7ee; color: #166534; }
+.pl-dup__novo svg { flex: none; margin-top: 1px; }
+.pl-mes__vazio--solto { border: 1.5px dashed #ddd5f3; border-radius: 12px; text-align: center; }

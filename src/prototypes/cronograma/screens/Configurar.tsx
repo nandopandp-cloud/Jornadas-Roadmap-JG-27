@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion'
 import { ArrowLeft, ArrowRight, Building2, CalendarDays, CheckCircle2, Copy, Layers, Plus, Save, Users } from 'lucide-react'
 import { useRef, useState } from 'react'
-import { AplicarPara, CamposProg, Etapas4, MesesProg, Num, PlanoCab, useDestaque, validarProg, type ErrosProg } from '../components/plano'
-import { Btn, Modal, Select } from '../components/ui'
-import { MESES_PLANO, curta, formInicial, nomeMesPlano, novoIdProg, somarMeses, textoAplicacao, turmasDaProg, type Prog } from '../plano'
+import { AplicarPara, CamposProg, DuplicarModal, Etapas4, MesesProg, Num, PlanoCab, useDestaque, validarProg, type ErrosProg } from '../components/plano'
+import { Btn } from '../components/ui'
+import { curta, formInicial, nomeMesPlano, novoIdProg, turmasDaProg, type Prog } from '../plano'
 import { TIPOS } from '../data'
 import { useCron } from '../store'
 
@@ -18,9 +18,8 @@ export default function Configurar() {
   const [editando, setEditando] = useState<string | null>(null)
   const [tentou, setTentou] = useState(false)
   const [destaque, piscar] = useDestaque()
-  const [dupModal, setDupModal] = useState(false)
-  const [dupId, setDupId] = useState('')
-  const [dupMes, setDupMes] = useState(MESES_PLANO[1])
+  /** false = fechado; '' = escolher programação; id = duplicar essa */
+  const [dup, setDup] = useState<string | false>(false)
   const formRef = useRef<HTMLDivElement>(null)
   const listaRef = useRef<HTMLElement>(null)
 
@@ -53,15 +52,13 @@ export default function Configurar() {
     setTentou(false)
     formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
-  const duplicar = (p: Prog, mesesDepois = 1) => {
-    const ini = somarMeses(p.inicio, mesesDepois)
-    const fim = somarMeses(p.fim, mesesDepois)
-    const cabe = fim <= '2027-05-31'
-    const id = novoIdProg()
-    const nova = cabe ? { ...p, id, inicio: ini, fim } : { ...p, id }
+  /** recebe a cópia já com as novas datas (vinda do modal) */
+  const duplicar = (nova: Prog, mesNovo: boolean) => {
     setPlano((pl2) => ({ ...pl2, progs: [...pl2.progs, nova] }))
-    piscar(id)
-    toast(cabe ? `Duplicada para ${curta(ini)} a ${curta(fim)}.` : 'Programação duplicada no mesmo período.')
+    setDup(false)
+    piscar(nova.id)
+    const mes = nomeMesPlano(nova.inicio.slice(0, 7)).split(' (')[0]
+    toast(mesNovo ? `${mes} criado com a programação duplicada.` : `Duplicada para ${curta(nova.inicio)} a ${curta(nova.fim)}.`)
   }
   const excluir = (p: Prog) => {
     setPlano((pl2) => ({ ...pl2, progs: pl2.progs.filter((x) => x.id !== p.id) }))
@@ -157,10 +154,7 @@ export default function Configurar() {
               pequeno
               icone={<Copy size={16} />}
               disabled={!pl.progs.length}
-              onClick={() => {
-                setDupId(pl.progs[0]?.id ?? '')
-                setDupModal(true)
-              }}
+              onClick={() => setDup('')}
             >
               Duplicar programação
             </Btn>
@@ -177,7 +171,7 @@ export default function Configurar() {
           progs={pl.progs}
           escopo={e}
           destaque={destaque}
-          acoes={{ editar, duplicar: (p) => duplicar(p), excluir }}
+          acoes={{ editar, duplicar: (p) => setDup(p.id), excluir }}
           vazio={<span>Nenhuma programação neste mês.</span>}
         />
         )}
@@ -199,39 +193,7 @@ export default function Configurar() {
       </footer>
 
 
-      <Modal
-        aberto={dupModal}
-        onFechar={() => setDupModal(false)}
-        titulo="Duplicar programação"
-        largura={540}
-        rodape={
-          <>
-            <Btn variante="contorno" onClick={() => setDupModal(false)}>
-              Cancelar
-            </Btn>
-            <Btn
-              icone={<Copy size={18} />}
-              onClick={() => {
-                const p = pl.progs.find((x) => x.id === dupId)
-                if (p) duplicar(p, MESES_PLANO.indexOf(dupMes) - MESES_PLANO.indexOf(p.inicio.slice(0, 7)))
-                setDupModal(false)
-              }}
-            >
-              Duplicar
-            </Btn>
-          </>
-        }
-      >
-        <div className="cr-campo">
-          <span>Programação</span>
-          <Select className="cr-select--bloco" valor={dupId} onChange={setDupId} opcoes={pl.progs.map((p) => ({ valor: p.id, texto: `${TIPOS[p.tipo].nome} · ${p.objeto} · ${textoAplicacao(p, e)}` }))} />
-        </div>
-        <div className="cr-campo">
-          <span>Copiar para o mês</span>
-          <Select className="cr-select--bloco" valor={dupMes} onChange={setDupMes} opcoes={MESES_PLANO.map((m) => ({ valor: m, texto: nomeMesPlano(m) }))} />
-        </div>
-        <p className="cr-texto cr-texto--suave">As datas são mantidas no mesmo dia do mês escolhido.</p>
-      </Modal>
+      <DuplicarModal aberto={dup !== false} inicial={dup || null} progs={pl.progs} escopo={e} onFechar={() => setDup(false)} onDuplicar={duplicar} />
     </div>
   )
 }

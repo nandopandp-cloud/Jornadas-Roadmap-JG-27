@@ -77,9 +77,12 @@ export const HABILIDADES: Record<string, string[]> = {
 }
 
 /* ---------------- período do cronograma (Março a Maio de 2027) ---------------- */
-export const PERIODO_INICIO = '2027-03-01'
-export const PERIODO_FIM = '2027-05-31'
-export const MESES_PLANO = ['2027-03', '2027-04', '2027-05']
+/** o cronograma cobre sempre os 12 meses do ano (janeiro a dezembro de 2027) */
+export const PERIODO_INICIO = '2027-01-01'
+export const PERIODO_FIM = '2027-12-31'
+export const ANO_LETIVO = Array.from({ length: 12 }, (_, i) => `2027-${String(i + 1).padStart(2, '0')}`)
+/** meses que já têm programações lançadas (em ordem) */
+export const mesesDe = (progs: { inicio: string }[]) => [...new Set(progs.map((p) => p.inicio.slice(0, 7)))].sort()
 export const nomeMesPlano = (k: string) => {
   const d = parseData(`${k}-01`)
   return `${capital(MESES[d.getMonth()])} (Mês ${d.getMonth() + 1})`
