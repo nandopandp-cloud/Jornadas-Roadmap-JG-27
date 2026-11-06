@@ -43,6 +43,14 @@ A voz oficial do Luno vem da ElevenLabs. A chave **nunca vai para o navegador**:
 - Narração em pt-BR (voz do sistema), efeitos sonoros sintetizados e micro-animações (Framer Motion).
 - Arte recortada das telas de referência, em `public/alfa/`.
 
+## Protótipo: Cronograma de Uso (Educadores)
+
+Independente da Alfabetização e **sem áudio** (não usa ElevenLabs nem narração).
+
+- **Gestor:** lista de escolas da rede (busca, status, Abrir/Criar/Continuar) → importar CSV (arrastar e soltar, modelo oficial para baixar, arquivo de exemplo) → análise animada → revisão das 12 inconsistências (aceitar, escolher outra correspondência ou manter; obrigatórias bloqueiam o avanço) → revisão do cronograma por mês (filtros, busca, ordenação, editar, excluir com desfazer, nova atividade) → resumo e publicação.
+- **Calendário escolar:** grade mensal com atividades agendadas e sugeridas, painel do dia, filtros, visão em tabela e nova atividade no dia.
+- **Professor:** troque o perfil clicando no usuário (rodapé do menu). Início com banner, recomendações (Pendentes, Criadas, Todas), criar atividade/avaliação, minicalendário e próximos eventos.
+
 O estado fica em memória: recarregar a página reinicia o protótipo.
 
 Ícones 3D: [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji) (licença MIT), em `public/3d/`.

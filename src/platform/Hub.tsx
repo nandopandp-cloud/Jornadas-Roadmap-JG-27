@@ -13,7 +13,7 @@ const DEVICES: Record<Device, { w: number; h: number; label: string }> = {
 
 export default function Hub({ slug }: { slug?: string }) {
   const journey = findJourney(slug) ?? journeys[0]
-  const [device, setDevice] = useState<Device>('tablet')
+  const [device, setDevice] = useState<Device>(journey.dispositivo ?? 'tablet')
   const [flow, setFlow] = useState<string | null>(null)
   const [nonce, setNonce] = useState(0)
   const [shareOpen, setShareOpen] = useState(false)
@@ -22,6 +22,7 @@ export default function Hub({ slug }: { slug?: string }) {
 
   useEffect(() => {
     document.title = `${journey.name} · Jornadas Jovens Gênios`
+    setDevice(journey.dispositivo ?? 'tablet')
   }, [journey])
 
   const select = (j: Journey) => {
@@ -167,7 +168,7 @@ export default function Hub({ slug }: { slug?: string }) {
           </div>
         )}
 
-        <Preview key={`${journey.slug}-${effectiveDevice}`} device={effectiveDevice} src={src} nonce={nonce} bare={isNarrow} />
+        <Preview key={`${journey.slug}-${effectiveDevice}`} device={effectiveDevice} src={src} nonce={nonce} bare={isNarrow} dominio={journey.dominio} />
         {!isNarrow && <p className="pf-hint">{journey.description}</p>}
       </main>
 
@@ -177,7 +178,7 @@ export default function Hub({ slug }: { slug?: string }) {
 }
 
 /* ---------- moldura de dispositivo com escala automática ---------- */
-function Preview({ device, src, nonce, bare }: { device: Device; src: string; nonce: number; bare: boolean }) {
+function Preview({ device, src, nonce, bare, dominio = 'alunos.jovensgenios.com' }: { device: Device; src: string; nonce: number; bare: boolean; dominio?: string }) {
   const wrap = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(1)
   const { w, h } = DEVICES[device]
@@ -219,7 +220,7 @@ function Preview({ device, src, nonce, bare }: { device: Device; src: string; no
             <i />
             <i />
             <i />
-            <span>alunos.jovensgenios.com</span>
+            <span>{dominio}</span>
           </div>
         )}
         {device === 'mobile' && <div className="pf-device__notch" />}

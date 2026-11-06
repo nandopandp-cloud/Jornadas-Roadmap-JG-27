@@ -1,6 +1,6 @@
 import { defineConfig, loadEnv, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
-import { existsSync, readdirSync, readFileSync, statSync, unlinkSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync, rmSync, statSync, unlinkSync } from 'node:fs'
 import { join } from 'node:path'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { sameOrigin, synthesize, type TtsEnv } from './server/elevenlabs'
@@ -50,20 +50,29 @@ function ttsProxy(mode: string): Plugin {
 }
 
 /**
- * As telas de referência ficam soltas em public/ (fonte de consulta do time), mas não precisam ir para o site:
- * remove do dist os .png da raiz (a arte usada pelo app fica em public/alfa e public/3d).
+ * As telas de referência ficam em public/ (soltas ou em subpastas, como “public/cronograma de uso”) para consulta
+ * do time, mas não precisam ir para o site. Depois do build, apaga do dist todo .png que não seja arte usada
+ * pelo app (public/alfa, public/cron e public/3d) e as pastas que ficarem vazias.
  */
+const ARTE_DO_APP = ['alfa', 'cron', '3d', 'assets']
 function semReferencias(): Plugin {
-  return {
-    name: 'sem-referencias',
-    apply: 'build',
-    closeBundle() {
-      for (const f of readdirSync('dist')) {
-        const full = join('dist', f)
-        if (f.toLowerCase().endsWith('.png') && statSync(full).isFile()) unlinkSync(full)
-      }
-    },
+  const limpar = (dir: string, raiz: boolean): boolean => {
+    let vazio = true
+    for (const f of readdirSync(dir)) {
+      const full = join(dir, f)
+      if (statSync(full).isDirectory()) {
+        if (raiz && ARTE_DO_APP.includes(f)) {
+          vazio = false
+          continue
+        }
+        if (limpar(full, false)) rmSync(full, { recursive: true })
+        else vazio = false
+      } else if (f.toLowerCase().endsWith('.png') || f === '.DS_Store') unlinkSync(full)
+      else vazio = false
+    }
+    return vazio
   }
+  return { name: 'sem-referencias', apply: 'build', closeBundle: () => void limpar('dist', true) }
 }
 
 // base relativo: funciona em qualquer host estático (Vercel, Netlify, GitHub Pages em subpasta).
