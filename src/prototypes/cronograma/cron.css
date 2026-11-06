@@ -5332,3 +5332,7 @@
 .pl-dup__novo { margin-top: 8px; background: #e9f7ee; color: #166534; }
 .pl-dup__novo svg { flex: none; margin-top: 1px; }
 .pl-mes__vazio--solto { border: 1.5px dashed #ddd5f3; border-radius: 12px; text-align: center; }
+
+.cr-select__lista[style*='fixed'] {
+  z-index: 300;
+}

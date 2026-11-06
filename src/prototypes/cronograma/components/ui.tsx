@@ -75,18 +75,26 @@ export function Select<T extends string>({
   largura?: number
 }) {
   const [aberto, setAberto] = useState(false)
-  const [espaco, setEspaco] = useState<{ cima: boolean; max: number }>({ cima: false, max: 300 })
+  // a lista usa posição fixa na tela: nunca é cortada por modais ou painéis com rolagem
+  const [pos, setPos] = useState<React.CSSProperties>({})
+  const [cimaAberto, setCima] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (!aberto) return
-    // abre para cima quando falta espaço embaixo (ex.: dentro de modais) e limita a altura ao espaço visível
-    const caixa = ref.current?.closest('.cr-modal__corpo, .cr-main') as HTMLElement | null
     const r = ref.current!.getBoundingClientRect()
-    const lim = caixa?.getBoundingClientRect() ?? { top: 0, bottom: window.innerHeight }
-    const baixo = Math.min(lim.bottom, window.innerHeight) - r.bottom - 12
-    const cima = r.top - Math.max(lim.top, 0) - 12
-    const paraCima = baixo < 220 && cima > baixo
-    setEspaco({ cima: paraCima, max: Math.max(140, Math.min(300, paraCima ? cima : baixo)) })
+    const baixo = window.innerHeight - r.bottom - 12
+    const cima = r.top - 12
+    const paraCima = baixo < 240 && cima > baixo
+    const max = Math.max(140, Math.min(300, paraCima ? cima : baixo))
+    setCima(paraCima)
+    setPos({ position: 'fixed', left: r.left, minWidth: r.width, maxHeight: max, ...(paraCima ? { bottom: window.innerHeight - r.top + 6, top: 'auto' } : { top: r.bottom + 6 }) })
+    // fecha ao rolar a página, mas não ao rolar a própria lista
+    const fechar = (ev?: Event) => {
+      if (ev && ref.current?.contains(ev.target as Node)) return
+      setAberto(false)
+    }
+    window.addEventListener('resize', fechar)
+    document.addEventListener('scroll', fechar, true)
     const fora = (e: MouseEvent) => !ref.current?.contains(e.target as Node) && setAberto(false)
     const esc = (e: KeyboardEvent) => e.key === 'Escape' && setAberto(false)
     document.addEventListener('mousedown', fora)
@@ -94,6 +102,8 @@ export function Select<T extends string>({
     return () => {
       document.removeEventListener('mousedown', fora)
       document.removeEventListener('keydown', esc)
+      window.removeEventListener('resize', fechar)
+      document.removeEventListener('scroll', fechar, true)
     }
   }, [aberto])
   const atual = opcoes.find((o) => o.valor === valor)
@@ -110,8 +120,8 @@ export function Select<T extends string>({
       <AnimatePresence>
         {aberto && (
           <motion.ul
-            className={`cr-select__lista ${espaco.cima ? 'is-cima' : ''}`}
-            style={{ maxHeight: espaco.max }}
+            className={`cr-select__lista ${cimaAberto ? 'is-cima' : ''}`}
+            style={pos}
             role="listbox"
             initial={{ opacity: 0, y: -6, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
