@@ -225,3 +225,76 @@ export function somarMeses(iso: string, n: number) {
 }
 
 export const nomeTipo = (t: TipoId) => TIPOS[t].nome
+
+/* ---------------- educadores e exportação no formato da planilha modelo ---------------- */
+export const REDE_NOME = 'Rede Municipal de Ensino'
+
+const PROFESSORES: Record<string, string[]> = {
+  Ciências: ['Álvaro Dumbledore', 'Marina Costa', 'Rafael Nunes', 'Beatriz Lima'],
+  Português: ['Julia Verus', 'Rosana Alves', 'Carla Mendes', 'Paulo Freitas'],
+  Matemática: ['Lucius Seneca', 'Helena Prado', 'Diego Ramos', 'Sônia Matos'],
+  História: ['Claudia Octavia', 'Renato Silva', 'Lúcia Barros'],
+  Geografia: ['Glaucio Santos', 'Fernanda Rocha', 'Igor Pacheco'],
+}
+const hash = (s: string) => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7)
+
+/** educador(a) vinculado à turma no componente (dados de exemplo, sempre o mesmo para a mesma turma) */
+export function educadorDe(t: Turma, p: Prog, e: Escopo, resolvidos: string[]) {
+  if (!e.autoVinculo && !resolvidos.includes(p.id)) return 'A vincular'
+  const semVinculo = t.escola === ESCOLA_SEM_EDUCADOR && t.ano === '8º ano' && p.componente === 'Matemática'
+  if (semVinculo) return resolvidos.includes(p.id) ? EDUCADORES_SUGERIDOS[0] : 'Sem educador vinculado'
+  // anos iniciais: professor(a) polivalente da turma
+  const lista = parseInt(t.ano) <= 5 ? ['Ana Paula Reis', 'Márcia Teixeira', 'Joana Duarte', 'Cristina Melo', 'Patrícia Souza'] : PROFESSORES[p.componente] ?? ['Educador(a) da turma']
+  return lista[hash(`${t.escola}-${t.ano}-${p.componente}`) % lista.length]
+}
+
+/** colunas e linhas do resumo exportado — uma linha por turma, como a planilha modelo */
+export function linhasExportacao(progs: Prog[], e: Escopo, resolvidos: string[], status: (p: Prog) => string) {
+  const cab = [
+    'Rede',
+    'Escola',
+    'Mês',
+    'Início',
+    'Término',
+    'Ano Escolar',
+    'Turma',
+    'Educador(a)',
+    'Ano Escolar (conteúdo)',
+    'Componente Curricular',
+    'Unidade temática',
+    'Objeto de Conhecimento',
+    'Habilidades',
+    'Atividade na Plataforma',
+    'Status',
+  ]
+  const linhas = [...progs]
+    .sort((a, b) => a.inicio.localeCompare(b.inicio))
+    .flatMap((p) =>
+      turmasDaProg(p, e)
+        .sort((a, b) => nomeRede(a.escola).localeCompare(nomeRede(b.escola)) || ANOS_ESCOPO.indexOf(a.ano) - ANOS_ESCOPO.indexOf(b.ano) || a.nome.localeCompare(b.nome))
+        .map((t) => [
+          REDE_NOME,
+          nomeRede(t.escola),
+          capital(MESES[parseData(p.inicio).getMonth()]),
+          brPlano(p.inicio),
+          brPlano(p.fim),
+          t.ano,
+          t.nome,
+          educadorDe(t, p, e, resolvidos),
+          t.ano,
+          p.componente,
+          p.unidade,
+          p.objeto,
+          p.habilidade ?? '',
+          TIPOS[p.tipo].nome,
+          status(p),
+        ]),
+    )
+  return [cab, ...linhas]
+}
+
+/** monta o CSV (separado por ponto e vírgula, com BOM para o Excel abrir com acentos) */
+export function paraCSV(tabela: string[][]) {
+  const cel = (v: string) => (/[;"\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v)
+  return '﻿' + tabela.map((l) => l.map(cel).join(';')).join('\r\n')
+}

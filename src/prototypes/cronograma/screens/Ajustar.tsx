@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { AplicarPara, CamposProg, DuplicarModal, Etapas4, MesesProg, Num, PlanoCab, useDestaque, validarProg } from '../components/plano'
 import { Btn, Modal, Select, TIPO_ICONE } from '../components/ui'
 import { COMPONENTES, TIPOS, TIPO_LISTA, type TipoId } from '../data'
-import { EDUCADORES_SUGERIDOS, brPlano, curta, nomeMesPlano, nomeRede, pendenciaDe, periodoProgs, textoAplicacao, turmasDaProg, type Pendencia, type Prog } from '../plano'
+import { EDUCADORES_SUGERIDOS, linhasExportacao, paraCSV, curta, nomeMesPlano, nomeRede, pendenciaDe, periodoProgs, textoAplicacao, turmasDaProg, type Pendencia, type Prog } from '../plano'
 import { useCron } from '../store'
 
 type Aba = 'todas' | 'pendencias' | 'ajustadas'
@@ -61,20 +61,16 @@ export default function Ajustar() {
     toast('Programação removida.', 'info', { rotulo: 'Desfazer', fn: () => setPlano((x) => ({ ...x, progs: [...x.progs, p] })) })
   }
 
+  /** exporta no formato da planilha modelo: uma linha por turma, com rede, escola, educador e currículo */
   const exportar = () => {
-    const linhas = [
-      ['Mês', 'Atividade', 'Componente', 'Unidade temática', 'Conteúdo', 'Habilidade', 'Início', 'Término', 'Aplicação', 'Status'].join(';'),
-      ...[...pl.progs]
-        .sort((a, b) => a.inicio.localeCompare(b.inicio))
-        .map((p) => [p.inicio.slice(5, 7), TIPOS[p.tipo].nome, p.componente, p.unidade, p.objeto, p.habilidade ?? '', brPlano(p.inicio), brPlano(p.fim), textoAplicacao(p, e), temPend(p) ? 'Pendência' : 'Válida'].join(';')),
-    ]
-    const url = URL.createObjectURL(new Blob(['﻿' + linhas.join('\n')], { type: 'text/csv;charset=utf-8' }))
+    const tabela = linhasExportacao(pl.progs, e, pl.resolvidos, (p) => (temPend(p) ? 'Pendência' : 'Válida'))
+    const url = URL.createObjectURL(new Blob([paraCSV(tabela)], { type: 'text/csv;charset=utf-8' }))
     const a = document.createElement('a')
     a.href = url
-    a.download = 'resumo_cronograma_2027.csv'
+    a.download = 'cronograma_de_uso_2027.csv'
     a.click()
     window.setTimeout(() => URL.revokeObjectURL(url), 1000)
-    toast('Resumo exportado: resumo_cronograma_2027.csv')
+    toast(`Planilha exportada: ${tabela.length - 1} linhas (uma por turma) em cronograma_de_uso_2027.csv`)
   }
 
   const avancar = () => {
