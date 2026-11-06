@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { AlertTriangle, BookOpen, CalendarDays, Check, CheckCircle2, ChevronDown, Copy, Pencil, Plus, Search, Trash2, X } from 'lucide-react'
+import { AlertTriangle, BookOpen, CalendarDays, Check, CheckCircle2, ChevronDown, Copy, Pencil, Search, Trash2, X } from 'lucide-react'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { COMPONENTES, TIPOS, TIPO_LISTA, type TipoId } from '../data'
 import {
@@ -19,6 +19,7 @@ import {
   turmasDaProg,
   turmasDoEscopo,
   type Escopo,
+  type Turma,
   type Prog,
 } from '../plano'
 import { Select, TIPO_ICONE } from './ui'
@@ -412,25 +413,35 @@ function Aplicacao({ p, escopo }: { p: Prog; escopo: Escopo }) {
 export function AplicarPara({ f, set, escopo, erros }: { f: Prog; set: (p: Partial<Prog>) => void; escopo: Escopo; erros: ErrosProg }) {
   const doEscopo = turmasDoEscopo(escopo)
   const anos = ANOS_ESCOPO.filter((a) => escopo.anos.includes(a) && doEscopo.some((t) => t.ano === a))
-  const escolasComTurma = REDE.filter((e) => escopo.escolas.includes(e.id) && doEscopo.some((t) => t.escola === e.id && f.anos.includes(t.ano)))
+  const escolasDisp = REDE.filter((e) => escopo.escolas.includes(e.id) && doEscopo.some((t) => t.escola === e.id && f.anos.includes(t.ano)))
   const candidatas = turmasCandidatas(f, escopo)
   const excl = f.turmasExcluidas ?? []
   const recebem = candidatas.filter((t) => !excl.includes(t.id))
   const toggle = (lista: string[], v: string) => (lista.includes(v) ? lista.filter((x) => x !== v) : [...lista, v])
   const contaAno = (a: string) => doEscopo.filter((t) => t.ano === a && f.escolas.includes(t.escola)).length
-  const todasEsc = escolasComTurma.length > 0 && escolasComTurma.every((e) => f.escolas.includes(e.id))
+  const todosAnos = anos.every((a) => f.anos.includes(a))
+  const escSel = escolasDisp.filter((e) => f.escolas.includes(e.id))
+
+  /** marca/desmarca um grupo de turmas de uma vez */
+  const grupo = (ts: Turma[], incluir: boolean) =>
+    set({ turmasExcluidas: incluir ? excl.filter((id) => !ts.some((t) => t.id === id)) : [...new Set([...excl, ...ts.map((t) => t.id)])] })
+
   return (
     <div className="pl-ap">
       <div className="pl-ap__bloco">
         <span className="pl-ap__rotulo">
           <b>1</b> Anos escolares
+          {anos.length > 1 && (
+            <button type="button" className="cr-link pl-ap__todas" onClick={() => set({ anos: todosAnos ? [] : anos })}>
+              {todosAnos ? 'Limpar' : 'Selecionar todos'}
+            </button>
+          )}
         </span>
         <div className="pl-ap__chips">
           {anos.map((a) => {
             const on = f.anos.includes(a)
             return (
-              <motion.button key={a} type="button" whileTap={{ scale: 0.94 }} className={`pl-chip ${on ? 'is-on' : ''}`} onClick={() => set({ anos: toggle(f.anos, a) })} aria-pressed={on}>
-                {on && <Check size={15} strokeWidth={3} />}
+              <motion.button key={a} type="button" whileTap={{ scale: 0.94 }} className={`pl-chip pl-chip--ano ${on ? 'is-on' : ''}`} onClick={() => set({ anos: toggle(f.anos, a) })} aria-pressed={on}>
                 {a}
                 <em>{contaAno(a)}</em>
               </motion.button>
@@ -442,30 +453,12 @@ export function AplicarPara({ f, set, escopo, erros }: { f: Prog; set: (p: Parti
       <div className="pl-ap__bloco">
         <span className="pl-ap__rotulo">
           <b>2</b> Escolas
-          <small>
-            {escolasComTurma.filter((e) => f.escolas.includes(e.id)).length} de {escolasComTurma.length}
-          </small>
-          {escolasComTurma.length > 1 && (
-            <button type="button" className="cr-link pl-ap__todas" onClick={() => set({ escolas: todasEsc ? [] : [...new Set([...f.escolas, ...escolasComTurma.map((e) => e.id)])] })}>
-              {todasEsc ? 'Limpar' : 'Selecionar todas'}
-            </button>
-          )}
         </span>
-        <div className="pl-ap__chips pl-ap__chips--rolar">
-          {escolasComTurma.length ? (
-            escolasComTurma.map((e) => {
-              const on = f.escolas.includes(e.id)
-              return (
-                <motion.button key={e.id} type="button" whileTap={{ scale: 0.94 }} className={`pl-chip pl-chip--escola ${on ? 'is-on' : ''}`} onClick={() => set({ escolas: toggle(f.escolas, e.id) })} aria-pressed={on}>
-                  {on && <Check size={15} strokeWidth={3} />}
-                  {e.nome}
-                </motion.button>
-              )
-            })
-          ) : (
-            <span className="pl-ap__vazio">Escolha um ano escolar.</span>
-          )}
-        </div>
+        <SeletorEscolas
+          escolas={escolasDisp.map((e) => ({ ...e, n: candidatas.filter((t) => t.escola === e.id).length || doEscopo.filter((t) => t.escola === e.id && f.anos.includes(t.ano)).length }))}
+          sel={f.escolas}
+          onChange={(escolas) => set({ escolas })}
+        />
       </div>
 
       <div className="pl-ap__bloco">
@@ -474,36 +467,194 @@ export function AplicarPara({ f, set, escopo, erros }: { f: Prog; set: (p: Parti
           <motion.em key={recebem.length} initial={{ scale: 1.4 }} animate={{ scale: 1 }} className="pl-ap__qtd">
             {recebem.length}
           </motion.em>
+          <small>de {candidatas.length}</small>
           {excl.length > 0 && (
             <button type="button" className="cr-link pl-ap__todas" onClick={() => set({ turmasExcluidas: [] })}>
               Incluir todas
             </button>
           )}
         </span>
-        <div className="pl-ap__turmas">
-          {candidatas.length ? (
-            candidatas.map((t) => {
-              const on = !excl.includes(t.id)
-              return (
-                <button
-                  key={t.id}
-                  type="button"
-                  className={`pl-turmachip ${on ? 'is-on' : ''}`}
-                  onClick={() => set({ turmasExcluidas: toggle(excl, t.id) })}
-                  title={on ? 'Clique para não enviar a esta turma' : 'Clique para incluir esta turma'}
-                >
-                  <strong>{t.nome}</strong>
-                  <small>{nomeRede(t.escola)}</small>
-                  {on ? <X size={14} className="pl-turmachip__x" /> : <Plus size={14} className="pl-turmachip__x" />}
-                </button>
-              )
-            })
-          ) : (
-            <span className="pl-ap__vazio">As turmas aparecem aqui conforme os anos e as escolas escolhidos.</span>
-          )}
-        </div>
+        <ArvoreTurmas turmas={candidatas} excl={excl} escolas={escSel} onTurma={(id) => set({ turmasExcluidas: toggle(excl, id) })} onGrupo={grupo} />
       </div>
       {(erros.anos || erros.escolas) && <small className="cr-erro">{erros.anos ?? erros.escolas}</small>}
+    </div>
+  )
+}
+
+/** seletor de escolas com busca — escala para redes com centenas de escolas */
+function SeletorEscolas({ escolas, sel, onChange }: { escolas: { id: string; nome: string; n: number }[]; sel: string[]; onChange: (v: string[]) => void }) {
+  const [aberto, setAberto] = useState(false)
+  const [q, setQ] = useState('')
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!aberto) return
+    const fora = (e: MouseEvent) => !ref.current?.contains(e.target as Node) && setAberto(false)
+    document.addEventListener('mousedown', fora)
+    return () => document.removeEventListener('mousedown', fora)
+  }, [aberto])
+  const marcadas = escolas.filter((e) => sel.includes(e.id))
+  const vis = escolas.filter((e) => e.nome.toLowerCase().includes(q.trim().toLowerCase()))
+  const todasVis = vis.length > 0 && vis.every((e) => sel.includes(e.id))
+  const resumo = !escolas.length
+    ? 'Escolha um ano escolar'
+    : marcadas.length === escolas.length
+      ? `Todas as escolas (${escolas.length})`
+      : marcadas.length === 0
+        ? 'Nenhuma escola selecionada'
+        : marcadas.length <= 2
+          ? marcadas.map((e) => e.nome).join(', ')
+          : `${marcadas.length} de ${escolas.length} escolas`
+  return (
+    <div className={`cr-select pl-esc ${aberto ? 'is-aberto' : ''}`} ref={ref}>
+      <button type="button" className="cr-select__btn" disabled={!escolas.length} onClick={() => setAberto((a) => !a)} aria-expanded={aberto}>
+        <span className="cr-select__valor">{resumo}</span>
+        <ChevronDown size={18} className="cr-select__seta" />
+      </button>
+      <AnimatePresence>
+        {aberto && (
+          <motion.div className="pl-esc__pop" initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.14 }}>
+            <label className="pl-esc__busca">
+              <Search size={16} />
+              <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder={`Buscar entre ${escolas.length} escolas`} />
+              {q && (
+                <button type="button" onClick={() => setQ('')} aria-label="Limpar busca">
+                  <X size={14} />
+                </button>
+              )}
+            </label>
+            <button
+              type="button"
+              className="pl-esc__todas"
+              onClick={() => onChange(todasVis ? sel.filter((id) => !vis.some((e) => e.id === id)) : [...new Set([...sel, ...vis.map((e) => e.id)])])}
+            >
+              <Caixa on={todasVis} meio={!todasVis && vis.some((e) => sel.includes(e.id))} />
+              {q ? `Selecionar resultados (${vis.length})` : 'Selecionar todas'}
+            </button>
+            <ul>
+              {vis.map((e) => {
+                const on = sel.includes(e.id)
+                return (
+                  <li key={e.id}>
+                    <button type="button" onClick={() => onChange(on ? sel.filter((x) => x !== e.id) : [...sel, e.id])}>
+                      <Caixa on={on} />
+                      <span>{e.nome}</span>
+                      <em>{e.n} turmas</em>
+                    </button>
+                  </li>
+                )
+              })}
+              {!vis.length && <li className="pl-semres">Nenhuma escola encontrada.</li>}
+            </ul>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+/** caixa de seleção visual (sem botão próprio, para usar dentro de listas) */
+function Caixa({ on, meio }: { on: boolean; meio?: boolean }) {
+  return (
+    <span className={`pl-caixa ${on ? 'is-on' : ''} ${meio ? 'is-meio' : ''}`} aria-hidden>
+      {on ? <Check size={13} strokeWidth={3.4} /> : meio ? <i /> : null}
+    </span>
+  )
+}
+
+/**
+ * Turmas agrupadas por escola → ano. Escolas começam recolhidas, com contagem e ação em lote;
+ * há busca por turma/escola. Assim 50+ turmas por escola continuam fáceis de revisar.
+ */
+function ArvoreTurmas({
+  turmas,
+  excl,
+  escolas,
+  onTurma,
+  onGrupo,
+}: {
+  turmas: Turma[]
+  excl: string[]
+  escolas: { id: string; nome: string }[]
+  onTurma: (id: string) => void
+  onGrupo: (ts: Turma[], incluir: boolean) => void
+}) {
+  const [abertas, setAbertas] = useState<string[]>([])
+  const [q, setQ] = useState('')
+  const busca = q.trim().toLowerCase()
+  if (!turmas.length) return <span className="pl-ap__vazio">As turmas aparecem aqui conforme os anos e as escolas escolhidos.</span>
+  const filtra = (t: Turma) => !busca || t.nome.toLowerCase().includes(busca) || nomeRede(t.escola).toLowerCase().includes(busca) || t.ano.includes(busca)
+  return (
+    <div className="pl-arvore">
+      {turmas.length > 12 && (
+        <label className="pl-esc__busca pl-arvore__busca">
+          <Search size={16} />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar turma ou escola (ex.: 6º A, Monteiro)" />
+          {q && (
+            <button type="button" onClick={() => setQ('')} aria-label="Limpar busca">
+              <X size={14} />
+            </button>
+          )}
+        </label>
+      )}
+      <ul className="pl-arvore__lista">
+        {escolas.map((e) => {
+          const ts = turmas.filter((t) => t.escola === e.id)
+          const vis = ts.filter(filtra)
+          if (!vis.length) return null
+          const nOn = ts.filter((t) => !excl.includes(t.id)).length
+          const aberta = abertas.includes(e.id) || (!!busca && vis.length <= 30)
+          const anos = ANOS_ESCOPO.filter((a) => vis.some((t) => t.ano === a))
+          return (
+            <li key={e.id} className={`pl-arvore__esc ${aberta ? 'is-aberta' : ''}`}>
+              <div className="pl-arvore__cab">
+                <button type="button" className="pl-arvore__abrir" onClick={() => setAbertas((x) => (x.includes(e.id) ? x.filter((i) => i !== e.id) : [...x, e.id]))} aria-expanded={aberta}>
+                  <motion.span animate={{ rotate: aberta ? 0 : -90 }} style={{ display: 'inline-flex' }}>
+                    <ChevronDown size={16} />
+                  </motion.span>
+                  <span className="pl-arvore__nome">{e.nome}</span>
+                </button>
+                <span className="pl-arvore__barra">
+                  <i style={{ width: `${(nOn / ts.length) * 100}%` }} />
+                </span>
+                <span className={`pl-arvore__n ${nOn < ts.length ? 'is-parcial' : ''}`}>
+                  {nOn}/{ts.length}
+                </span>
+                <button type="button" className="pl-arvore__lote" onClick={() => onGrupo(ts, nOn < ts.length)} title={nOn < ts.length ? 'Incluir todas as turmas desta escola' : 'Remover todas as turmas desta escola'}>
+                  <Caixa on={nOn === ts.length} meio={nOn > 0 && nOn < ts.length} />
+                </button>
+              </div>
+              <AnimatePresence initial={false}>
+                {aberta && (
+                  <motion.div className="pl-arvore__corpo" initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.18 }}>
+                    {anos.map((a) => {
+                      const ta = vis.filter((t) => t.ano === a)
+                      const on = ta.filter((t) => !excl.includes(t.id)).length
+                      return (
+                        <div key={a} className="pl-arvore__ano">
+                          <button type="button" className="pl-arvore__anolote" onClick={() => onGrupo(ta, on < ta.length)}>
+                            <Caixa on={on === ta.length} meio={on > 0 && on < ta.length} />
+                            {a}
+                          </button>
+                          <div className="pl-arvore__turmas">
+                            {ta.map((t) => {
+                              const ok = !excl.includes(t.id)
+                              return (
+                                <button key={t.id} type="button" className={`pl-mini ${ok ? 'is-on' : ''}`} onClick={() => onTurma(t.id)} title={`${t.nome} · ${e.nome} — ${ok ? 'clique para remover' : 'clique para incluir'}`}>
+                                  {t.nome.replace(`${parseInt(a)}º `, '')}
+                                </button>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </li>
+          )
+        })}
+      </ul>
     </div>
   )
 }

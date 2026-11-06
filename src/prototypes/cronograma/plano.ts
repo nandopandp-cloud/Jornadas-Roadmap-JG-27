@@ -29,9 +29,17 @@ const OFERTA: Record<string, string[]> = {
 }
 
 export type Turma = { id: string; ano: string; nome: string; escola: string }
+/**
+ * Quantas turmas cada escola tem por ano (redes reais variam muito).
+ * A EMEF Monteiro Lobato é a escola “grande” do exemplo: 6 turmas por ano = 54 turmas.
+ */
+const TURMAS_POR_ANO: Record<string, number> = { a: 3, b: 2, c: 4, d: 2, e: 3, f: 2, g: 1, h: 2, i: 2, j: 1, k: 6, l: 3 }
+const LETRAS = 'ABCDEFGH'
 export const TURMAS_REDE: Turma[] = ANOS_ESCOPO.flatMap((ano) => {
   const n = parseInt(ano)
-  return OFERTA[ano].map((escola, i) => ({ id: `${ano}-${escola}`, ano, escola, nome: String(n * 100 + i + 1) }))
+  return OFERTA[ano].flatMap((escola) =>
+    Array.from({ length: TURMAS_POR_ANO[escola] ?? 1 }, (_, j) => ({ id: `${ano}-${escola}-${j}`, ano, escola, nome: `${n}º ${LETRAS[j]}` })),
+  )
 })
 
 /* ---------------- currículo ---------------- */
