@@ -75,9 +75,18 @@ export function Select<T extends string>({
   largura?: number
 }) {
   const [aberto, setAberto] = useState(false)
+  const [espaco, setEspaco] = useState<{ cima: boolean; max: number }>({ cima: false, max: 300 })
   const ref = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (!aberto) return
+    // abre para cima quando falta espaço embaixo (ex.: dentro de modais) e limita a altura ao espaço visível
+    const caixa = ref.current?.closest('.cr-modal__corpo, .cr-main') as HTMLElement | null
+    const r = ref.current!.getBoundingClientRect()
+    const lim = caixa?.getBoundingClientRect() ?? { top: 0, bottom: window.innerHeight }
+    const baixo = Math.min(lim.bottom, window.innerHeight) - r.bottom - 12
+    const cima = r.top - Math.max(lim.top, 0) - 12
+    const paraCima = baixo < 220 && cima > baixo
+    setEspaco({ cima: paraCima, max: Math.max(140, Math.min(300, paraCima ? cima : baixo)) })
     const fora = (e: MouseEvent) => !ref.current?.contains(e.target as Node) && setAberto(false)
     const esc = (e: KeyboardEvent) => e.key === 'Escape' && setAberto(false)
     document.addEventListener('mousedown', fora)
@@ -101,7 +110,8 @@ export function Select<T extends string>({
       <AnimatePresence>
         {aberto && (
           <motion.ul
-            className="cr-select__lista"
+            className={`cr-select__lista ${espaco.cima ? 'is-cima' : ''}`}
+            style={{ maxHeight: espaco.max }}
             role="listbox"
             initial={{ opacity: 0, y: -6, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}

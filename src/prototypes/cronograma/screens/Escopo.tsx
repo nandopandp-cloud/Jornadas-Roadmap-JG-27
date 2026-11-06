@@ -146,7 +146,7 @@ export default function Escopo() {
             onChange={setFiltroEsc}
             opcoes={[
               { valor: 'todas', texto: `Todas as escolas (${e.escolas.length})` },
-              ...REDE.filter((x) => e.escolas.includes(x.id)).map((x) => ({ valor: x.id, texto: `${x.nome} (${turmas.filter((t) => t.escola === x.id).length})`, icone: <School size={16} /> })),
+              ...REDE.filter((x) => e.escolas.includes(x.id) && turmas.some((t) => t.escola === x.id)).map((x) => ({ valor: x.id, texto: `${x.nome} (${turmas.filter((t) => t.escola === x.id).length})`, icone: <School size={16} /> })),
             ]}
           />
           {(() => {

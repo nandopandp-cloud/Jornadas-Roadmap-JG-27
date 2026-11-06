@@ -5073,3 +5073,9 @@
     grid-template-columns: 1fr;
   }
 }
+
+.cr-select__lista.is-cima {
+  top: auto;
+  bottom: calc(100% + 6px);
+  transform-origin: bottom;
+}
