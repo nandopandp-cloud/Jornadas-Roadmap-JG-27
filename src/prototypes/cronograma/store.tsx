@@ -122,7 +122,7 @@ function agoraTexto() {
 /* ---------------- estado inicial ---------------- */
 export type Inicio = 'lista' | 'importar' | 'inconsistencias' | 'revisar' | 'publicar' | 'calendario' | 'professor' | 'inicio' | 'escolha' | 'escopo' | 'configurar' | 'ajustar' | 'finalizar'
 
-const novoPlano = (escola?: string, comExemplo = true): Plano => {
+const novoPlano = (escola?: string, comExemplo = false): Plano => {
   const escopo = escopoInicial(escola)
   return {
     escopo,
@@ -145,7 +145,7 @@ function inicial(start: Inicio): State {
   if (start === 'escopo') return { ...s, plano: novoPlano(), view: { id: 'escopo' } }
   if (start === 'configurar') return { ...s, plano: novoPlano(), view: { id: 'configurar' } }
   if (start === 'ajustar' || start === 'finalizar') {
-    const p = novoPlano()
+    const p = novoPlano(undefined, true)
     p.progs = [{ ...formInicial(p.escopo.escolas), id: 'p1' }, ...p.progs]
     if (start === 'finalizar') p.resolvidos = ['p3']
     return { ...s, plano: p, view: { id: start } }

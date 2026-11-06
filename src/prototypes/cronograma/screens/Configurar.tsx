@@ -1,6 +1,6 @@
-import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowLeft, ArrowRight, Bookmark, Building2, CalendarDays, CheckCircle2, Copy, Layers, Plus, Save, Users } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { motion } from 'framer-motion'
+import { ArrowLeft, ArrowRight, Building2, CalendarDays, CheckCircle2, Copy, Layers, Plus, Save, Users } from 'lucide-react'
+import { useRef, useState } from 'react'
 import { AplicarPara, CamposProg, Etapas4, MesesProg, Num, PlanoCab, useDestaque, validarProg, type ErrosProg } from '../components/plano'
 import { Btn, Modal, Select } from '../components/ui'
 import { MESES_PLANO, curta, formInicial, nomeMesPlano, novoIdProg, somarMeses, textoAplicacao, turmasDaProg, type Prog } from '../plano'
@@ -18,22 +18,11 @@ export default function Configurar() {
   const [editando, setEditando] = useState<string | null>(null)
   const [tentou, setTentou] = useState(false)
   const [destaque, piscar] = useDestaque()
-  const [modeloModal, setModeloModal] = useState(false)
-  const [nomeModelo, setNomeModelo] = useState('')
-  const [usarModelo, setUsarModelo] = useState(false)
   const [dupModal, setDupModal] = useState(false)
   const [dupId, setDupId] = useState('')
   const [dupMes, setDupMes] = useState(MESES_PLANO[1])
   const formRef = useRef<HTMLDivElement>(null)
   const listaRef = useRef<HTMLElement>(null)
-  const usarRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!usarModelo) return
-    const fora = (ev: MouseEvent) => !usarRef.current?.contains(ev.target as Node) && setUsarModelo(false)
-    document.addEventListener('mousedown', fora)
-    return () => document.removeEventListener('mousedown', fora)
-  }, [usarModelo])
 
   const erros: ErrosProg = tentou ? validarProg(f) : {}
   const set = (p: Partial<Prog>) => setF((x) => ({ ...x, ...p }))
@@ -151,16 +140,6 @@ export default function Configurar() {
           {editando ? 'Cancelar edição' : 'Cancelar'}
         </Btn>
         <span />
-        <Btn
-          variante="contorno"
-          icone={<Bookmark size={18} />}
-          onClick={() => {
-            setNomeModelo(`${TIPOS[f.tipo].nome} de ${f.componente}`)
-            setModeloModal(true)
-          }}
-        >
-          Salvar como modelo
-        </Btn>
         <Btn icone={editando ? <Save size={20} /> : <Plus size={22} />} className="pl-adicionar" onClick={salvar}>
           {editando ? 'Salvar alterações' : 'Adicionar ao cronograma'}
         </Btn>
@@ -172,37 +151,7 @@ export default function Configurar() {
           <h3>
             Cronograma em construção <span>({pl.progs.length} {pl.progs.length === 1 ? 'programação' : 'programações'})</span>
           </h3>
-          <div className="pl-construcao__btns" ref={usarRef}>
-            <Btn variante="contorno" pequeno icone={<Layers size={16} />} onClick={() => setUsarModelo((u) => !u)}>
-              Usar modelo
-            </Btn>
-            <AnimatePresence>
-              {usarModelo && (
-                <motion.div className="cr-menu__lista pl-modelos" initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}>
-                  <p>Preencher o formulário com um modelo</p>
-                  {pl.modelos.map((m) => (
-                    <button
-                      key={m.id}
-                      onClick={() => {
-                        setF((x) => ({ ...x, ...m.prog, anos: m.prog.anos.filter((a) => e.anos.includes(a)) }))
-                        setEditando(null)
-                        setUsarModelo(false)
-                        toast(`Modelo “${m.nome}” aplicado. Defina as datas e adicione.`, 'info')
-                        formRef.current?.scrollIntoView({ behavior: 'smooth' })
-                      }}
-                    >
-                      <span className="pl-modelos__tipo" style={{ background: TIPOS[m.prog.tipo].cor }} />
-                      <span>
-                        <strong>{m.nome}</strong>
-                        <small>
-                          {TIPOS[m.prog.tipo].nome} · {m.prog.componente} · {m.prog.objeto}
-                        </small>
-                      </span>
-                    </button>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
+          <div className="pl-construcao__btns">
             <Btn
               variante="contorno"
               pequeno
@@ -217,17 +166,21 @@ export default function Configurar() {
             </Btn>
           </div>
         </header>
+        {pl.progs.length === 0 ? (
+          <motion.div className="pl-vazio" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <CalendarDays size={34} strokeWidth={1.5} />
+            <strong>Seu cronograma ainda está vazio</strong>
+            <span>Preencha a programação acima e clique em “Adicionar ao cronograma”. As atividades aparecem aqui, organizadas por mês.</span>
+          </motion.div>
+        ) : (
         <MesesProg
           progs={pl.progs}
           escopo={e}
           destaque={destaque}
           acoes={{ editar, duplicar: (p) => duplicar(p), excluir }}
-          vazio={
-            <span>
-              Nenhuma programação neste mês. <button className="cr-link" onClick={() => formRef.current?.scrollIntoView({ behavior: 'smooth' })}>Criar programação</button>
-            </span>
-          }
+          vazio={<span>Nenhuma programação neste mês.</span>}
         />
+        )}
       </section>
 
       <footer className="pl-rodape pl-rodape--linha">
@@ -245,35 +198,6 @@ export default function Configurar() {
         </Btn>
       </footer>
 
-      <Modal
-        aberto={modeloModal}
-        onFechar={() => setModeloModal(false)}
-        titulo="Salvar como modelo"
-        largura={480}
-        rodape={
-          <>
-            <Btn variante="contorno" onClick={() => setModeloModal(false)}>
-              Cancelar
-            </Btn>
-            <Btn
-              disabled={!nomeModelo.trim()}
-              onClick={() => {
-                setPlano((p) => ({ ...p, modelos: [...p.modelos, { id: `m${Date.now()}`, nome: nomeModelo.trim(), prog: { tipo: f.tipo, componente: f.componente, unidade: f.unidade, objeto: f.objeto, habilidade: f.habilidade, anos: f.anos } }] }))
-                setModeloModal(false)
-                toast(`Modelo “${nomeModelo.trim()}” salvo. Use em “Usar modelo”.`)
-              }}
-            >
-              Salvar modelo
-            </Btn>
-          </>
-        }
-      >
-        <p className="cr-texto">Reaproveite esta configuração (tipo, componente, conteúdo e anos) em outras programações.</p>
-        <label className="cr-campo" style={{ marginTop: 14 }}>
-          <span>Nome do modelo</span>
-          <input autoFocus value={nomeModelo} onChange={(ev) => setNomeModelo(ev.target.value)} />
-        </label>
-      </Modal>
 
       <Modal
         aberto={dupModal}

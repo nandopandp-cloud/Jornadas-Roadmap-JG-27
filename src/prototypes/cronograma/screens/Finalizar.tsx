@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowLeft, Building2, CalendarDays, Check, Clock, Eye, GraduationCap, Info, Layers, List, Megaphone, Users } from 'lucide-react'
+import { ArrowLeft, Building2, CalendarDays, Check, GraduationCap, Info, Layers, List, Megaphone, Users } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Etapas4, MesesProg, PlanoCab } from '../components/plano'
 import { Btn } from '../components/ui'
@@ -27,10 +27,9 @@ export default function Finalizar() {
     if (dataInvalida) return
     setEnviando(true)
     window.setTimeout(() => {
-      const modo = pub.modo === 'agora' ? 'publicado' : 'agendado'
-      publicarPlano(modo)
+      publicarPlano('publicado')
       setEnviando(false)
-      setFeito(modo)
+      setFeito('publicado')
     }, 1300)
   }
 
@@ -64,7 +63,7 @@ export default function Finalizar() {
               </motion.div>
             ))}
           </div>
-          <MesesProg progs={pl.progs} escopo={e} colunas={{ periodo: false }} />
+          <MesesProg progs={pl.progs} escopo={e} colunas={{ periodo: false, habilidade: false }} />
         </motion.section>
 
         <motion.section className="cr-cartao pl-final__pub" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06 }}>
@@ -72,7 +71,7 @@ export default function Finalizar() {
             <Megaphone size={30} strokeWidth={1.7} />
             <div>
               <h3>Publicação do cronograma</h3>
-              <p>Defina como e quando o cronograma será disponibilizado.</p>
+              <p>Defina quando o cronograma será disponibilizado.</p>
             </div>
           </header>
 
@@ -89,40 +88,8 @@ export default function Finalizar() {
             <span className={`pl-data pl-data--grande ${dataInvalida ? 'is-erro' : ''}`}>
               <CalendarDays size={20} />
               <input type="date" value={pub.data} max={PERIODO_FIM} onChange={(ev) => setPub({ data: ev.target.value })} />
-              {pub.modo === 'agendar' && (
-                <>
-                  <Clock size={20} />
-                  <input type="time" value={pub.hora} onChange={(ev) => setPub({ hora: ev.target.value })} />
-                </>
-              )}
             </span>
             {dataInvalida && <small className="cr-erro">Escolha uma data até o fim do período (31/05/2027).</small>}
-          </div>
-
-          <div className="pl-bloco">
-            <div className="pl-bloco__tit pl-bloco__tit--forte">
-              <Eye size={24} />
-              <strong>Visibilidade para os educadores</strong>
-            </div>
-            <div className="pl-radios" role="radiogroup">
-              {(
-                [
-                  ['agora', 'Publicar agora', 'Disponibiliza o cronograma na data definida.'],
-                  ['agendar', 'Agendar publicação', 'Define uma data e horário futuro para a publicação.'],
-                ] as const
-              ).map(([id, t, d]) => (
-                <label key={id} className={`pl-radio ${pub.modo === id ? 'is-on' : ''}`}>
-                  <input type="radio" name="pub" checked={pub.modo === id} onChange={() => setPub({ modo: id })} />
-                  <span className="pl-radio__bola">
-                    <AnimatePresence>{pub.modo === id && <motion.i initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }} />}</AnimatePresence>
-                  </span>
-                  <span>
-                    <strong>{t}</strong>
-                    <small>{d}</small>
-                  </span>
-                </label>
-              ))}
-            </div>
           </div>
 
           <div className="pl-oque">
@@ -144,8 +111,8 @@ export default function Finalizar() {
         <Btn variante="contorno" icone={<ArrowLeft size={20} />} onClick={() => ir({ id: 'ajustar' }, -1)}>
           Voltar
         </Btn>
-        <Btn icone={enviando ? <span className="cr-spinner cr-spinner--branco" /> : pub.modo === 'agora' ? <Check size={20} /> : <Clock size={20} />} disabled={enviando || dataInvalida} onClick={publicar}>
-          {enviando ? (pub.modo === 'agora' ? 'Publicando…' : 'Agendando…') : pub.modo === 'agora' ? 'Publicar cronograma' : 'Agendar publicação'}
+        <Btn icone={enviando ? <span className="cr-spinner cr-spinner--branco" /> : <Check size={20} />} disabled={enviando || dataInvalida} onClick={publicar}>
+          {enviando ? 'Publicando…' : 'Publicar cronograma'}
         </Btn>
       </footer>
 
@@ -159,7 +126,7 @@ export default function Finalizar() {
               <p>
                 {feito === 'publicado' ? (
                   <>
-                    As <strong>{pl.progs.length} programações</strong> já estão disponíveis para os educadores de <strong>{escolas} escolas</strong> e {turmas} turmas.
+                    As <strong>{pl.progs.length} programações</strong> ficam visíveis para os educadores de <strong>{escolas} escolas</strong> e {turmas} turmas a partir de <strong>{brPlano(pub.data)}</strong>.
                   </>
                 ) : (
                   <>

@@ -1,8 +1,8 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowRight, Building2, CalendarDays, ChevronDown, GraduationCap, Info, LayoutList, Layers, Sparkles, UserRound, Users } from 'lucide-react'
+import { ArrowRight, Building2, ChevronDown, GraduationCap, Info, School, UserRound, Users } from 'lucide-react'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Etapas4, PlanoCab } from '../components/plano'
-import { Btn, Checkbox, Modal } from '../components/ui'
+import { Btn, Checkbox, Modal, Select } from '../components/ui'
 import { ANOS_ESCOPO, REDE, TURMAS_REDE, nomeRede, turmasDoEscopo, type Escopo as EscopoT } from '../plano'
 import { useCron } from '../store'
 
@@ -11,8 +11,11 @@ export default function Escopo() {
   const { s, setPlano, ir, toast } = useCron()
   const e = s.plano!.escopo
   const [verTurmas, setVerTurmas] = useState(false)
+  const [filtroSel, setFiltroEsc] = useState('todas')
   const [tentou, setTentou] = useState(false)
   const turmas = turmasDoEscopo(e)
+  // se a escola filtrada saiu do escopo, volta para “todas”
+  const filtroEsc = filtroSel === 'todas' || e.escolas.includes(filtroSel) ? filtroSel : 'todas'
   const set = (p: Partial<EscopoT>) => setPlano((pl) => {
     const escopo = { ...pl.escopo, ...p }
     // programações acompanham o escopo (remove escolas/anos que saíram)
@@ -114,21 +117,6 @@ export default function Escopo() {
         </Cartao>
       </div>
 
-      <motion.section className="pl-depois" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
-        <h3>
-          <Sparkles size={26} /> O que acontece depois?
-        </h3>
-        {[
-          { I: CalendarDays, t: 'Você definirá as programações (atividades, avaliações, conteúdos e datas).' },
-          { I: Layers, t: 'Poderá aplicar em massa para todas as turmas selecionadas.' },
-          { I: LayoutList, t: 'Depois, revisará as informações em uma tabela, com a opção de ajustes e personalizações.' },
-        ].map(({ I, t }) => (
-          <div key={t} className="pl-depois__item">
-            <I size={28} strokeWidth={1.6} />
-            <span>{t}</span>
-          </div>
-        ))}
-      </motion.section>
 
       <AnimatePresence>{tentou && erro && <motion.p className="pl-erro" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>{erro}</motion.p>}</AnimatePresence>
 
@@ -150,9 +138,35 @@ export default function Escopo() {
 
       <Modal aberto={verTurmas} onFechar={() => setVerTurmas(false)} titulo={`Turmas do escopo (${turmas.length})`} largura={640} rodape={<Btn onClick={() => setVerTurmas(false)}>Pronto</Btn>}>
         <p className="cr-texto cr-texto--suave">Desmarque as turmas que não devem receber o cronograma.</p>
+        <div className="pl-turmas__filtro">
+          <Select
+            rotulo="Escola:"
+            className="cr-select--bloco"
+            valor={filtroEsc}
+            onChange={setFiltroEsc}
+            opcoes={[
+              { valor: 'todas', texto: `Todas as escolas (${e.escolas.length})` },
+              ...REDE.filter((x) => e.escolas.includes(x.id)).map((x) => ({ valor: x.id, texto: `${x.nome} (${turmas.filter((t) => t.escola === x.id).length})`, icone: <School size={16} /> })),
+            ]}
+          />
+          {(() => {
+            const vis = TURMAS_REDE.filter((t) => e.anos.includes(t.ano) && e.escolas.includes(t.escola) && (filtroEsc === 'todas' || t.escola === filtroEsc))
+            const todas = vis.every((t) => !e.turmasExcluidas.includes(t.id))
+            return (
+              <button
+                className="cr-link"
+                onClick={() =>
+                  set({ turmasExcluidas: todas ? [...new Set([...e.turmasExcluidas, ...vis.map((t) => t.id)])] : e.turmasExcluidas.filter((id) => !vis.some((t) => t.id === id)) })
+                }
+              >
+                {todas ? 'Desmarcar todas' : 'Marcar todas'}
+              </button>
+            )
+          })()}
+        </div>
         <div className="pl-turmas">
           {ANOS_ESCOPO.filter((a) => e.anos.includes(a)).map((a) => {
-            const ts = TURMAS_REDE.filter((t) => t.ano === a && e.escolas.includes(t.escola))
+            const ts = TURMAS_REDE.filter((t) => t.ano === a && e.escolas.includes(t.escola) && (filtroEsc === 'todas' || t.escola === filtroEsc))
             if (!ts.length) return null
             return (
               <section key={a}>
@@ -218,7 +232,7 @@ function Multi({ rotulo, itens, sel, onToggle }: { rotulo: string; itens: { id: 
       </button>
       <AnimatePresence>
         {aberto && (
-          <motion.ul className="cr-select__lista pl-multi__lista" initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.14 }}>
+          <motion.ul className="pl-multi__lista" initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.14 }}>
             {itens.map((it) => (
               <li key={it.id}>
                 <label className="pl-multi__item">

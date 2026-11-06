@@ -11,25 +11,27 @@ export const REDE: EscolaRede[] = [
 export const nomeRede = (id: string) => REDE.find((e) => e.id === id)?.nome ?? id
 
 /* ---------------- anos e turmas ---------------- */
-export const ANOS_ESCOPO = ['6º ano', '7º ano', '8º ano', '9º ano', '1º ano', '2º ano', '3º ano']
-const FUND = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'k'] // escolas com 6º a 8º ano
+/** anos do Ensino Fundamental, em ordem */
+export const ANOS_ESCOPO = ['1º ano', '2º ano', '3º ano', '4º ano', '5º ano', '6º ano', '7º ano', '8º ano', '9º ano']
+const INICIAIS = ['c', 'h', 'i', 'j', 'k', 'l'] // escolas com 1º a 5º ano
+const FINAIS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'k'] // escolas com 6º a 8º ano
 const NONO = ['a', 'b', 'c', 'k']
-const MEDIO = ['h', 'i', 'j', 'l']
 const OFERTA: Record<string, string[]> = {
-  '6º ano': FUND,
-  '7º ano': FUND,
-  '8º ano': FUND,
+  '1º ano': INICIAIS,
+  '2º ano': INICIAIS,
+  '3º ano': INICIAIS,
+  '4º ano': INICIAIS,
+  '5º ano': INICIAIS,
+  '6º ano': FINAIS,
+  '7º ano': FINAIS,
+  '8º ano': FINAIS,
   '9º ano': NONO,
-  '1º ano': MEDIO,
-  '2º ano': MEDIO,
-  '3º ano': MEDIO,
 }
 
 export type Turma = { id: string; ano: string; nome: string; escola: string }
 export const TURMAS_REDE: Turma[] = ANOS_ESCOPO.flatMap((ano) => {
   const n = parseInt(ano)
-  const serie = ANOS_ESCOPO.indexOf(ano) >= 4 ? n * 1000 : n * 100 // ensino médio: 1001, 2001…
-  return OFERTA[ano].map((escola, i) => ({ id: `${ano}-${escola}`, ano, escola, nome: String(serie + i + 1) }))
+  return OFERTA[ano].map((escola, i) => ({ id: `${ano}-${escola}`, ano, escola, nome: String(n * 100 + i + 1) }))
 })
 
 /* ---------------- currículo ---------------- */
@@ -94,16 +96,22 @@ export type Prog = {
   anos: string[]
   /** escolas onde a programação vale (subconjunto do escopo) */
   escolas: string[]
+  /** turmas desmarcadas manualmente nesta programação */
+  turmasExcluidas?: string[]
 }
 export type Escopo = { escolas: string[]; anos: string[]; turmasExcluidas: string[]; autoVinculo: boolean }
 
 export const turmasDoEscopo = (e: Escopo) => TURMAS_REDE.filter((t) => e.escolas.includes(t.escola) && e.anos.includes(t.ano) && !e.turmasExcluidas.includes(t.id))
-export const turmasDaProg = (p: Pick<Prog, 'anos' | 'escolas'>, e: Escopo) => turmasDoEscopo(e).filter((t) => p.anos.includes(t.ano) && p.escolas.includes(t.escola))
+/** turmas possíveis para os anos/escolas da programação (sem considerar as desmarcadas) */
+export const turmasCandidatas = (p: Pick<Prog, 'anos' | 'escolas'>, e: Escopo) => turmasDoEscopo(e).filter((t) => p.anos.includes(t.ano) && p.escolas.includes(t.escola))
+/** turmas que de fato recebem a programação */
+export const turmasDaProg = (p: Pick<Prog, 'anos' | 'escolas' | 'turmasExcluidas'>, e: Escopo) => turmasCandidatas(p, e).filter((t) => !p.turmasExcluidas?.includes(t.id))
 
 /** “8 turmas (6º ano)”, “16 turmas (6º e 7º anos)” */
-export function textoAplicacao(p: Pick<Prog, 'anos' | 'escolas'>, e: Escopo) {
-  const n = turmasDaProg(p, e).length
-  const anos = ANOS_ESCOPO.filter((a) => p.anos.includes(a)).map((a) => a.replace(' ano', ''))
+export function textoAplicacao(p: Pick<Prog, 'anos' | 'escolas' | 'turmasExcluidas'>, e: Escopo) {
+  const ts = turmasDaProg(p, e)
+  const n = ts.length
+  const anos = ANOS_ESCOPO.filter((a) => ts.some((t) => t.ano === a)).map((a) => a.replace(' ano', ''))
   const lista = anos.length > 1 ? `${anos.slice(0, -1).join(', ')} e ${anos.at(-1)} anos` : `${anos[0] ?? '—'} ano`
   return `${n} ${n === 1 ? 'turma' : 'turmas'} (${lista})`
 }

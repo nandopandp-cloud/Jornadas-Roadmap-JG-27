@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { AlertTriangle, BookOpen, CalendarDays, Check, CheckCircle2, ChevronDown, Copy, Pencil, Search, Trash2 } from 'lucide-react'
+import { AlertTriangle, BookOpen, CalendarDays, Check, CheckCircle2, ChevronDown, Copy, Pencil, Plus, Search, Trash2, X } from 'lucide-react'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { COMPONENTES, TIPOS, TIPO_LISTA, type TipoId } from '../data'
 import {
@@ -13,12 +13,15 @@ import {
   curta,
   intervaloMes,
   nomeMesPlano,
+  nomeRede,
   textoAplicacao,
+  turmasCandidatas,
+  turmasDaProg,
   turmasDoEscopo,
   type Escopo,
   type Prog,
 } from '../plano'
-import { Checkbox, Select, TIPO_ICONE } from './ui'
+import { Select, TIPO_ICONE } from './ui'
 
 /* ---------------- cabeçalho com ilustração ---------------- */
 export function PlanoCab({ titulo, subtitulo, img }: { titulo: string; subtitulo: string; img: string }) {
@@ -96,7 +99,7 @@ export function TipoPill({ tipo }: { tipo: TipoId }) {
 export function MesesProg({
   progs,
   escopo,
-  colunas = { periodo: true },
+  colunas = { periodo: true, habilidade: true },
   status,
   acoes,
   vazio,
@@ -105,7 +108,7 @@ export function MesesProg({
 }: {
   progs: Prog[]
   escopo: Escopo
-  colunas?: { periodo?: boolean }
+  colunas?: { periodo?: boolean; habilidade?: boolean }
   status?: (p: Prog) => 'valida' | 'pendencia'
   acoes?: { editar: (p: Prog) => void; duplicar: (p: Prog) => void; excluir: (p: Prog) => void }
   vazio?: ReactNode
@@ -145,8 +148,10 @@ export function MesesProg({
                       <thead>
                         <tr>
                           <th>Atividade</th>
-                          <th>Componente</th>
-                          <th>Conteúdo</th>
+                          <th>Componente curricular</th>
+                          <th>Unidade temática</th>
+                          <th>Objeto de conhecimento</th>
+                          {colunas.habilidade && <th>Habilidade</th>}
                           {colunas.periodo && <th>Período</th>}
                           <th>Aplicação</th>
                           {status && <th>Status</th>}
@@ -170,7 +175,19 @@ export function MesesProg({
                                   <TipoPill tipo={p.tipo} />
                                 </td>
                                 <td>{p.componente}</td>
-                                <td>{p.objeto || '—'}</td>
+                                <td className="pl-tabela__quebra">{p.unidade || '—'}</td>
+                                <td className="pl-tabela__quebra">{p.objeto || '—'}</td>
+                                {colunas.habilidade && (
+                                  <td>
+                                    {p.habilidade ? (
+                                      <span className="pl-hab" title={p.habilidade}>
+                                        {p.habilidade.split(' — ')[0]}
+                                      </span>
+                                    ) : (
+                                      <span className="pl-tabela__nada">—</span>
+                                    )}
+                                  </td>
+                                )}
                                 {colunas.periodo && (
                                   <td>
                                     <span className="pl-periodo">
@@ -178,7 +195,9 @@ export function MesesProg({
                                     </span>
                                   </td>
                                 )}
-                                <td>{textoAplicacao(p, escopo)}</td>
+                                <td>
+                                  <Aplicacao p={p} escopo={escopo} />
+                                </td>
                                 {st && (
                                   <td>
                                     <motion.span key={st} className={`pl-status pl-status--${st}`} initial={{ scale: 0.8 }} animate={{ scale: 1 }}>
@@ -370,52 +389,120 @@ export function CamposProg({ f, set, erros }: { f: Prog; set: (p: Partial<Prog>)
   )
 }
 
-/** “Aplicar para”: anos/turmas ou escolas, com contagem de turmas */
-export function AplicarPara({ f, set, escopo, erros }: { f: Prog; set: (p: Partial<Prog>) => void; escopo: Escopo; erros: ErrosProg }) {
-  const [aba, setAba] = useState<'anos' | 'escolas'>('anos')
-  const turmas = turmasDoEscopo(escopo)
-  const anos = ANOS_ESCOPO.filter((a) => escopo.anos.includes(a))
-  const escolas = REDE.filter((e) => escopo.escolas.includes(e.id))
-  const contaAno = (a: string) => turmas.filter((t) => t.ano === a && f.escolas.includes(t.escola)).length
-  const contaEsc = (id: string) => turmas.filter((t) => t.escola === id && f.anos.includes(t.ano)).length
-  const toggle = (lista: string[], v: string) => (lista.includes(v) ? lista.filter((x) => x !== v) : [...lista, v])
+/** célula “Aplicação”: resumo + quais turmas recebem */
+function Aplicacao({ p, escopo }: { p: Prog; escopo: Escopo }) {
+  const ts = turmasDaProg(p, escopo)
+  const nomes = ts.map((t) => t.nome)
+  const ver = nomes.slice(0, 4).join(', ')
   return (
-    <div className="pl-aplicar">
-      <div className="pl-aplicar__abas">
-        {(
-          [
-            ['anos', 'Anos e turmas'],
-            ['escolas', 'Escolas'],
-          ] as const
-        ).map(([id, t]) => (
-          <button key={id} className={aba === id ? 'is-on' : ''} onClick={() => setAba(id)}>
-            {aba === id && <motion.span layoutId="pl-aplicar-aba" className="pl-aplicar__pill" />}
-            <span>
-              {t}
-              {id === 'escolas' && f.escolas.length < escolas.length ? ` (${f.escolas.length})` : ''}
-            </span>
-          </button>
-        ))}
+    <span className="pl-apl" title={ts.map((t) => `${t.nome} · ${nomeRede(t.escola)}`).join('\n')}>
+      <strong>{textoAplicacao(p, escopo)}</strong>
+      <small>
+        Turmas {ver}
+        {nomes.length > 4 ? ` +${nomes.length - 4}` : ''}
+      </small>
+    </span>
+  )
+}
+
+/**
+ * “Aplicar para” em três passos visíveis: anos → escolas → turmas que vão receber.
+ * Cada turma aparece como chip e pode ser desmarcada individualmente.
+ */
+export function AplicarPara({ f, set, escopo, erros }: { f: Prog; set: (p: Partial<Prog>) => void; escopo: Escopo; erros: ErrosProg }) {
+  const doEscopo = turmasDoEscopo(escopo)
+  const anos = ANOS_ESCOPO.filter((a) => escopo.anos.includes(a) && doEscopo.some((t) => t.ano === a))
+  const escolasComTurma = REDE.filter((e) => escopo.escolas.includes(e.id) && doEscopo.some((t) => t.escola === e.id && f.anos.includes(t.ano)))
+  const candidatas = turmasCandidatas(f, escopo)
+  const excl = f.turmasExcluidas ?? []
+  const recebem = candidatas.filter((t) => !excl.includes(t.id))
+  const toggle = (lista: string[], v: string) => (lista.includes(v) ? lista.filter((x) => x !== v) : [...lista, v])
+  const contaAno = (a: string) => doEscopo.filter((t) => t.ano === a && f.escolas.includes(t.escola)).length
+  const todasEsc = escolasComTurma.length > 0 && escolasComTurma.every((e) => f.escolas.includes(e.id))
+  return (
+    <div className="pl-ap">
+      <div className="pl-ap__bloco">
+        <span className="pl-ap__rotulo">
+          <b>1</b> Anos escolares
+        </span>
+        <div className="pl-ap__chips">
+          {anos.map((a) => {
+            const on = f.anos.includes(a)
+            return (
+              <motion.button key={a} type="button" whileTap={{ scale: 0.94 }} className={`pl-chip ${on ? 'is-on' : ''}`} onClick={() => set({ anos: toggle(f.anos, a) })} aria-pressed={on}>
+                {on && <Check size={15} strokeWidth={3} />}
+                {a}
+                <em>{contaAno(a)}</em>
+              </motion.button>
+            )
+          })}
+        </div>
       </div>
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.ul key={aba} className="pl-aplicar__lista" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.15 }}>
-          {aba === 'anos'
-            ? anos.map((a) => (
-                <li key={a} onClick={() => set({ anos: toggle(f.anos, a) })}>
-                  <Checkbox checked={f.anos.includes(a)} onChange={() => set({ anos: toggle(f.anos, a) })} rotulo={a} />
-                  <span className="pl-aplicar__nome">{a}</span>
-                  <span className="pl-aplicar__qtd">{contaAno(a)} turmas</span>
-                </li>
-              ))
-            : escolas.map((e) => (
-                <li key={e.id} onClick={() => set({ escolas: toggle(f.escolas, e.id) })}>
-                  <Checkbox checked={f.escolas.includes(e.id)} onChange={() => set({ escolas: toggle(f.escolas, e.id) })} rotulo={e.nome} />
-                  <span className="pl-aplicar__nome">{e.nome}</span>
-                  <span className="pl-aplicar__qtd">{contaEsc(e.id)} turmas</span>
-                </li>
-              ))}
-        </motion.ul>
-      </AnimatePresence>
+
+      <div className="pl-ap__bloco">
+        <span className="pl-ap__rotulo">
+          <b>2</b> Escolas
+          <small>
+            {escolasComTurma.filter((e) => f.escolas.includes(e.id)).length} de {escolasComTurma.length}
+          </small>
+          {escolasComTurma.length > 1 && (
+            <button type="button" className="cr-link pl-ap__todas" onClick={() => set({ escolas: todasEsc ? [] : [...new Set([...f.escolas, ...escolasComTurma.map((e) => e.id)])] })}>
+              {todasEsc ? 'Limpar' : 'Selecionar todas'}
+            </button>
+          )}
+        </span>
+        <div className="pl-ap__chips pl-ap__chips--rolar">
+          {escolasComTurma.length ? (
+            escolasComTurma.map((e) => {
+              const on = f.escolas.includes(e.id)
+              return (
+                <motion.button key={e.id} type="button" whileTap={{ scale: 0.94 }} className={`pl-chip pl-chip--escola ${on ? 'is-on' : ''}`} onClick={() => set({ escolas: toggle(f.escolas, e.id) })} aria-pressed={on}>
+                  {on && <Check size={15} strokeWidth={3} />}
+                  {e.nome}
+                </motion.button>
+              )
+            })
+          ) : (
+            <span className="pl-ap__vazio">Escolha um ano escolar.</span>
+          )}
+        </div>
+      </div>
+
+      <div className="pl-ap__bloco">
+        <span className="pl-ap__rotulo">
+          <b>3</b> Turmas que vão receber
+          <motion.em key={recebem.length} initial={{ scale: 1.4 }} animate={{ scale: 1 }} className="pl-ap__qtd">
+            {recebem.length}
+          </motion.em>
+          {excl.length > 0 && (
+            <button type="button" className="cr-link pl-ap__todas" onClick={() => set({ turmasExcluidas: [] })}>
+              Incluir todas
+            </button>
+          )}
+        </span>
+        <div className="pl-ap__turmas">
+          {candidatas.length ? (
+            candidatas.map((t) => {
+              const on = !excl.includes(t.id)
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  className={`pl-turmachip ${on ? 'is-on' : ''}`}
+                  onClick={() => set({ turmasExcluidas: toggle(excl, t.id) })}
+                  title={on ? 'Clique para não enviar a esta turma' : 'Clique para incluir esta turma'}
+                >
+                  <strong>{t.nome}</strong>
+                  <small>{nomeRede(t.escola)}</small>
+                  {on ? <X size={14} className="pl-turmachip__x" /> : <Plus size={14} className="pl-turmachip__x" />}
+                </button>
+              )
+            })
+          ) : (
+            <span className="pl-ap__vazio">As turmas aparecem aqui conforme os anos e as escolas escolhidos.</span>
+          )}
+        </div>
+      </div>
       {(erros.anos || erros.escolas) && <small className="cr-erro">{erros.anos ?? erros.escolas}</small>}
     </div>
   )
