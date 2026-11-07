@@ -3449,3 +3449,25 @@
   height: 100%;
   max-width: none;
 }
+
+/* celular: banner principal mostra o personagem inteiro à direita, com o capuz vazando */
+@media (max-width: 860px) {
+  .lj-banner--loja .lj-banner__img {
+    width: auto !important;
+    max-width: none;
+    height: calc(100% + 30px) !important;
+    left: auto;
+    right: -215px;
+    object-fit: contain;
+  }
+  .lj-banner--loja {
+    overflow: visible;
+    clip-path: polygon(0 20px, 6px 6px, 20px 0, 50% 0, 50% -40px, 94% -40px, 94% 0, calc(100% - 20px) 0, calc(100% - 6px) 6px, 100% 20px, 100% calc(100% - 20px), calc(100% - 6px) calc(100% - 6px), calc(100% - 20px) 100%, 20px 100%, 6px calc(100% - 6px), 0 calc(100% - 20px));
+  }
+  .lj-banner--loja::after {
+    background: linear-gradient(90deg, rgba(42, 26, 122, 0.95) 0%, rgba(42, 26, 122, 0.7) 45%, transparent 75%) !important;
+  }
+  .lj-banner--loja .lj-banner__txt {
+    max-width: 58%;
+  }
+}
