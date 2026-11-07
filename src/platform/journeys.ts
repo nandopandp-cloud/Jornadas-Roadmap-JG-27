@@ -107,6 +107,29 @@ export const journeys: Journey[] = [
     ],
     component: lazy(() => import('../prototypes/flashcards')),
   },
+  {
+    slug: 'lojinha',
+    name: 'Lojinha',
+    product: 'Exploradores · Plataforma do Estudante',
+    audience: 'Estudantes · Clube Jovens Gênios',
+    description:
+      'Estudante troca pontos por avatares, backgrounds, pets, cards e recompensas físicas; acompanha o cartão fidelidade com QR Code, o histórico de pontos, o status dos resgates e as regras.',
+    icon: './3d/gem.png',
+    accent: '#029e8f',
+    status: 'navegavel',
+    dispositivo: 'desktop',
+    dominio: 'exploradores.jovensgenios.com',
+    flows: [
+      { id: 'loja', label: 'Loja', icon: './3d/gem.png' },
+      { id: 'avatares', label: 'Avatares', icon: './3d/boy-2.png' },
+      { id: 'item', label: 'Detalhe e resgate', icon: './3d/party.png' },
+      { id: 'cartao', label: 'Meu Cartão', icon: './3d/crown.png' },
+      { id: 'historico', label: 'Histórico', icon: './3d/calendar.png' },
+      { id: 'resgates', label: 'Meus Resgates', icon: './3d/clipboard.png' },
+      { id: 'regras', label: 'Regras', icon: './3d/memo.png' },
+    ],
+    component: lazy(() => import('../prototypes/lojinha')),
+  },
 ]
 
 export const findJourney = (slug?: string) => journeys.find((j) => j.slug === slug)

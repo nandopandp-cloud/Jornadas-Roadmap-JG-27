@@ -66,4 +66,16 @@ Independente das demais jornadas e **sem áudio**. Plataforma GenieX do estudant
 
 Atalhos de fluxo na plataforma abrem com o cenário das referências (Literatura 8/24, História, Matemática e 12 favoritos). Banco de conteúdo em `src/prototypes/flashcards/data.tsx` (12 disciplinas, 6 tópicos cada).
 
+## Protótipo: Lojinha (Exploradores)
+
+Independente das demais jornadas e **sem áudio**. Plataforma dos Exploradores, com saldo de pontos do Clube Jovens Gênios.
+
+- **Loja:** banner de boas-vindas, 6 categorias (Avatares, Backgrounds, Pets, Cards, Personalização, Recompensas exclusivas) e destaques.
+- **Categoria:** filtros por raridade com contagem (Comum, Raro, Épico, Lendário), ordenação e grade animada; 24 trajes de avatar.
+- **Detalhe e resgate:** galeria com setas, miniaturas e arrastar; favoritar; confirmação com a conta do saldo; presente abrindo com confete; gemas voando até o saldo no topo; item digital liberado em alguns segundos (com notificação) e “Usar como avatar”; aviso de pontos insuficientes.
+- **Meu Cartão:** cartão fidelidade com inclinação 3D e verso com QR Code; saldo, QR Code e copiar ID.
+- **Histórico:** filtros por tipo e período, entradas e saídas. **Meus Resgates:** tabela com status e painel com linha do tempo. **Regras:** 7 tópicos.
+
+O atalho “Loja” começa antes do resgate do Traje Explorador (saldo 245.800); os atalhos Meu Cartão, Histórico e Meus Resgates já mostram o traje resgatado, como nas referências.
+
 Ícones 3D: [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji) (licença MIT), em `public/3d/`.
