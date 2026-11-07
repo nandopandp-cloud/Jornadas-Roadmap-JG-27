@@ -29,7 +29,7 @@ Antes de uma iniciativa virar produto, o time precisa mostrar como ela vai funci
 
 <!-- jornadas:inicio (gerado automaticamente a partir de src/platform/journeys.ts — não edite à mão) -->
 
-A plataforma tem hoje **4 jornadas**. Cada uma vive na sua própria branch, com um README dedicado.
+A plataforma tem hoje **5 jornadas**. Cada uma vive na sua própria branch, com um README dedicado.
 
 ### Alfabetização
 
@@ -62,6 +62,14 @@ Estudante escolhe até 5 disciplinas e seus tópicos, gera grupos de flashcards,
 Estudante troca pontos por avatares, backgrounds, pets, cards e recompensas físicas; acompanha o cartão fidelidade com QR Code, o histórico de pontos, o status dos resgates e as regras.
 
 [Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/lojinha) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/lojinha) · [Branch `prototipo-lojinha`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/prototipo-lojinha)
+
+### Gestão da Lojinha
+
+**Admin Jovens Gênios** · Times internos · Exploradores, Educadores e GenieX
+
+Times internos administram a Lojinha das três plataformas: catálogo de itens e categorias, resgates com andamento e estorno, extrato de pontos, estudantes e configurações.
+
+[Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/gestao-lojinha) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/gestao-lojinha) · [Branch `prototipo-gestao-lojinha`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/prototipo-gestao-lojinha)
 
 <!-- jornadas:fim -->
 

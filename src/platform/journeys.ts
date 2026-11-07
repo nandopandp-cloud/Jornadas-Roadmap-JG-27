@@ -130,6 +130,32 @@ export const journeys: Journey[] = [
     ],
     component: lazy(() => import('../prototypes/lojinha')),
   },
+  {
+    slug: 'gestao-lojinha',
+    name: 'Gestão da Lojinha',
+    product: 'Admin Jovens Gênios',
+    audience: 'Times internos · Exploradores, Educadores e GenieX',
+    description:
+      'Times internos administram a Lojinha das três plataformas: catálogo de itens e categorias, resgates com andamento e estorno, extrato de pontos, estudantes e configurações.',
+    icon: './3d/clipboard.png',
+    accent: '#1d63ed',
+    status: 'navegavel',
+    dispositivo: 'desktop',
+    dominio: 'admin.jovensgenios.com',
+    flows: [
+      { id: 'visao', label: 'Visão geral', icon: './3d/bullseye.png' },
+      { id: 'itens', label: 'Catálogo de itens', icon: './3d/gem.png' },
+      { id: 'cadastrar', label: 'Cadastrar item', icon: './3d/sparkles.png' },
+      { id: 'categorias', label: 'Categorias', icon: './3d/books.png' },
+      { id: 'resgates', label: 'Resgates', icon: './3d/party.png' },
+      { id: 'resgate', label: 'Detalhes do resgate', icon: './3d/memo.png' },
+      { id: 'extrato', label: 'Pontos e extrato', icon: './3d/notes.png' },
+      { id: 'estudantes', label: 'Estudantes', icon: './3d/girl-2.png' },
+      { id: 'estudante', label: 'Perfil do estudante', icon: './3d/boy-2.png' },
+      { id: 'config', label: 'Configurações', icon: './3d/crown.png' },
+    ],
+    component: lazy(() => import('../prototypes/gestao-lojinha')),
+  },
 ]
 
 export const findJourney = (slug?: string) => journeys.find((j) => j.slug === slug)
