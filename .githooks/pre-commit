@@ -1,0 +1,4 @@
+#!/bin/sh
+# Mantém a seção “Jornadas” do README sincronizada com src/platform/journeys.ts (só na main)
+[ "$(git rev-parse --abbrev-ref HEAD)" = "main" ] || exit 0
+node scripts/readme-jornadas.mjs && git add README.md
