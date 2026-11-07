@@ -63,7 +63,7 @@ Estudante troca pontos por avatares, backgrounds, pets, cards e recompensas fís
 
 [Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/lojinha) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/lojinha) · [Branch `prototipo-lojinha`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/prototipo-lojinha)
 
-### Gestão da Lojinha
+### Gestão das Lojinhas
 
 **Admin Jovens Gênios** · Times internos · Exploradores, Educadores e GenieX
 
