@@ -232,7 +232,7 @@ const ITENS: ({ id: string; nome: string; img: string } | 'sep')[] = [
   'sep',
   { id: 'missoes', nome: 'Missões', img: './loja/m-foguete.webp' },
   { id: 'batalhas', nome: 'Batalhas', img: './loja/m-espadas.webp' },
-  { id: 'lojinha', nome: 'Lojinha', img: './loja/m-livro.webp' },
+  { id: 'lojinha', nome: 'Lojinha', img: './loja/lojinha.webp' },
   { id: 'explorar', nome: 'Explorar', img: './loja/m-planeta.webp' },
 ]
 function Lateral({ aberta, onAlternar, onFechar, foraDoEscopo }: { aberta: boolean; onAlternar: () => void; onFechar: () => void; foraDoEscopo: (n: string) => void }) {
