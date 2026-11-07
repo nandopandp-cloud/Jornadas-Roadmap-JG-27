@@ -1,4 +1,4 @@
-# Jornada: Gestão da Lojinha (Admin)
+# Jornada: Gestão das Lojinhas (Admin)
 
 Protótipo navegável da **gestão da Lojinha no Admin da Jovens Gênios**, usado pelos times internos para administrar tudo o que envolve a Lojinha das três plataformas: **Exploradores, Educadores e GenieX**. Parte do Roadmap 2027. Esta branch trata só desta jornada; a visão geral da plataforma e das demais jornadas está no README da branch `main`.
 
