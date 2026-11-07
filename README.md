@@ -1,6 +1,53 @@
 # Jornadas-Roadmap-JG-27
 Principais Jornadas do Roadmap 2027 — protótipos navegáveis da Jovens Gênios.
 
+## Sobre o projeto
+
+Plataforma simples para apresentar e compartilhar os protótipos das iniciativas do Roadmap 2027. À esquerda fica a lista de jornadas; ao escolher uma, o protótipo abre numa prévia em Desktop, Tablet ou Celular, com atalhos para cada fluxo. Cada jornada também tem um **link público** que abre só o protótipo, em tela cheia, para enviar a quem precisar testar.
+
+Os protótipos são 100% navegáveis, independentes entre si e construídos fielmente a partir das telas de referência do time (guardadas em `public/<iniciativa>/`). Funcionam no desktop e no celular, com micro-animações. Os dados são fictícios e ficam em memória: recarregar a página reinicia o protótipo.
+
+**Publicado em:** https://jornadas-roadmap-jg-27.vercel.app
+
+### Jornadas
+
+| Jornada | Plataforma | Público | Link público |
+| --- | --- | --- | --- |
+| Alfabetização | App do Estudante | 1º e 2º ano (EF) | `#/p/alfabetizacao` |
+| Cronograma de Uso | Plataforma Educadores | Gestores e professores | `#/p/cronograma` |
+| Flashcards | GenieX · Estudante | Ensino Médio | `#/p/flashcards` |
+| Lojinha | Exploradores · Estudante | Clube Jovens Gênios | `#/p/lojinha` |
+
+Só a Alfabetização tem áudio (voz do Luno via ElevenLabs); as demais iniciativas não usam som.
+
+### Tecnologia
+
+- **Vite + React 19 + TypeScript**, animações com **Framer Motion**, ícones **lucide-react**, QR Codes com **qrcode**.
+- Roteamento por hash, site estático e uma função serverless (`api/tts.ts`) para a voz.
+- Hospedagem na **Vercel** (`vercel deploy --prod`).
+
+### Estrutura
+
+```
+src/
+  platform/        # plataforma: Hub (sidebar + prévia), link público, compartilhar (QR/WhatsApp), registro das jornadas
+  prototypes/
+    alfabetizacao/ # cada protótipo: index.tsx, store, dados, components/ e screens/
+    cronograma/
+    flashcards/
+    lojinha/
+  shared/          # som e voz (Alfabetização)
+server/, api/      # proxy da ElevenLabs (local e Vercel)
+public/
+  alfa/ cron/ flash/ loja/   # artes usadas pelos protótipos (.webp)
+  3d/                        # ícones 3D (Fluent Emoji)
+  <iniciativa>/              # telas de referência (não vão para o site publicado)
+```
+
+### Artes
+
+As ilustrações são recortadas das próprias telas de referência: remoção de fundo com **rembg (BiRefNet)**, remoção de textos e selos com **LaMa** (inpainting) e, quando necessário, aumento de nitidez com **Real-ESRGAN**. Os textos dos banners e cartões são refeitos em HTML para ficarem nítidos e animados. No build, as imagens de referência são descartadas e só as pastas de arte entram no `dist/` (lista `ARTE_DO_APP` em `vite.config.ts`).
+
 ## Rodando
 
 ```bash
@@ -15,7 +62,7 @@ npm run build    # gera dist/ (site estático)
 | --- | --- |
 | `#/` ou `#/jornada/<slug>` | Plataforma: sidebar com as jornadas + preview em Desktop/Tablet/Celular |
 | `#/p/<slug>` | **Link público**: só o protótipo, em tela cheia, sem a plataforma |
-| `#/p/<slug>?screen=mural` | Link público começando direto num fluxo (`abertura`, `home`, `trail`, `tasks`, `mural`, `new-production`, `achievements`). Sem `screen`, começa pela abertura. |
+| `#/p/<slug>?screen=<fluxo>` | Link público começando direto num fluxo (os mesmos atalhos da plataforma, ex.: `#/p/lojinha?screen=resgates`). Sem `screen`, começa pela tela inicial. |
 
 O roteamento é por hash, então o `dist/` funciona em qualquer hospedagem estática (Vercel, Netlify, GitHub Pages) sem configurar rewrites. O link público só funciona para outras pessoas depois que o site estiver publicado.
 
@@ -31,7 +78,8 @@ A voz oficial do Luno vem da ElevenLabs. A chave **nunca vai para o navegador**:
 ## Adicionando uma nova jornada
 
 1. Crie `src/prototypes/<slug>/index.tsx` exportando um componente `default` (recebe `startScreen` e `embedded`).
-2. Registre em `src/platform/journeys.ts`.
+2. Registre em `src/platform/journeys.ts` (nome, plataforma, público, dispositivo da prévia e atalhos de fluxo).
+3. Se tiver uma pasta de arte nova em `public/`, inclua-a em `ARTE_DO_APP` no `vite.config.ts`.
 
 ## Protótipo: Alfabetização (1º e 2º ano)
 
