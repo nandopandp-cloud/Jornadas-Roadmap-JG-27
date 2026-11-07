@@ -54,4 +54,16 @@ Independente da Alfabetização e **sem áudio** (não usa ElevenLabs nem narra�
 
 O estado fica em memória: recarregar a página reinicia o protótipo.
 
+## Protótipo: Flashcards (GenieX · Estudante)
+
+Independente das demais jornadas e **sem áudio**. Plataforma GenieX do estudante do Ensino Médio.
+
+- **Entrada:** Página inicial (Para você, Perfil, Continue aprendendo, Cronograma) → item **Flashcards** no menu (com selo “Novo”) → apresentação da funcionalidade e “Meus acessos”.
+- **Criar flashcards:** escolher até **5 disciplinas** (busca, filtro por área do conhecimento, painel “Seleções atuais”) → escolher os **tópicos** de cada disciplina (acordeão “Suas seleções”, validação de disciplina sem tópico) → **gerando** com progresso animado por seleção → os grupos novos aparecem no topo de “Meus grupos” com destaque.
+- **Estudar:** card com “Ver resposta” (virada 3D e modo foco com o cabeçalho compacto), **Não sei / Eu sei / Revisar depois**, setas, lista “Cards do grupo” com filtro por tópico e status, favoritar card/grupo, abas Resumo e Desempenho. Atalhos: espaço, ← →, 1, 2, 3.
+- **Sessão concluída:** anel de progresso, acertos/revisar/erros, cards favoritados, desempenho por tópico, lista “Revisar depois” e estudar novamente.
+- **Favoritos e Histórico:** filtros por curso e tópico, busca, ordenação, card que vira para mostrar a resposta, remover com desfazer; histórico de sessões com taxa de acertos.
+
+Atalhos de fluxo na plataforma abrem com o cenário das referências (Literatura 8/24, História, Matemática e 12 favoritos). Banco de conteúdo em `src/prototypes/flashcards/data.tsx` (12 disciplinas, 6 tópicos cada).
+
 Ícones 3D: [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji) (licença MIT), em `public/3d/`.

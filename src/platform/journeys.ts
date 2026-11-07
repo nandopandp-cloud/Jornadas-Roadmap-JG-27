@@ -80,6 +80,33 @@ export const journeys: Journey[] = [
     ],
     component: lazy(() => import('../prototypes/cronograma')),
   },
+  {
+    slug: 'flashcards',
+    name: 'Flashcards',
+    product: 'GenieX · Plataforma do Estudante',
+    audience: 'Ensino Médio',
+    description:
+      'Estudante escolhe até 5 disciplinas e seus tópicos, gera grupos de flashcards, estuda com “Não sei / Eu sei / Revisar depois”, favorita cards e acompanha o resultado de cada sessão.',
+    icon: './3d/bulb.png',
+    accent: '#4b55ec',
+    status: 'navegavel',
+    dispositivo: 'desktop',
+    dominio: 'geniex.jovensgenios.com',
+    flows: [
+      { id: 'inicio', label: 'Página inicial', icon: './3d/house.png' },
+      { id: 'landing', label: 'Entrada Flashcards', icon: './3d/sparkles.png' },
+      { id: 'disciplinas', label: 'Escolher disciplinas', icon: './3d/books.png' },
+      { id: 'topicos', label: 'Escolher tópicos', icon: './3d/memo.png' },
+      { id: 'gerando', label: 'Gerando flashcards', icon: './3d/rocket.png' },
+      { id: 'grupos', label: 'Meus grupos', icon: './3d/notes.png' },
+      { id: 'estudo', label: 'Estudar grupo', icon: './3d/bulb.png' },
+      { id: 'resposta', label: 'Resposta revelada', icon: './3d/glowing-star.png' },
+      { id: 'concluida', label: 'Sessão concluída', icon: './3d/trophy.png' },
+      { id: 'favoritos', label: 'Favoritos', icon: './3d/star.png' },
+      { id: 'historico', label: 'Histórico', icon: './3d/calendar.png' },
+    ],
+    component: lazy(() => import('../prototypes/flashcards')),
+  },
 ]
 
 export const findJourney = (slug?: string) => journeys.find((j) => j.slug === slug)

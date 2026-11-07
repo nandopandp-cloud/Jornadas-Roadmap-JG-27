@@ -54,7 +54,7 @@ function ttsProxy(mode: string): Plugin {
  * do time, mas não precisam ir para o site. Depois do build, apaga do dist todo .png que não seja arte usada
  * pelo app (public/alfa, public/cron e public/3d) e as pastas que ficarem vazias.
  */
-const ARTE_DO_APP = ['alfa', 'cron', '3d', 'assets']
+const ARTE_DO_APP = ['alfa', 'cron', 'flash', '3d', 'assets']
 function semReferencias(): Plugin {
   const limpar = (dir: string, raiz: boolean): boolean => {
     let vazio = true
