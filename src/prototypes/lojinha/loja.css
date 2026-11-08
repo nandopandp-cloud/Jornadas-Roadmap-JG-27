@@ -3471,3 +3471,423 @@
     max-width: 58%;
   }
 }
+
+/* =====================================================================
+   Camada Yunara Design System
+   Base: arquivo Figma da Lojinha (componentes Yunara: Top Bar, Tabs,
+   Button, Icon Button, Separator, Dropdown, Dropdown List Base, Input,
+   Progress Bar, Toast, Modal e Step Indicator). Fonte: Nunito.
+   ===================================================================== */
+.lj {
+  --teal: #00a19a;
+  --teal-2: #008c87;
+  --teal-3: #007a75;
+  --teal-claro: #e7fbf9;
+  --teal-borda: #7ec7c2;
+  --tinta: #1f1f1f;
+  --texto: #2e2e2e;
+  --linha: #e0e0e0;
+  --borda-card: #ebebeb;
+  --sombra-y: 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+/* Top Bar */
+.lj-topo {
+  height: 76px;
+  padding: 16px 24px 16px 31px;
+}
+.lj-pilula,
+.lj-quadrado {
+  border: 1px solid var(--linha) !important;
+  border-radius: 8px !important;
+  background: #fff;
+  color: var(--texto);
+}
+.lj-pilula {
+  padding: 0 24px;
+  gap: 8px;
+}
+.lj-pilula:hover,
+.lj-quadrado:hover {
+  border-color: #c7c7c7 !important;
+  box-shadow: none;
+}
+.lj-pilula img {
+  width: 20px;
+  height: 20px;
+}
+.lj-pilula--pts small {
+  font-size: 14px;
+}
+.lj-topo__div {
+  width: 1px;
+  height: 20px;
+  margin: 0 4px;
+  background: var(--linha);
+}
+
+/* Tabs */
+.lj-abas {
+  gap: 4px;
+  height: 52px;
+  padding: 4px;
+  border: 1px solid var(--linha);
+  border-radius: 12px;
+  background: #f0f0f0;
+}
+.lj-aba {
+  height: 44px;
+  gap: 16px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #808080;
+}
+.lj-aba svg {
+  width: 20px;
+  height: 20px;
+}
+.lj-aba + .lj-aba::before {
+  display: none;
+}
+.lj-aba.is-on {
+  color: var(--texto);
+}
+.lj-aba__pill {
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid var(--linha);
+  box-shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+}
+.lj-aba:not(.is-on):hover {
+  color: var(--texto);
+}
+
+/* Button: primário com “degrau” de 4 px, secundário com base, ghost */
+.lj-btn {
+  border-radius: 8px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+.lj-btn--p {
+  height: 36px;
+  padding: 0 24px 4px;
+  font-size: 12px;
+  border-radius: 8px;
+}
+.lj-btn--m {
+  height: 44px;
+  padding: 0 24px 4px;
+  font-size: 14px;
+}
+.lj-btn--g {
+  height: 64px;
+  padding: 0 24px 2px;
+  font-size: 16px;
+  border-radius: 8px;
+  letter-spacing: 0;
+}
+.lj-btn--primario {
+  background: var(--teal);
+  color: #fff;
+  box-shadow: inset 0 -4px 0 var(--teal-2);
+}
+.lj-btn--primario:hover:not(:disabled) {
+  background: var(--teal-2);
+  box-shadow: inset 0 -4px 0 var(--teal-3);
+}
+.lj-btn--primario:active:not(:disabled) {
+  box-shadow: inset 0 -2px 0 var(--teal-3);
+  transform: translateY(1px);
+}
+.lj-btn--contorno {
+  border: 1px solid var(--linha);
+  background: #fff;
+  color: var(--teal);
+  box-shadow: inset 0 -3px 0 var(--linha);
+}
+.lj-btn--contorno:hover:not(:disabled) {
+  background: #f7f7f7;
+}
+.lj-btn--fantasma {
+  color: var(--teal);
+  box-shadow: none;
+}
+.lj-btn--fantasma:hover:not(:disabled) {
+  background: var(--teal-claro);
+}
+.lj-btn:disabled {
+  opacity: 1;
+  background: #f0f0f0;
+  color: #a3a3a3;
+  border-color: var(--linha);
+  box-shadow: inset 0 -4px 0 #e0e0e0;
+}
+.lj-btn--fantasma:disabled {
+  background: none;
+  box-shadow: none;
+}
+.lj-iconbtn {
+  border-radius: 8px;
+}
+.lj-link {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: var(--teal);
+}
+.lj-voltar {
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  color: var(--teal);
+}
+
+/* selos de raridade */
+.lj-selo {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border-radius: 9999px;
+}
+.lj-selo--comum {
+  background: var(--teal-claro);
+  color: #1f7ccc;
+}
+
+/* Dropdown, Input e Dropdown List Base */
+.lj-select {
+  height: 44px;
+  padding: 12px 12px 12px 16px;
+  gap: 8px;
+  border: 1px solid var(--linha);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--texto);
+}
+.lj-select--ordem,
+.lj-select--cat,
+.lj-select--periodo {
+  font-weight: 400;
+}
+.lj-select--forte {
+  font-size: 16px;
+  font-weight: 800;
+}
+.lj-select:hover,
+.lj-select.is-aberto {
+  border-color: #c7c7c7;
+}
+.lj-select.is-aberto {
+  box-shadow: 0 0 0 3px rgba(0, 161, 154, 0.15);
+  border-color: var(--teal);
+}
+.lj-busca {
+  height: 44px;
+  padding: 12px 16px;
+  gap: 8px;
+  border: 1px solid var(--linha);
+  border-radius: 8px;
+  color: var(--texto);
+}
+.lj-busca:focus-within {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(0, 161, 154, 0.15);
+}
+.lj-busca input {
+  font-size: 14px;
+}
+.lj-busca input::placeholder {
+  color: #6d6d6d;
+}
+.lj-pop {
+  padding: 8px;
+  border: 1px solid var(--linha);
+  border-radius: 8px;
+  box-shadow: 0 12px 16px -4px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+.lj-pop > button {
+  min-height: 40px;
+  padding: 12px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--texto);
+}
+.lj-pop > button + button {
+  margin-top: 4px;
+}
+.lj-pop > button:hover {
+  background: #f7f7f7;
+}
+.lj-pop--lista > button.is-on {
+  color: var(--texto);
+  background: #fff;
+  font-weight: 700;
+}
+
+/* chips (Button Secondary Small; ativo = Primary) */
+.lj-chip {
+  height: 36px;
+  padding: 0 24px 3px;
+  gap: 8px;
+  border: 1px solid var(--linha);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: inset 0 -3px 0 var(--linha);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: var(--teal);
+}
+.lj-chip:hover:not(:disabled) {
+  border-color: #c7c7c7;
+}
+.lj-chip.is-on {
+  color: #fff;
+  box-shadow: none;
+}
+.lj-chip__pill {
+  border-radius: 8px;
+  background: var(--teal);
+  box-shadow: inset 0 -4px 0 var(--teal-2);
+}
+
+/* Modal */
+.lj-modal {
+  background: rgba(31, 31, 31, 0.45);
+  backdrop-filter: none;
+}
+.lj-modal__caixa {
+  border: 1px solid var(--linha);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 20px 24px -4px rgba(0, 0, 0, 0.08), 0 8px 8px -4px rgba(0, 0, 0, 0.03);
+}
+.lj-modal__caixa h2,
+.lj-modal__caixa h3:first-child {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--texto);
+}
+
+/* Toast */
+.lj-toast {
+  min-height: 56px;
+  padding: 12px 12px 16px 16px;
+  border-radius: 8px;
+  background: #008f5d;
+  box-shadow: inset 0 -4px 0 #007a4d, 0 12px 24px rgba(0, 0, 0, 0.12);
+  font-size: 14px;
+  font-weight: 800;
+}
+.lj-toast__ic {
+  background: rgba(255, 255, 255, 0.2);
+}
+.lj-toast--info {
+  background: #2e2e2e;
+  box-shadow: inset 0 -4px 0 #1f1f1f, 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+.lj-toast--info .lj-toast__ic {
+  background: rgba(255, 255, 255, 0.16);
+}
+.lj-toast--erro {
+  background: #e11d48;
+  box-shadow: inset 0 -4px 0 #be123c, 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+.lj-toast--erro .lj-toast__ic {
+  background: rgba(255, 255, 255, 0.2);
+}
+.lj-toast__acao {
+  color: #fff !important;
+  text-decoration: underline;
+}
+.lj-toast__x {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Step Indicator (linha do tempo) e Progress Bar */
+.lj-linha-tempo__bola {
+  width: 36px;
+  height: 36px;
+  background: #f0f0f0;
+  color: #808080;
+  font-size: 14px;
+}
+.lj-linha-tempo li:not(:last-child)::after {
+  left: 17px;
+  top: 38px;
+  background: var(--linha);
+}
+.lj-falta__barra {
+  height: 16px;
+  border-radius: 9999px;
+  background: #f0f0f0;
+}
+.lj-falta__barra i {
+  border-radius: 9999px;
+  background: var(--teal);
+}
+
+/* item: caixas neutras, setas Icon Button e características */
+.lj-caixa {
+  background: #f7f7f7 !important;
+  border: 0 !important;
+}
+.lj-caixa--rar {
+  background: #f0f0f0 !important;
+}
+.lj-onde {
+  background: #f0f0f0 !important;
+  border: 0 !important;
+}
+.lj-galeria__seta {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 8px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.7) !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+.lj-carac__c strong {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.lj-carac__c small,
+.lj-carac__c p,
+.lj-carac__c span {
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  color: #6b6e80;
+}
+.lj-select--forte {
+  font-size: 14px;
+  font-weight: 400;
+}
+.lj-btn--m {
+  font-size: 16px;
+  letter-spacing: 0;
+}
+
+/* paginação (Button Primary Medium + Icon Button Secondary) */
+.lj-paginas {
+  gap: 8px;
+}
+.lj-paginas button {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid var(--linha);
+  font-size: 16px;
+  color: var(--texto);
+}
+.lj-paginas button.is-on {
+  padding-bottom: 4px;
+  border-color: var(--teal);
+  box-shadow: inset 0 -4px 0 var(--teal-2);
+}
+.lj-paginas button:disabled {
+  opacity: 1;
+  color: #c7c7c7;
+}
