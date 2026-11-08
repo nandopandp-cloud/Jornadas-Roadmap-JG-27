@@ -120,7 +120,7 @@ export default function Finalizar() {
           <motion.div className="cr-modal cr-sucesso" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <Confete />
             <motion.div className="cr-modal__caixa cr-sucesso__caixa" initial={{ scale: 0.8, y: 30, opacity: 0 }} animate={{ scale: 1, y: 0, opacity: 1 }} transition={{ type: 'spring', stiffness: 260, damping: 18 }}>
-              <motion.img src="./cron/cab-calendario-ok.webp" alt="" className="pl-sucesso__img" initial={{ scale: 0.6, rotate: -6 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: 'spring', stiffness: 260, damping: 12, delay: 0.1 }} />
+              <motion.img src="./cron/calendario-selo.svg" alt="" className="pl-sucesso__img" initial={{ scale: 0.6, rotate: -6 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: 'spring', stiffness: 260, damping: 12, delay: 0.1 }} />
               <h2>{feito === 'publicado' ? 'Cronograma publicado!' : 'Publicação agendada!'}</h2>
               <p>
                 {feito === 'publicado' ? (

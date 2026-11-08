@@ -41,7 +41,7 @@ export function PlanoCab({ titulo, subtitulo, img }: { titulo: string; subtitulo
       </div>
       <motion.img
         className="pl-cab__img"
-        src={`./cron/${img}.webp`}
+        src={`./cron/${img}.svg`}
         alt=""
         initial={{ opacity: 0, x: 24, scale: 0.95 }}
         animate={{ opacity: 1, x: 0, scale: 1, y: [0, -4, 0] }}

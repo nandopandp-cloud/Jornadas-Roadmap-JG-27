@@ -8,11 +8,11 @@ export type TipoId = 'prova' | 'tarefa' | 'campeonato' | 'aula' | 'desafio'
 export type Tipo = { id: TipoId; nome: string; plural: string; natureza: 'Avaliação' | 'Atividade'; cor: string; fundo: string; borda: string }
 
 export const TIPOS: Record<TipoId, Tipo> = {
-  prova: { id: 'prova', nome: 'Prova Genial', plural: 'Prova Genial', natureza: 'Avaliação', cor: '#1d6fe0', fundo: '#e3eeff', borda: '#bcd5fb' },
-  tarefa: { id: 'tarefa', nome: 'Tarefa', plural: 'Tarefas', natureza: 'Atividade', cor: '#f07a12', fundo: '#ffefdc', borda: '#fbd3a6' },
-  campeonato: { id: 'campeonato', nome: 'Campeonato', plural: 'Campeonatos', natureza: 'Atividade', cor: '#6d28d9', fundo: '#efe8fd', borda: '#d8c8fa' },
-  aula: { id: 'aula', nome: 'Aula Invertida', plural: 'Aulas Invertidas', natureza: 'Atividade', cor: '#15803d', fundo: '#e0f5e6', borda: '#b4e3c1' },
-  desafio: { id: 'desafio', nome: 'Desafio Adaptativo', plural: 'Desafios Adaptativos', natureza: 'Atividade', cor: '#ea7a0c', fundo: '#fff1d6', borda: '#fbd9a0' },
+  prova: { id: 'prova', nome: 'Prova Genial', plural: 'Prova Genial', natureza: 'Avaliação', cor: '#7930b0', fundo: '#e1c2ec', borda: '#d3a9e6' },
+  tarefa: { id: 'tarefa', nome: 'Tarefa', plural: 'Tarefas', natureza: 'Atividade', cor: '#ffa800', fundo: '#fffac0', borda: '#ffd666' },
+  campeonato: { id: 'campeonato', nome: 'Campeonato', plural: 'Campeonatos', natureza: 'Atividade', cor: '#00a199', fundo: '#dff4f4', borda: '#8fd9d5' },
+  aula: { id: 'aula', nome: 'Aula Invertida', plural: 'Aulas Invertidas', natureza: 'Atividade', cor: '#00af34', fundo: '#b8f4cb', borda: '#7ee3a0' },
+  desafio: { id: 'desafio', nome: 'Desafio Adaptativo', plural: 'Desafios Adaptativos', natureza: 'Atividade', cor: '#441f67', fundo: '#e8d1ff', borda: '#c9a3ec' },
 }
 export const TIPO_LISTA: TipoId[] = ['prova', 'tarefa', 'campeonato', 'aula', 'desafio']
 

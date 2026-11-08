@@ -295,99 +295,40 @@ export function GravidadeIcone({ g, tamanho = 40 }: { g: 'sugestao' | 'validar' 
 }
 
 /* =====================================================================
-   Ilustrações (SVG, no traço das referências)
+   Ilustrações flat (padrão Educadores: as mesmas do Figma, em public/cron)
    ===================================================================== */
-const ROXO = '#4c1d95'
-const LILAS = '#cdbdf3'
-
-/** arquivo CSV com grade (tela de importação) */
+/** arquivo CSV (tela de importação) */
 export function IlustraCSV({ animar }: { animar?: boolean }) {
   return (
-    <svg className="cr-ilustra" viewBox="0 0 200 180" aria-hidden>
-      <g fill="none" stroke={ROXO} strokeWidth="5" strokeLinejoin="round" strokeLinecap="round">
-        <path d="M30 22h70l28 28v98a10 10 0 0 1-10 10H30a10 10 0 0 1-10-10V32a10 10 0 0 1 10-10Z" fill="#fff" />
-        <path d="M100 22v22a6 6 0 0 0 6 6h22" fill={LILAS} fillOpacity=".5" />
-      </g>
-      <g stroke={LILAS} strokeWidth="5">
-        <rect x="38" y="66" width="72" height="62" rx="4" fill="#f5f0ff" />
-        <path d="M38 86h72M38 107h72M62 66v62M86 66v62" />
-      </g>
-      <motion.g initial={animar ? { y: 8, opacity: 0 } : false} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2, type: 'spring', stiffness: 260, damping: 16 }}>
-        <rect x="92" y="114" width="86" height="46" rx="10" fill="#7c4bd8" />
-        <text x="135" y="146" textAnchor="middle" fontFamily="Figtree, sans-serif" fontWeight="700" fontSize="26" fill="#fff">
-          CSV
-        </text>
-      </motion.g>
-      <g className="cr-ilustra__raios" stroke={ROXO} strokeWidth="5" strokeLinecap="round">
-        <path d="M150 12l-6 18M170 26l-14 12M178 48l-18 4" />
-      </g>
-    </svg>
+    <motion.img
+      className="cr-ilustra"
+      src="./cron/arquivo-csv.svg"
+      alt=""
+      aria-hidden
+      initial={animar ? { y: 8, opacity: 0 } : false}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ type: 'spring', stiffness: 260, damping: 16 }}
+    />
   )
 }
 
-/** arquivo CSV com lupa escaneando (análise) */
+/** arquivo CSV com lupa (análise) */
 export function IlustraAnalise() {
-  return (
-    <svg className="cr-ilustra" viewBox="0 0 300 260" aria-hidden>
-      <path d="M40 140c-10-60 50-110 120-104 60 5 90 40 104 86 14 50-6 98-62 112-60 15-152-30-162-94Z" fill="#efe8fb" />
-      <g fill="none" stroke={ROXO} strokeWidth="5" strokeLinejoin="round">
-        <path d="M86 50h86l34 34v134a10 10 0 0 1-10 10H86a10 10 0 0 1-10-10V60a10 10 0 0 1 10-10Z" fill="#fff" />
-        <path d="M172 50v26a8 8 0 0 0 8 8h26" fill={LILAS} fillOpacity=".55" />
-      </g>
-      <g stroke={LILAS} strokeWidth="5">
-        <rect x="94" y="104" width="98" height="96" rx="4" fill="#f6f1ff" />
-        <path d="M94 136h98M94 168h98M127 104v96M160 104v96" />
-      </g>
-      <rect x="76" y="40" width="84" height="42" rx="8" fill="#7c4bd8" />
-      <text x="118" y="70" textAnchor="middle" fontFamily="Figtree, sans-serif" fontWeight="800" fontSize="26" fill="#fff">
-        CSV
-      </text>
-      {/* lupa passeando pela planilha */}
-      <g className="cr-ilustra__lupa">
-        <circle cx="170" cy="160" r="30" fill="rgba(255,255,255,.55)" stroke={ROXO} strokeWidth="7" />
-        <path d="M192 182l26 26" stroke="#8b5cf6" strokeWidth="14" strokeLinecap="round" />
-      </g>
-      <g className="cr-ilustra__raios" stroke={ROXO} strokeWidth="5" strokeLinecap="round">
-        <path d="M222 14l-6 22M244 30l-16 16M256 56l-24 6" />
-      </g>
-    </svg>
-  )
+  return <motion.img className="cr-ilustra" src="./cron/analise-csv.svg" alt="" aria-hidden animate={{ y: [0, -4, 0] }} transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }} />
 }
 
-/** calendário com selo verde (publicar) */
+/** calendário com selo (publicar) */
 export function IlustraCalendarioOk() {
   return (
-    <svg className="cr-ilustra" viewBox="0 0 320 240" aria-hidden>
-      <path d="M42 140c-6-56 46-100 118-100 74 0 128 40 132 96 4 58-50 92-128 92-72 0-116-34-122-88Z" fill="#efe8fb" />
-      <g fill="none" stroke={ROXO} strokeWidth="6" strokeLinejoin="round" strokeLinecap="round">
-        <rect x="74" y="50" width="176" height="150" rx="16" fill="#fff" />
-        <path d="M74 86h176" />
-        <path d="M110 34v30M162 34v30M214 34v30" />
-        <circle cx="110" cy="40" r="10" fill="#fff" />
-        <circle cx="162" cy="40" r="10" fill="#fff" />
-        <circle cx="214" cy="40" r="10" fill="#fff" />
-      </g>
-      <g fill="#ddd0f7">
-        {[0, 1, 2].map((c) => [0, 1].map((r) => <rect key={`${c}${r}`} x={98 + c * 46} y={104 + r * 42} width="30" height="28" rx="5" />))}
-      </g>
-      <motion.g initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.3, type: 'spring', stiffness: 300, damping: 12 }} style={{ transformOrigin: '232px 180px' }}>
-        <circle cx="232" cy="180" r="38" fill="#22a447" stroke="#fff" strokeWidth="6" />
-        <motion.path
-          d="M214 181l13 13 24-26"
-          fill="none"
-          stroke="#fff"
-          strokeWidth="9"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ delay: 0.55, duration: 0.4 }}
-        />
-      </motion.g>
-      <g className="cr-ilustra__raios" stroke={ROXO} strokeWidth="6" strokeLinecap="round">
-        <path d="M262 22l-6 22M286 38l-18 14M298 64l-24 6" />
-      </g>
-    </svg>
+    <motion.img
+      className="cr-ilustra"
+      src="./cron/calendario-selo.svg"
+      alt=""
+      aria-hidden
+      initial={{ scale: 0.85, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 16 }}
+    />
   )
 }
 

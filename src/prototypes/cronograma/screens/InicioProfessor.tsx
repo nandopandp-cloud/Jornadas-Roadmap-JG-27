@@ -59,7 +59,7 @@ export default function InicioProfessor() {
           </div>
           <motion.img
             className="cr-banner__img"
-            src="./cron/banner-foguete.webp"
+            src="./cron/banner-foguete.svg"
             alt=""
             initial={{ opacity: 0, x: 30, rotate: -4 }}
             animate={{ opacity: 1, x: 0, rotate: 0, y: [0, -6, 0] }}

@@ -45,7 +45,7 @@ export default function InicioGestor() {
             </Btn>
           </div>
         </div>
-        <img className="cr-banner__img" src="./cron/banner-foguete.webp" alt="" />
+        <img className="cr-banner__img" src="./cron/banner-foguete.svg" alt="" />
       </motion.section>
     </div>
   )

@@ -49,7 +49,7 @@ export default function Escolha({ escola }: { escola?: string }) {
           </motion.p>
         </div>
         <motion.img
-          src="./cron/cab-calendario-foguete.webp"
+          src="./cron/cab-calendario-foguete.svg"
           alt=""
           className="pl-escolha__img"
           initial={{ opacity: 0, x: 30 }}
@@ -77,7 +77,7 @@ export default function Escolha({ escola }: { escola?: string }) {
               <span className={`pl-opcao__radio ${on ? 'is-on' : ''}`}>
                 <AnimatePresence>{on && <motion.i initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }} transition={{ type: 'spring', stiffness: 600, damping: 20 }} />}</AnimatePresence>
               </span>
-              <motion.img className="pl-opcao__img" src={`./cron/${o.img}.webp`} alt="" animate={on ? { y: [0, -6, 0], scale: 1.03 } : { y: 0, scale: 1 }} transition={on ? { y: { duration: 2.6, repeat: Infinity, ease: 'easeInOut' }, scale: { duration: 0.3 } } : { duration: 0.3 }} />
+              <motion.img className="pl-opcao__img" src={`./cron/${o.img}.svg`} alt="" animate={on ? { y: [0, -6, 0], scale: 1.03 } : { y: 0, scale: 1 }} transition={on ? { y: { duration: 2.6, repeat: Infinity, ease: 'easeInOut' }, scale: { duration: 0.3 } } : { duration: 0.3 }} />
               <h2>{o.titulo}</h2>
               <p>{o.texto}</p>
               <ul>

@@ -98,11 +98,11 @@ function Shell() {
           <nav className="cr-migalhas" aria-label="Você está em">
             {migalhas.map((m, i) => (
               <span key={i} className="cr-migalhas__item">
-                {i > 0 && <ChevronRight size={16} className="cr-migalhas__sep" />}
+                {i > 0 && <span className="cr-migalhas__sep">/</span>}
                 {m.ir ? (
                   <button onClick={() => navegar(m.ir!)}>{m.texto}</button>
                 ) : (
-                  <span className={i === migalhas.length - 1 && migalhas.length > 1 ? 'is-atual' : ''}>{m.texto}</span>
+                  <span className={i === migalhas.length - 1 ? 'is-atual' : ''}>{m.texto}</span>
                 )}
               </span>
             ))}
@@ -209,7 +209,7 @@ function Sidebar({ aberta, onNavegar, onRecolher }: { aberta: boolean; onNavegar
         <img src="./cron/logo.webp" alt="Jovens Gênios" />
         <div className="cr-side__marcatxt">
           <strong>Educadores</strong>
-          <span>Educadores</span>
+          <span>Jovens Gênios</span>
         </div>
         <button className="cr-iconbtn cr-side__recolher" onClick={onRecolher} aria-label="Recolher menu">
           <ChevronLeft size={20} />
