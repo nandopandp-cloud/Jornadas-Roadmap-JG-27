@@ -29,7 +29,7 @@ Antes de uma iniciativa virar produto, o time precisa mostrar como ela vai funci
 
 <!-- jornadas:inicio (gerado automaticamente a partir de src/platform/journeys.ts — não edite à mão) -->
 
-A plataforma tem hoje **9 jornadas**. Cada uma vive na sua própria branch, com um README dedicado.
+A plataforma tem hoje **10 jornadas**. Cada uma vive na sua própria branch, com um README dedicado.
 
 ### Alfabetização
 
@@ -102,6 +102,14 @@ Estudante acompanha a própria evolução na GenieX, a partir do perfil: XP vál
 Relatórios da gamificação da GenieX para professores e gestores: turmas com XP válido, elo médio e distribuição por elo; relatório da turma com regressões e badges; e o relatório de cada estudante com elos, 25 badges, evolução do XP, modalidades e extrato de lotes, com exportação em CSV e PDF.
 
 [Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/gamificacao-geniex-educadores) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/gamificacao-geniex-educadores) · [Branch `gamificacao-geniex-educadores`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/gamificacao-geniex-educadores)
+
+### Teste Vocacional GenieX
+
+**GenieX · Plataforma do Estudante** · Ensino Médio
+
+Estudante responde 52 perguntas sobre interesses, valores, preferências e habilidades, recebe um perfil RIASEC com profissões explicadas, explora e compara carreiras e segue próximos passos para investigar o futuro.
+
+[Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/teste-vocacional) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/teste-vocacional) · [Branch `teste-vocacional-geniex`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/teste-vocacional-geniex)
 
 <!-- jornadas:fim -->
 
