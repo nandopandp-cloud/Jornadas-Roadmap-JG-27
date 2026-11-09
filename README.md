@@ -25,13 +25,13 @@ Código em `src/prototypes/gamificacao-geniex-educadores/` (`index.tsx`, `data.t
 
 | Atalho (`?screen=`) | Tela |
 | --- | --- |
-| `turmas` | Relatórios de Turmas · aba Gamificação (Visão geral mostra a tabela atual) |
+| `turmas` | Relatórios de Turmas: turmas com XP válido médio e elo médio, seleção para exportar (sem abas) |
 | `turma` | Relatório da turma EFAFMAT8A |
 | `estudantes` | Relatórios de Estudantes · aba Gamificação |
 | `resumo` · `elos` · `badges` · `extrato` | Relatório de gamificação da Ana Caroline |
 | `exportar-turma` · `exportar-estudante` | Menu Exportar aberto, com véu |
 
-- **Funciona de verdade:** troca de turma, busca, abas por elo (e cliques na legenda), linhas clicáveis, sub-navegação do estudante, filtro de modalidade no extrato, exportar (menu/folha com véu, Esc e clique fora fecham), sidebar recolhível e em gaveta no celular.
+- **Funciona de verdade:** seleção de turmas para exportar, troca de turma, busca, abas por elo (e cliques na legenda), linhas clicáveis, sub-navegação do estudante, filtro de modalidade no extrato, exportar (menu/folha com véu, Esc e clique fora fecham), sidebar recolhível e em gaveta no celular.
 - **Fora do escopo:** os demais itens do menu e as outras abas do perfil mostram um aviso.
 
 ## Bibliotecas do arquivo
