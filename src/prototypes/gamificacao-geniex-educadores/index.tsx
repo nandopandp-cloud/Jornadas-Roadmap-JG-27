@@ -5,6 +5,7 @@ import {
   Award,
   BarChart3,
   Calendar,
+  Check,
   CheckCircle2,
   ChevronDown,
   ChevronLeft,
@@ -305,68 +306,48 @@ const Th = ({ children, ord }: { children: ReactNode; ord?: boolean }) => (
 )
 
 /* ---------------- T1 · Relatórios de Turmas ---------------- */
-function Turmas({ aba, celular, onAba, onTurma, onExportar }: { aba: 'visao' | 'gamificacao'; celular: boolean; onAba: (a: 'visao' | 'gamificacao') => void; onTurma: (id: string) => void; onExportar: (ev?: MouseEvent) => void }) {
+function Turmas({ celular, onTurma, onExportar }: { aba?: 'visao' | 'gamificacao'; celular: boolean; onAba?: (a: 'visao' | 'gamificacao') => void; onTurma: (id: string) => void; onExportar: (ev?: MouseEvent) => void }) {
   const [q, setQ] = useState('')
+  const [sel, setSel] = useState<string[]>([])
   const lista = TURMAS.filter((t) => t.nome.toLowerCase().includes(q.trim().toLowerCase()))
+  const todas = lista.length > 0 && lista.every((t) => sel.includes(t.id))
+  const alterna = (id: string) => setSel((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]))
+  const alternaTodas = () => setSel(todas ? [] : lista.map((t) => t.id))
   return (
     <>
       <h1 className="rx-h1">Relatórios de Turmas</h1>
       <Alerta />
-      <Abas nome="relatorio" itens={[['visao', 'Visão geral', BarChart3], ['gamificacao', 'Gamificação', Trophy]]} ativa={aba} onTroca={onAba} />
       <section className="rx-cartao">
         <div className="rx-cartao__topo">
-          <div>{aba === 'visao' && <h2>Relatórios de Turmas</h2>}</div>
+          <div>{sel.length > 0 && <p className="rx-selecao">{sel.length} {sel.length === 1 ? 'turma selecionada' : 'turmas selecionadas'}</p>}</div>
           <Busca valor={q} onTroca={setQ} ph="Pesquisar pelo nome..." />
           <button className="rx-btn is-primario" onClick={onExportar}>
-            <Download size={16} /> Exportar <ChevronDown size={16} />
+            <Download size={16} /> Exportar{sel.length ? ` (${sel.length})` : ''} <ChevronDown size={16} />
           </button>
         </div>
-        {aba === 'visao' ? (
-          <div className="rx-tabela-rola">
-            <div className="rx-tabela rx-t-visao">
-              <div className="rx-tr is-cab">
-                <Th ord>Turma</Th>
-                <Th ord>Ano escolar</Th>
-                <Th ord>Estudantes</Th>
-                <Th ord>Estudantes ativos</Th>
-                <Th ord>Professores ativos</Th>
-                <Th ord>Proficiência</Th>
-              </div>
-              {lista.map((t) => (
-                <div key={t.id} className="rx-tr">
-                  <b>{t.nome}</b>
-                  <span>{t.ano}</span>
-                  <span>{t.estudantes}</span>
-                  <span>{t.ativos}</span>
-                  <span>{t.professores}</span>
-                  <span>
-                    <em className={`rx-prof is-${t.proficiencia.replace(' ', '-').toLowerCase()}`}>{t.proficiencia}</em>
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : celular ? (
+        {celular ? (
           <div className="rx-cards">
             {lista.map((t) => (
-              <CartaoTurma key={t.id} t={t} onAbrir={() => onTurma(t.id)} />
+              <CartaoTurma key={t.id} t={t} marcada={sel.includes(t.id)} onMarcar={() => alterna(t.id)} onAbrir={() => onTurma(t.id)} />
             ))}
           </div>
         ) : (
           <div className="rx-tabela-rola">
             <div className="rx-tabela rx-t-turmas">
               <div className="rx-tr is-cab">
+                <Caixa marcada={todas} parcial={!todas && sel.length > 0} onClick={alternaTodas} rotulo="Selecionar todas as turmas" />
                 <Th ord>Turma</Th>
                 <Th ord>Ano escolar</Th>
                 <Th ord>Estudantes</Th>
                 <Th ord>XP válido médio</Th>
                 <Th ord>Elo médio</Th>
-                <span />
+                <span className="rx-th is-dir">Ação</span>
               </div>
               {lista.map((t) => {
                 const e = eloDe(t.xpMedio)
                 return (
-                  <div key={t.id} className="rx-tr is-clicavel" onClick={() => onTurma(t.id)}>
+                  <div key={t.id} className={`rx-tr is-clicavel ${sel.includes(t.id) ? 'is-marcada' : ''}`} onClick={() => onTurma(t.id)}>
+                    <Caixa marcada={sel.includes(t.id)} onClick={() => alterna(t.id)} rotulo={'Selecionar ' + t.nome} />
                     <b>{t.nome}</b>
                     <span>{t.ano}</span>
                     <span>{t.estudantes}</span>
@@ -374,7 +355,7 @@ function Turmas({ aba, celular, onAba, onTurma, onExportar }: { aba: 'visao' | '
                     <span className="rx-cel-elo">
                       <Medalha elo={e.id} size={18} /> {e.nome}
                     </span>
-                    <button className="rx-link" onClick={(ev) => { ev.stopPropagation(); onTurma(t.id) }}>
+                    <button className="rx-link is-dir" onClick={(ev) => { ev.stopPropagation(); onTurma(t.id) }}>
                       Ver relatório <ArrowRight size={16} />
                     </button>
                   </div>
@@ -390,14 +371,35 @@ function Turmas({ aba, celular, onAba, onTurma, onExportar }: { aba: 'visao' | '
     </>
   )
 }
-function CartaoTurma({ t, onAbrir }: { t: Turma; onAbrir: () => void }) {
+function Caixa({ marcada, parcial, onClick, rotulo }: { marcada: boolean; parcial?: boolean; onClick: () => void; rotulo: string }) {
+  return (
+    <button
+      className={`rx-caixa ${marcada || parcial ? 'is-on' : ''}`}
+      role="checkbox"
+      aria-checked={parcial ? 'mixed' : marcada}
+      aria-label={rotulo}
+      onClick={(ev) => {
+        ev.stopPropagation()
+        onClick()
+      }}
+    >
+      {marcada ? <Check size={12} strokeWidth={3} /> : parcial ? <i /> : null}
+    </button>
+  )
+}
+function CartaoTurma({ t, marcada, onMarcar, onAbrir }: { t: Turma; marcada: boolean; onMarcar: () => void; onAbrir: () => void }) {
   const e = eloDe(t.xpMedio)
   return (
-    <article className="rx-card" onClick={onAbrir}>
-      <b>{t.nome}</b>
-      <small>
-        {t.ano} · {t.estudantes} estudantes
-      </small>
+    <article className={`rx-card ${marcada ? 'is-marcada' : ''}`} onClick={onAbrir}>
+      <span className="rx-card__linha">
+        <span>
+          <b>{t.nome}</b>
+          <small>
+            {t.ano} · {t.estudantes} estudantes
+          </small>
+        </span>
+        <Caixa marcada={marcada} onClick={onMarcar} rotulo={'Selecionar ' + t.nome} />
+      </span>
       <div className="rx-dados">
         <span>
           <small>XP válido médio</small>
