@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowRight, Check, School } from 'lucide-react'
+import { ArrowRight, Check } from 'lucide-react'
 import { useState } from 'react'
-import { Btn, Modal, Select } from '../components/ui'
+import { Btn } from '../components/ui'
 import { nomeEscola, useCron } from '../store'
 
 type Opcao = 'plataforma' | 'csv'
@@ -25,16 +25,17 @@ const OPCOES: { id: Opcao; titulo: string; texto: string; img: string; itens: st
 
 /** Primeira etapa: escolher como montar o cronograma */
 export default function Escolha({ escola }: { escola?: string }) {
-  const { s, ir, iniciar, iniciarPlano } = useCron()
+  const { s, ir, iniciar, iniciarPlano, verValidacao, toast } = useCron()
   const [op, setOp] = useState<Opcao>('plataforma')
-  const [pedirEscola, setPedirEscola] = useState(false)
-  const semCronograma = s.escolas.filter((e) => e.status === 'nao-iniciado')
-  const [escolhida, setEscolhida] = useState(semCronograma[0]?.id ?? 'f')
 
+  /** planilha não pede escola: um mesmo arquivo pode trazer as programações de várias escolas */
   const continuar = () => {
-    if (op === 'plataforma') iniciarPlano(escola)
-    else if (escola) iniciar(escola)
-    else setPedirEscola(true)
+    if (op === 'plataforma') return iniciarPlano(escola)
+    if (s.validacao?.estado === 'rodando') {
+      toast('Já há uma planilha em validação. Acompanhe o andamento por aqui.', 'info')
+      return verValidacao()
+    }
+    iniciar()
   }
 
   return (
@@ -102,30 +103,6 @@ export default function Escolha({ escola }: { escola?: string }) {
         </Btn>
       </footer>
 
-      <Modal
-        aberto={pedirEscola}
-        onFechar={() => setPedirEscola(false)}
-        titulo="Para qual escola é a planilha?"
-        largura={500}
-        rodape={
-          <>
-            <Btn variante="contorno" onClick={() => setPedirEscola(false)}>
-              Cancelar
-            </Btn>
-            <Btn
-              onClick={() => {
-                setPedirEscola(false)
-                iniciar(escolhida)
-              }}
-            >
-              Continuar
-            </Btn>
-          </>
-        }
-      >
-        <p className="cr-texto">A importação por planilha cria o cronograma de uma escola por vez.</p>
-        <Select className="cr-select--bloco" valor={escolhida} onChange={setEscolhida} opcoes={s.escolas.map((e) => ({ valor: e.id, texto: e.nome, icone: <School size={16} /> }))} />
-      </Modal>
     </div>
   )
 }

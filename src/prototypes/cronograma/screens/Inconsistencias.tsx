@@ -224,7 +224,7 @@ export default function Inconsistencias() {
         }
       >
         <p className="cr-texto">
-          Faltam {TOTAL_OCORRENCIAS - resolvidas} ocorrências. Podemos aplicar automaticamente as correções recomendadas para a {nomeEscola(s.escolas, w.escola)} — você ainda poderá editar tudo
+          Faltam {TOTAL_OCORRENCIAS - resolvidas} ocorrências. Podemos aplicar automaticamente as correções recomendadas para {w.escolas.length > 1 ? `as ${w.escolas.length} escolas da planilha` : `a ${nomeEscola(s.escolas, w.escola)}`} — você ainda poderá editar tudo
           na próxima tela.
         </p>
       </Modal>

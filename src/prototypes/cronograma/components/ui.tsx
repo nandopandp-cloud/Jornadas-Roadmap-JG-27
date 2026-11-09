@@ -333,14 +333,32 @@ export function IlustraCalendarioOk() {
 }
 
 /** rótulo de status da escola */
-export function StatusEscola({ status }: { status: 'publicado' | 'agendado' | 'rascunho' | 'nao-iniciado' }) {
-  const txt = status === 'publicado' ? 'Publicado' : status === 'agendado' ? 'Agendado' : status === 'rascunho' ? 'Em rascunho' : 'Não iniciado'
+export function StatusEscola({ status }: { status: 'publicado' | 'agendado' | 'rascunho' | 'nao-iniciado' | 'validando' | 'validada' }) {
+  const txt =
+    status === 'publicado'
+      ? 'Publicado'
+      : status === 'agendado'
+        ? 'Agendado'
+        : status === 'rascunho'
+          ? 'Em rascunho'
+          : status === 'validando'
+            ? 'Validando planilha'
+            : status === 'validada'
+              ? 'Pronta para revisão'
+              : 'Não iniciado'
   return (
     <motion.span key={status} className={`cr-status cr-status--${status}`} initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
       {status === 'publicado' ? (
         <svg viewBox="0 0 16 16" width="16" height="16">
           <circle cx="8" cy="8" r="6.6" fill="none" stroke="currentColor" strokeWidth="1.6" />
           <path d="m5.2 8.2 2 2 3.8-4" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      ) : status === 'validando' ? (
+        <span className="cr-status__gira" aria-hidden />
+      ) : status === 'validada' ? (
+        <svg viewBox="0 0 16 16" width="16" height="16">
+          <path d="M4 2.8h5l3 3V13H4z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+          <path d="m6 9 1.5 1.5L10.5 7.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       ) : status === 'rascunho' ? (
         <svg viewBox="0 0 16 16" width="16" height="16">

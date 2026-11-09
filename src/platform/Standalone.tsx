@@ -15,9 +15,9 @@ export default function Standalone({ slug, params }: { slug: string; params: URL
   if (!journey || !journey.component) {
     return (
       <div className="pf-notfound">
-        <img src="./3d/locked.png" alt="" width={96} height={96} />
-        <h1>Protótipo não encontrado</h1>
-        <p>Confira se o link está completo ou peça um novo link para quem compartilhou.</p>
+        <img src={journey ? journey.icon : './3d/locked.png'} alt="" width={96} height={96} />
+        <h1>{journey ? `${journey.name}: em construção` : 'Protótipo não encontrado'}</h1>
+        <p>{journey ? 'O navegável desta jornada ainda está sendo desenhado. Volte em breve.' : 'Confira se o link está completo ou peça um novo link para quem compartilhou.'}</p>
         {!embedded && (
           <a className="pf-btn pf-btn--primary" href="#/">
             Ver todas as jornadas

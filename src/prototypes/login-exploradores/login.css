@@ -1,0 +1,922 @@
+/* =====================================================================
+   Login simplificado · Exploradores — Yunara Design System (Seafoam)
+   ===================================================================== */
+.lg {
+  --teal: #00a19a;
+  --teal-2: #008c87;
+  --teal-claro: #e7fbf9;
+  --tinta: #1f1f1f;
+  --texto: #2e2e2e;
+  --suave: #808080;
+  --apagado: #bfbfbf;
+  --linha: #e0e0e0;
+  --linha-2: #f0f0f0;
+  --sup: #faf9f9;
+  --vermelho: #d31510;
+  --vermelho-claro: #fcebea;
+  --amarelo: #e3b226;
+  --amarelo-claro: #fcf5dc;
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 47%) minmax(0, 1fr);
+  background: #fff;
+  color: var(--texto);
+  font-family: 'Nunito', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+.lg *,
+.lg *::before,
+.lg *::after {
+  box-sizing: border-box;
+}
+:where(.lg) button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+:where(.lg) h1,
+:where(.lg) h2,
+:where(.lg) p,
+:where(.lg) ol {
+  margin: 0;
+}
+
+/* --- arte ------------------------------------------------------------ */
+.lg-arte {
+  position: relative;
+  margin: 32px 0 32px 32px;
+  border-radius: 32px;
+  overflow: hidden;
+  background: #2a1260;
+}
+.lg-arte img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 45%;
+  display: block;
+  user-select: none;
+}
+.lg-voltar {
+  position: absolute;
+  top: 32px;
+  left: 32px;
+}
+
+/* --- coluna do formulário ---------------------------------------------- */
+.lg-lado {
+  overflow-y: auto;
+  display: grid;
+  place-items: center;
+  padding: 40px 24px;
+}
+.lg-cartao {
+  width: min(480px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+}
+.lg-logo {
+  width: 150px;
+  height: auto;
+}
+.lg-titulo {
+  text-align: center;
+  display: grid;
+  gap: 6px;
+}
+.lg-titulo h1 {
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: 800;
+  color: var(--texto);
+}
+.lg-titulo p {
+  font-size: 18px;
+  line-height: 1.45;
+  color: var(--suave);
+}
+.lg-pilha {
+  width: 100%;
+  display: grid;
+  gap: 14px;
+}
+.lg-par {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.lg-direita {
+  display: flex;
+  justify-content: flex-end;
+}
+.lg-nota {
+  font-size: 14px;
+  color: var(--suave);
+  margin-top: -10px;
+}
+.lg-dica {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--suave);
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px dashed var(--linha);
+}
+.lg-dica:hover {
+  color: var(--teal-2);
+  border-color: var(--teal);
+}
+
+/* --- botões (Button do Yunara, com degrau) ------------------------------ */
+.lg-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 800;
+  border-radius: 12px;
+  transition: transform 0.12s, filter 0.12s, background 0.12s;
+  white-space: nowrap;
+}
+.lg-btn.is-full {
+  width: 100%;
+}
+.lg-btn.is-g {
+  height: 64px;
+  font-size: 18px;
+  padding: 0 24px;
+}
+.lg-btn.is-m {
+  height: 48px;
+  font-size: 16px;
+  padding: 0 18px;
+}
+.lg-btn.is-p {
+  height: 36px;
+  font-size: 13px;
+  letter-spacing: 0.3px;
+  padding: 0 10px;
+}
+.lg-btn.is-pri {
+  background: var(--teal);
+  color: #fff;
+  box-shadow: inset 0 -4px 0 var(--teal-2);
+}
+.lg-btn.is-pri:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+.lg-btn.is-sec {
+  background: #fff;
+  color: var(--teal-2);
+  border: 1px solid var(--linha);
+  box-shadow: inset 0 -4px 0 var(--linha-2);
+}
+.lg-btn.is-sec:hover:not(:disabled) {
+  background: var(--sup);
+}
+.lg-btn.is-ghost {
+  color: var(--teal-2);
+}
+.lg-btn.is-ghost:hover:not(:disabled) {
+  background: var(--teal-claro);
+}
+.lg-btn:active:not(:disabled) {
+  transform: translateY(2px);
+}
+.lg-btn.is-pri:active:not(:disabled) {
+  box-shadow: inset 0 -2px 0 var(--teal-2);
+}
+.lg-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.lg-btn > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- opção de método ---------------------------------------------------- */
+.lg-opcao {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px 18px 16px;
+  background: #fff;
+  border: 1px solid var(--linha);
+  border-bottom-width: 4px;
+  border-radius: 16px;
+  text-align: left;
+}
+.lg-opcao:hover {
+  border-color: var(--teal);
+}
+.lg-opcao-ic {
+  position: relative;
+  flex: none;
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  background: var(--sup);
+  display: grid;
+  place-items: center;
+  color: var(--suave);
+}
+.lg-opcao.is-destaque .lg-opcao-ic {
+  background: var(--teal-claro);
+}
+.lg-opcao-img1 {
+  width: 44px;
+}
+.lg-opcao-a,
+.lg-opcao-b {
+  position: absolute;
+  width: 34px;
+}
+.lg-opcao-a {
+  left: 6px;
+  top: 6px;
+}
+.lg-opcao-b {
+  right: 6px;
+  bottom: 6px;
+}
+.lg-opcao-tx {
+  flex: 1;
+  display: grid;
+  gap: 2px;
+}
+.lg-opcao-tx b {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--texto);
+}
+.lg-opcao.is-destaque .lg-opcao-tx b {
+  font-size: 20px;
+}
+.lg-opcao-tx small {
+  font-size: 14px;
+  color: var(--suave);
+}
+.lg-opcao-seta {
+  color: var(--teal);
+  flex: none;
+}
+
+.lg-ou {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--apagado);
+  font-size: 14px;
+}
+.lg-ou i {
+  flex: 1;
+  height: 1px;
+  background: var(--linha);
+}
+
+/* --- selos --------------------------------------------------------------- */
+.lg-selo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+}
+.lg-selo.is-teal {
+  background: var(--teal);
+}
+.lg-selo.is-vermelho {
+  background: var(--vermelho);
+}
+.lg-selo.is-amarelo {
+  background: var(--amarelo);
+  color: var(--tinta);
+}
+.lg-selo.is-grande {
+  height: 40px;
+  padding: 0 16px;
+  font-size: 16px;
+}
+
+/* --- ilustrações --------------------------------------------------------- */
+.lg-ilus {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lg-ilus.is-baixa {
+  height: 136px;
+}
+.lg-ilus-cart {
+  width: 270px;
+  margin-right: 110px;
+}
+.lg-ilus-cam {
+  position: absolute;
+  width: 120px;
+  right: calc(50% - 170px);
+  top: 40px;
+}
+.lg-ilus-com-selo {
+  position: relative;
+  display: inline-block;
+}
+.lg-ilus-com-selo img {
+  width: 124px;
+  display: block;
+}
+.lg-ilus-selo {
+  position: absolute;
+  right: -8px;
+  bottom: 2px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  border: 3px solid #fff;
+}
+.lg-ilus-selo.is-vermelho {
+  background: var(--vermelho);
+}
+.lg-ilus-selo.is-amarelo {
+  background: var(--amarelo);
+}
+.lg-ilus-bot {
+  width: 116px;
+}
+.lg-ilus-cadeado {
+  width: 124px;
+}
+.lg-ilus.is-orbita {
+  height: 150px;
+}
+.lg-ilus-planeta {
+  width: 108px;
+  position: relative;
+}
+.lg-orbita {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 4px dashed var(--teal-2);
+}
+.lg-orbita img {
+  position: absolute;
+  width: 40px;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(60deg);
+}
+.lg-ilus.is-avatar {
+  height: 150px;
+}
+.lg-ilus-avatar {
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  box-shadow: 0 8px 24px rgba(0, 102, 97, 0.25);
+}
+.lg-ilus-confete {
+  position: absolute;
+  width: 64px;
+  left: calc(50% - 140px);
+  top: 8px;
+}
+.lg-ilus-brilho {
+  position: absolute;
+  width: 48px;
+  right: calc(50% - 130px);
+  top: 0;
+}
+
+/* --- câmera --------------------------------------------------------------- */
+.lg-camera {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  border-radius: 24px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #292933, #4c4a57);
+  display: grid;
+  place-items: center;
+}
+.lg-camera-cart {
+  width: 300px;
+}
+.lg-moldura {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  left: calc(50% - 128px);
+  top: 92px;
+}
+.lg-moldura i {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border: 5px solid var(--teal);
+  border-radius: 4px;
+}
+.lg-moldura i:nth-child(1) {
+  left: 0;
+  top: 0;
+  border-right: 0;
+  border-bottom: 0;
+}
+.lg-moldura i:nth-child(2) {
+  right: 0;
+  top: 0;
+  border-left: 0;
+  border-bottom: 0;
+}
+.lg-moldura i:nth-child(3) {
+  left: 0;
+  bottom: 0;
+  border-right: 0;
+  border-top: 0;
+}
+.lg-moldura i:nth-child(4) {
+  right: 0;
+  bottom: 0;
+  border-left: 0;
+  border-top: 0;
+}
+.lg-moldura.is-ok i {
+  border-color: #34d399;
+}
+.lg-linha {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--teal);
+  box-shadow: 0 0 12px 2px rgba(0, 161, 154, 0.9);
+  animation: lg-varre 1.6s ease-in-out infinite alternate;
+}
+@keyframes lg-varre {
+  from {
+    top: 8px;
+  }
+  to {
+    top: calc(100% - 11px);
+  }
+}
+.lg-camera-status {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.lg-camera-status.is-ok {
+  background: #008f5d;
+}
+
+/* --- código de ícones ---------------------------------------------------- */
+.lg-conf {
+  width: 100%;
+  padding: 16px 16px 18px;
+  border: 1px solid var(--linha);
+  border-bottom-width: 4px;
+  border-radius: 16px;
+  display: grid;
+  gap: 10px;
+  transition: border-color 0.2s;
+}
+.lg-conf.is-erro {
+  border-color: var(--vermelho);
+  animation: lg-treme 0.4s;
+}
+@keyframes lg-treme {
+  20%,
+  60% {
+    transform: translateX(-6px);
+  }
+  40%,
+  80% {
+    transform: translateX(6px);
+  }
+}
+.lg-conf-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--suave);
+}
+.lg-pos {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+}
+.lg-casa {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 16px;
+  border: 2px solid var(--linha-2);
+  background: var(--sup);
+  display: grid;
+  place-items: center;
+}
+.lg-casa img {
+  width: 63%;
+}
+.lg-casa b {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--linha-2);
+  color: var(--apagado);
+  font-size: 11px;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+}
+.lg-casa.is-cheia {
+  background: var(--teal-claro);
+  border-color: var(--teal-2);
+}
+.lg-casa.is-atual {
+  border: 2px dashed var(--teal);
+}
+.lg-casa.is-cheia b,
+.lg-casa.is-atual b {
+  background: var(--teal);
+  color: #fff;
+}
+.lg-casa.is-errada {
+  background: var(--vermelho-claro);
+  border-color: var(--vermelho);
+}
+.lg-casa.is-errada b {
+  background: var(--vermelho);
+  color: #fff;
+}
+.lg-casa-x {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--texto);
+  color: #fff !important;
+  display: grid;
+  place-items: center;
+}
+.lg-grade {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+}
+.lg-icone {
+  aspect-ratio: 1;
+  border-radius: 16px;
+  background: #fff;
+  border: 2px solid var(--linha);
+  border-bottom-width: 5px;
+  display: grid;
+  place-items: center;
+  transition: border-color 0.15s, background 0.15s;
+}
+.lg-icone img {
+  width: 68%;
+  pointer-events: none;
+}
+.lg-icone:hover:not(:disabled) {
+  border-color: var(--teal);
+  background: var(--teal-claro);
+}
+.lg-icone:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+.lg-cta {
+  width: 100%;
+  display: grid;
+  gap: 8px;
+  text-align: center;
+}
+.lg-cta small {
+  font-size: 14px;
+  color: var(--apagado);
+}
+
+/* --- aviso (Toast do Yunara, erro) ----------------------------------------- */
+.lg-aviso {
+  width: 100%;
+  overflow: hidden;
+}
+.lg-aviso > div {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--vermelho);
+  box-shadow: inset 0 -4px 0 #a5100c;
+  color: #fff;
+}
+.lg-aviso svg {
+  flex: none;
+  margin-top: 1px;
+}
+.lg-aviso span {
+  display: grid;
+  gap: 2px;
+  font-size: 14px;
+}
+.lg-aviso b {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+/* --- formulário (Input do Yunara) ------------------------------------------- */
+.lg-form {
+  width: 100%;
+  display: grid;
+  gap: 16px;
+}
+.lg-campo {
+  display: grid;
+  gap: 6px;
+}
+.lg-campo > span {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--texto);
+}
+.lg-campo > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 52px;
+  padding: 0 14px;
+  border: 1px solid var(--linha);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--teal-2);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.lg-campo > div:focus-within {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(0, 161, 154, 0.18);
+}
+.lg-campo input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  font: inherit;
+  font-size: 16px;
+  color: var(--texto);
+  background: transparent;
+}
+.lg-campo input::placeholder {
+  color: var(--apagado);
+}
+.lg-campo button {
+  color: var(--texto);
+  display: grid;
+}
+.lg-campo.is-erro > span {
+  color: var(--vermelho);
+}
+.lg-campo.is-erro > div {
+  border-color: var(--vermelho);
+  background: #fff7f7;
+  color: var(--vermelho);
+}
+
+/* --- progresso ----------------------------------------------------------- */
+.lg-progresso {
+  width: 100%;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--linha-2);
+  overflow: hidden;
+}
+.lg-progresso span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--teal);
+}
+
+/* --- toast, véu e modal ----------------------------------------------------- */
+.lg-toast {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(420px, calc(100% - 32px));
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: #2e2e2e;
+  box-shadow: inset 0 -4px 0 #1a1a1a, 0 12px 32px rgba(0, 0, 0, 0.25);
+  color: #fff;
+  font-weight: 700;
+}
+.lg-veu {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(10, 10, 20, 0.55);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+.lg-modal {
+  position: relative;
+  width: min(440px, 100%);
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px 24px 24px;
+  display: grid;
+  gap: 16px;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+}
+.lg-modal h2 {
+  font-size: 22px;
+  font-weight: 800;
+}
+.lg-modal p {
+  font-size: 15px;
+  color: var(--suave);
+}
+.lg-modal-x {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: var(--suave);
+}
+.lg-modal-x:hover {
+  background: var(--sup);
+}
+.lg-fim-avatar {
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  margin: 0 auto;
+}
+
+/* --- tablet (até 1180 px): painel de arte estreito ------------------------- */
+@media (max-width: 1180px) {
+  .lg {
+    grid-template-columns: 392px minmax(0, 1fr);
+  }
+  .lg-voltar {
+    top: 24px;
+    left: 24px;
+  }
+}
+
+/* --- celular (até 860 px): arte vira banner -------------------------------- */
+@media (max-width: 860px) {
+  .lg {
+    display: block;
+    overflow-y: auto;
+  }
+  .lg-arte {
+    margin: 16px;
+    height: 200px;
+    border-radius: 32px;
+  }
+  .lg-arte img {
+    object-position: 50% 47%;
+  }
+  .lg-voltar {
+    top: 12px;
+    left: 12px;
+  }
+  .lg-lado {
+    overflow: visible;
+    display: block;
+    padding: 8px 16px 32px;
+  }
+  .lg-cartao {
+    margin: 0 auto;
+    gap: 20px;
+  }
+  .lg-titulo h1 {
+    font-size: 24px;
+  }
+  .lg-titulo p {
+    font-size: 16px;
+  }
+  .lg-par {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .lg-pos {
+    gap: 6px;
+  }
+  .lg-casa {
+    border-radius: 12px;
+  }
+  .lg-casa b {
+    width: 16px;
+    height: 16px;
+    left: 3px;
+    top: 3px;
+    font-size: 9px;
+  }
+  .lg-casa-x {
+    width: 18px;
+    height: 18px;
+    right: 2px;
+    top: 2px;
+  }
+  .lg-grade {
+    gap: 8px;
+  }
+  .lg-icone {
+    border-radius: 12px;
+  }
+  .lg-camera {
+    height: 224px;
+  }
+  .lg-camera-cart {
+    width: 230px;
+  }
+  .lg-moldura {
+    width: 112px;
+    height: 112px;
+    left: calc(50% - 98px);
+    top: 66px;
+  }
+  .lg-ilus-cart {
+    width: 220px;
+    margin-right: 80px;
+  }
+  .lg-ilus-cam {
+    width: 96px;
+    right: calc(50% - 150px);
+  }
+  .lg-opcao.is-destaque .lg-opcao-tx b {
+    font-size: 18px;
+  }
+  .lg-toast {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lg *,
+  .lg *::before,
+  .lg *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

@@ -1,20 +1,20 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { CalendarDays, ChevronLeft, ChevronRight, Download, Eye, MoreVertical, Plus, School, Search, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
-import { Btn, Modal, Select, StatusEscola } from '../components/ui'
+import { Btn, StatusEscola } from '../components/ui'
 import { useCron } from '../store'
 import type { Escola } from '../data'
 
 export default function Lista({ aba: abaInicial }: { aba?: 'rede' | 'meus' }) {
-  const { s, iniciar, continuar, ir, toast } = useCron()
+  const { s, continuar, ir, toast, verValidacao, concluirAnalise } = useCron()
+  /** escola que está na planilha em validação (segundo plano) */
+  const naValidacao = (e: Escola) => !!s.validacao && e.status === 'nao-iniciado' && !!s.wizard?.escolas.includes(e.id)
+  const validada = s.validacao?.estado === 'concluida'
   const [aba, setAba] = useState<'rede' | 'meus'>(abaInicial ?? 'rede')
   const [busca, setBusca] = useState('')
-  const [novo, setNovo] = useState(false)
-  const [escolhida, setEscolhida] = useState('')
 
   const base = aba === 'rede' ? s.escolas : s.escolas.filter((e) => e.minha)
   const lista = base.filter((e) => e.nome.toLowerCase().includes(busca.trim().toLowerCase()))
-  const semCronograma = s.escolas.filter((e) => e.status === 'nao-iniciado')
 
   const acao = (e: Escola) => {
     if (e.status === 'publicado' || e.status === 'agendado') ir({ id: 'calendario', escola: e.id })
@@ -101,12 +101,18 @@ export default function Lista({ aba: abaInicial }: { aba?: 'rede' | 'meus' }) {
                     <td>{e.periodo ?? '–'}</td>
                     <td>{e.atualizado ?? '–'}</td>
                     <td>
-                      <StatusEscola status={e.status} />
+                      <StatusEscola status={naValidacao(e) ? (validada ? 'validada' : 'validando') : e.status} />
                     </td>
                     <td className="cr-tabela__acoes">
-                      <Btn variante="contorno" pequeno className="cr-acao" onClick={() => acao(e)}>
-                        {e.status === 'publicado' || e.status === 'agendado' ? 'Abrir' : e.status === 'rascunho' ? 'Continuar' : 'Criar'}
-                      </Btn>
+                      {naValidacao(e) ? (
+                        <Btn variante="contorno" pequeno className="cr-acao" onClick={validada ? concluirAnalise : verValidacao}>
+                          {validada ? 'Revisar' : 'Acompanhar'}
+                        </Btn>
+                      ) : (
+                        <Btn variante="contorno" pequeno className="cr-acao" onClick={() => acao(e)}>
+                          {e.status === 'publicado' || e.status === 'agendado' ? 'Abrir' : e.status === 'rascunho' ? 'Continuar' : 'Criar'}
+                        </Btn>
+                      )}
                       <MenuEscola
                         escola={e}
                         onCalendario={() => ir({ id: 'calendario', escola: e.id })}
@@ -142,40 +148,6 @@ export default function Lista({ aba: abaInicial }: { aba?: 'rede' | 'meus' }) {
         </footer>
       </section>
 
-      <Modal
-        aberto={novo}
-        onFechar={() => setNovo(false)}
-        titulo="Criar novo cronograma"
-        largura={500}
-        rodape={
-          <>
-            <Btn variante="contorno" onClick={() => setNovo(false)}>
-              Cancelar
-            </Btn>
-            <Btn
-              disabled={!escolhida}
-              onClick={() => {
-                setNovo(false)
-                iniciar(escolhida)
-              }}
-            >
-              Continuar
-            </Btn>
-          </>
-        }
-      >
-        <p className="cr-texto">Para qual escola você quer criar o cronograma de uso?</p>
-        {semCronograma.length ? (
-          <Select
-            className="cr-select--bloco"
-            valor={escolhida}
-            onChange={setEscolhida}
-            opcoes={semCronograma.map((e) => ({ valor: e.id, texto: e.nome, icone: <School size={16} /> }))}
-          />
-        ) : (
-          <p className="cr-texto cr-texto--suave">Todas as escolas da rede já têm cronograma.</p>
-        )}
-      </Modal>
     </div>
   )
 }

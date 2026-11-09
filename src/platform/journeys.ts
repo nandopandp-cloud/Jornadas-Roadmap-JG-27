@@ -20,10 +20,16 @@ export type Journey = {
   icon: string
   accent: string
   status: 'navegavel' | 'em-breve'
+  /** branch da jornada no GitHub (padrão: prototipo-<slug>) */
+  branch?: string
   /** dispositivo inicial da prévia na plataforma */
   dispositivo?: 'desktop' | 'tablet' | 'mobile'
   /** endereço exibido na moldura do navegador (prévia desktop) */
   dominio?: string
+  /** jornada em construção: etapas do playbook (Figma → navegável) */
+  etapas?: { nome: string; estado: 'feito' | 'atual' | 'proximo' }[]
+  /** links de trabalho (Figma, referências) mostrados enquanto a jornada está em construção */
+  links?: { label: string; url: string }[]
   /** atalhos de fluxo: abrem o protótipo direto numa tela */
   flows?: { id: string; label: string; icon: string }[]
   component?: LazyExoticComponent<ComponentType<PrototypeProps>>
@@ -58,7 +64,7 @@ export const journeys: Journey[] = [
     product: 'Plataforma Educadores',
     audience: 'Gestores e professores',
     description:
-      'Gestor importa o cronograma da escola em CSV, revisa as inconsistências sugeridas, ajusta as atividades e publica; o calendário escolar é preenchido e os professores recebem as recomendações.',
+      'Gestor cria o cronograma na plataforma ou importa uma planilha CSV com várias escolas; a validação roda em segundo plano enquanto ele navega, depois revisa as inconsistências sugeridas, ajusta as atividades e publica; o calendário escolar é preenchido e os professores recebem as recomendações.',
     icon: './3d/calendar.png',
     accent: '#4c1d95',
     status: 'navegavel',
@@ -72,6 +78,9 @@ export const journeys: Journey[] = [
       { id: 'ajustar', label: 'Plataforma: revisar', icon: './3d/bulb.png' },
       { id: 'finalizar', label: 'Plataforma: publicar', icon: './3d/rocket.png' },
       { id: 'importar', label: 'Planilha: importar CSV', icon: './3d/clipboard.png' },
+      { id: 'analise', label: 'Planilha: validação', icon: './3d/glowing-star.png' },
+      { id: 'validando', label: 'Validação em segundo plano', icon: './3d/seedling.png' },
+      { id: 'validada', label: 'Validação concluída', icon: './3d/party.png' },
       { id: 'inconsistencias', label: 'Inconsistências', icon: './3d/bulb.png' },
       { id: 'revisar', label: 'Revisar cronograma', icon: './3d/memo.png' },
       { id: 'publicar', label: 'Publicar', icon: './3d/rocket.png' },
@@ -155,6 +164,105 @@ export const journeys: Journey[] = [
       { id: 'config', label: 'Configurações', icon: './3d/crown.png' },
     ],
     component: lazy(() => import('../prototypes/gestao-lojinha')),
+  },
+  {
+    slug: 'login-exploradores',
+    branch: 'login-simplificado',
+    name: 'Login simplificado · Exploradores',
+    product: 'Exploradores · Plataforma do Estudante',
+    audience: 'Estudantes do Fundamental I · em fase de alfabetização',
+    description:
+      'Estudante entra sem digitar e-mail e senha: lê o QR Code da carteirinha pela câmera ou toca, na ordem, nos ícones espaciais do seu código. E-mail e senha continuam disponíveis; erros e pausa por tentativas orientam o próximo passo.',
+    icon: './login/icones/foguete.webp',
+    accent: '#00a19a',
+    status: 'navegavel',
+    dispositivo: 'tablet',
+    dominio: 'exploradores.jovensgenios.com',
+    flows: [
+      { id: 'inicio', label: 'Escolha do método', icon: './3d/sparkles.png' },
+      { id: 'camera', label: 'QR Code: ligar a câmera', icon: './3d/camera.png' },
+      { id: 'lendo', label: 'QR Code: lendo a carteirinha', icon: './login/icones/satelite.webp' },
+      { id: 'semcamera', label: 'Câmera indisponível', icon: './3d/locked.png' },
+      { id: 'qrinvalido', label: 'QR Code recusado', icon: './3d/bulb.png' },
+      { id: 'icones', label: 'Código de ícones', icon: './login/icones/planeta.webp' },
+      { id: 'icones-andamento', label: 'Código em andamento', icon: './login/icones/estrela.webp' },
+      { id: 'icones-erro', label: 'Sequência errada', icon: './login/icones/cometa.webp' },
+      { id: 'pausa', label: 'Pausa por tentativas', icon: './3d/locked.png' },
+      { id: 'email', label: 'E-mail e senha', icon: './3d/memo.png' },
+      { id: 'validando', label: 'Validação', icon: './login/icones/foguete.webp' },
+      { id: 'ola', label: 'Que bom te ver', icon: './3d/party.png' },
+      { id: 'pausado', label: 'Acesso pausado', icon: './3d/locked.png' },
+    ],
+    component: lazy(() => import('../prototypes/login-exploradores')),
+  },
+  {
+    slug: 'login-admin',
+    branch: 'login-simplificado-admin',
+    name: 'Login simplificado · Admins',
+    product: 'Admins Jovens Gênios',
+    audience: 'Gestores, administradores e secretarias escolares',
+    description:
+      'Gestão da credencial simplificada no cadastro do estudante: lista com status de credencial e permissão, emissão (individual e em lote), reemissão com motivo, revogação, bloqueio de acesso, impressão da carteirinha e histórico de tentativas.',
+    icon: './3d/clipboard.png',
+    accent: '#0265dc',
+    status: 'navegavel',
+    dispositivo: 'desktop',
+    dominio: 'admins.jovensgenios.com',
+    flows: [
+      { id: 'lista', label: 'Lista de estudantes', icon: './3d/books.png' },
+      { id: 'lote', label: 'Seleção em lote', icon: './3d/clipboard.png' },
+      { id: 'ativa', label: 'Credencial ativa', icon: './3d/glowing-star.png' },
+      { id: 'sem', label: 'Sem credencial', icon: './3d/memo.png' },
+      { id: 'emitir', label: 'Emitir credencial', icon: './3d/sparkles.png' },
+      { id: 'reemitir', label: 'Reemitir', icon: './3d/bulb.png' },
+      { id: 'imprimir', label: 'Imprimir carteirinha', icon: './3d/notes.png' },
+      { id: 'revogar', label: 'Revogar: escolher acessos', icon: './3d/pencil.png' },
+      { id: 'bloquear', label: 'Bloquear: escolher acessos', icon: './3d/locked.png' },
+      { id: 'revogada', label: 'Credencial revogada', icon: './3d/pencil.png' },
+      { id: 'bloqueado', label: 'Acesso bloqueado', icon: './3d/locked.png' },
+      { id: 'leitor', label: 'Perfil Leitor', icon: './3d/girl-2.png' },
+      { id: 'historico', label: 'Histórico de tentativas', icon: './3d/calendar.png' },
+    ],
+    component: lazy(() => import('../prototypes/login-admin')),
+  },
+  {
+    slug: 'gamificacao-geniex',
+    branch: 'gamificacao-geniex',
+    name: 'Gamificação GenieX',
+    product: 'GenieX · Plataforma do Estudante',
+    audience: 'Estudantes do Fundamental II e do Ensino Médio',
+    description:
+      'Estudante acompanha a própria evolução na GenieX, a partir do perfil: XP válido, elos (Bronze a Cósmico) com progressão e regressão, 25 badges permanentes, extrato de XP com a validade de cada lote e avisos de novo elo, elo alterado e badge desbloqueada.',
+    icon: './3d/trophy.png',
+    accent: '#5258e4',
+    status: 'navegavel',
+    dispositivo: 'desktop',
+    dominio: 'geniex.jovensgenios.com',
+    etapas: [
+      { nome: 'Mapeamento das bibliotecas', estado: 'feito' },
+      { nome: 'Tela piloto para validação', estado: 'feito' },
+      { nome: 'Telas nas 3 larguras', estado: 'feito' },
+      { nome: 'Componentes da jornada', estado: 'feito' },
+      { nome: 'Protótipo e handoff', estado: 'feito' },
+      { nome: 'Navegável', estado: 'feito' },
+    ],
+    links: [
+      { label: 'Figma da jornada', url: 'https://www.figma.com/design/BuFp19bdYy4ycLOk9vXCLH/Gamifica%C3%A7%C3%A3o-Geniex' },
+      { label: 'Referência (Campeonato GenieX)', url: 'https://www.figma.com/design/CFgSTHDpGqyNluCYfHxj7U/CAMPEONATO---GENIEX--CONCEITO-?node-id=28-140' },
+    ],
+    flows: [
+      { id: 'inicio', label: 'Minha evolução', icon: './3d/glowing-star.png' },
+      { id: 'menu', label: 'Menu do perfil', icon: './3d/boy-2.png' },
+      { id: 'elos', label: 'Os elos', icon: './3d/crown.png' },
+      { id: 'elo', label: 'Meu elo atual', icon: './3d/trophy.png' },
+      { id: 'elo-regressao', label: 'Após regressão', icon: './3d/bullseye.png' },
+      { id: 'badges', label: 'Minhas badges', icon: './3d/gem.png' },
+      { id: 'extrato', label: 'Extrato de XP', icon: './3d/notes.png' },
+      { id: 'lotes', label: 'XP a expirar', icon: './3d/calendar.png' },
+      { id: 'aviso-badge', label: 'Badge desbloqueada', icon: './3d/party.png' },
+      { id: 'aviso-elo', label: 'Novo elo', icon: './3d/rocket.png' },
+    ],
+    component: lazy(() => import('../prototypes/gamificacao-geniex')),
   },
 ]
 

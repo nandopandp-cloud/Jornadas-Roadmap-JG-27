@@ -3,12 +3,15 @@ import { ArrowLeft, Bell, CalendarDays, Check, FileText, GraduationCap, List, Sa
 import { useMemo, useState } from 'react'
 import { Btn, Etapas, IlustraCalendarioOk, TipoIcone } from '../components/ui'
 import { TIPOS, TIPO_LISTA } from '../data'
-import { nomeEscola, periodoDe, useCron } from '../store'
+import { nomeEscola, nomesEscolas, periodoDe, useCron } from '../store'
 
 export default function Publicar() {
   const { s, ir, publicar, setPerfil, toast } = useCron()
   const w = s.wizard!
   const escola = nomeEscola(s.escolas, w.escola)
+  // a planilha pode trazer várias escolas
+  const varias = w.escolas.length > 1
+  const nomes = varias ? nomesEscolas(s.escolas, w.escolas) : escola
   const [publicando, setPublicando] = useState(false)
   const [feito, setFeito] = useState(false)
   const porTipo = useMemo(() => TIPO_LISTA.map((t) => ({ t, n: w.atividades.filter((a) => a.tipo === t).length })), [w.atividades])
@@ -30,7 +33,7 @@ export default function Publicar() {
       <header className="cr-titulo">
         <h1>Finalize e publique o cronograma</h1>
         <p>
-          Confira o resumo do planejamento da {escola}. Ao publicar, os eventos serão disponibilizados no calendário e as recomendações de atividades serão enviadas aos professores.
+          Confira o resumo do planejamento {varias ? `das ${w.escolas.length} escolas da planilha` : `da ${escola}`}. Ao publicar, os eventos serão disponibilizados no calendário e as recomendações de atividades serão enviadas aos professores.
         </p>
       </header>
 
@@ -41,10 +44,10 @@ export default function Publicar() {
               <School size={30} strokeWidth={1.6} />
             </span>
             <div>
-              <h2>{escola}</h2>
-              <p>Rede Municipal de Ensino</p>
+              <h2>{varias ? `${w.escolas.length} escolas` : escola}</h2>
+              <p>{varias ? nomes : 'Rede Municipal de Ensino'}</p>
             </div>
-            <span className="cr-tag">Novo cronograma</span>
+            <span className="cr-tag">{varias ? 'Novos cronogramas' : 'Novo cronograma'}</span>
           </header>
           <div className="cr-resumo-final__dados">
             <div>
@@ -121,7 +124,7 @@ export default function Publicar() {
             icone={<Save size={18} />}
             onClick={() => {
               publicar(true)
-              toast(`Rascunho da ${escola} salvo.`)
+              toast(varias ? `Rascunho salvo para ${nomes}.` : `Rascunho da ${escola} salvo.`)
               ir({ id: 'lista' }, -1)
             }}
           >
@@ -143,9 +146,11 @@ export default function Publicar() {
                   <motion.path d="M14 27l8 8 16-18" fill="none" stroke="#fff" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 0.4, duration: 0.4 }} />
                 </svg>
               </motion.span>
-              <h2>Cronograma publicado!</h2>
+              <h2>{varias ? 'Cronogramas publicados!' : 'Cronograma publicado!'}</h2>
               <p>
-                O cronograma da <strong>{escola}</strong> já está no calendário escolar e os professores receberam {w.atividades.length} recomendações de atividades e avaliações.
+                {varias ? 'Os cronogramas de ' : 'O cronograma da '}
+                <strong>{nomes}</strong> {varias ? 'já estão' : 'já está'} no calendário escolar e os professores receberam {w.atividades.length * Math.max(1, w.escolas.length)} recomendações de atividades e
+                avaliações.
               </p>
               <div className="cr-sucesso__btns">
                 <Btn icone={<CalendarDays size={18} />} onClick={() => ir({ id: 'calendario', escola: w.escola, dia: '2025-11-06' })}>

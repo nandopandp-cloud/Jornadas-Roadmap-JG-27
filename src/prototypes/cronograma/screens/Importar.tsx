@@ -3,7 +3,7 @@ import { ChevronDown, Download, FileText, Info, Trash2, Upload } from 'lucide-re
 import { useRef, useState } from 'react'
 import { Btn, Etapas, IlustraCSV } from '../components/ui'
 import { COLUNAS_CSV } from '../data'
-import { nomeEscola, useCron } from '../store'
+import { VALIDACAO_MIN, useCron } from '../store'
 
 const MAX = 10 * 1024 * 1024
 export const tamanhoTexto = (b: number) => (b < 1024 * 1024 ? `${Math.max(1, Math.round(b / 1024))} KB` : `${(b / 1024 / 1024).toFixed(1)} MB`)
@@ -25,9 +25,8 @@ function baixarModelo() {
 }
 
 export default function Importar() {
-  const { s, setArquivo, ir, toast } = useCron()
+  const { s, setArquivo, ir, toast, iniciarValidacao } = useCron()
   const w = s.wizard!
-  const escola = nomeEscola(s.escolas, w.escola)
   const input = useRef<HTMLInputElement>(null)
   const [arrastando, setArrastando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
@@ -56,8 +55,8 @@ export default function Importar() {
       <header className="cr-titulo">
         <h1>Importe o cronograma de uso</h1>
         <p>
-          Envie um arquivo .CSV para criar o cronograma da {escola}. O sistema irá ler o arquivo, identificar possíveis inconsistências e sugerir correções para você antes de
-          continuar.
+          Envie um arquivo .CSV com as programações de uma ou mais escolas da sua rede. O sistema identifica as escolas, lê o arquivo, aponta possíveis inconsistências e
+          sugere correções antes de continuar.
         </p>
       </header>
 
@@ -89,7 +88,7 @@ export default function Importar() {
                 </Btn>
                 <button
                   className="cr-link cr-drop__exemplo"
-                  onClick={() => setArquivo({ nome: `cronograma_${escola.toLowerCase().replace(' ', '_')}.csv`, tamanho: 34 * 1024, enviadoEm: new Date(2025, 10, 6, 10, 24), exemplo: true })}
+                  onClick={() => setArquivo({ nome: 'cronograma_rede_2025.csv', tamanho: 134 * 1024, enviadoEm: new Date(2025, 10, 6, 10, 24), exemplo: true })}
                 >
                   ou use o arquivo de exemplo
                 </button>
@@ -138,7 +137,12 @@ export default function Importar() {
           <hr />
           <h3>O que acontece depois do envio?</h3>
           <ol className="cr-passos">
-            {['Analisamos seu arquivo.', 'Identificamos possíveis inconsistências.', 'Sugerimos ajustes (se necessário).', 'Você revisa e confirma os dados.'].map((t, i) => (
+            {[
+              `Validamos o arquivo em segundo plano (pode levar até ${VALIDACAO_MIN} minutos).`,
+              'Você continua usando a plataforma e acompanha o progresso numa caixinha.',
+              'Identificamos inconsistências e sugerimos ajustes, escola por escola.',
+              'Você revisa e confirma os dados.',
+            ].map((t, i) => (
               <motion.li key={t} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 + i * 0.07 }}>
                 <span>{i + 1}</span>
                 {t}
@@ -175,8 +179,8 @@ export default function Importar() {
           <Btn variante="contorno" onClick={() => ir({ id: 'lista' }, -1)}>
             Cancelar
           </Btn>
-          <Btn disabled={!arq} onClick={() => ir({ id: 'analise', escola: w.escola })}>
-            Continuar
+          <Btn disabled={!arq} onClick={iniciarValidacao}>
+            Iniciar validação
           </Btn>
         </div>
       </footer>
