@@ -16,7 +16,7 @@ const campo = (bloco, nome) => {
 const jornadas = lista
   .split(/\n  \{\n/)
   .slice(1)
-  .map((b) => ({ slug: campo(b, 'slug'), nome: campo(b, 'name'), produto: campo(b, 'product'), publico: campo(b, 'audience'), descricao: campo(b, 'description'), status: campo(b, 'status') }))
+  .map((b) => ({ slug: campo(b, 'slug'), nome: campo(b, 'name'), produto: campo(b, 'product'), publico: campo(b, 'audience'), descricao: campo(b, 'description'), status: campo(b, 'status'), branch: campo(b, 'branch') }))
   .filter((j) => j.slug)
 
 const secao = [
@@ -31,7 +31,7 @@ const secao = [
     '',
     j.descricao,
     '',
-    `[Protótipo navegável](${SITE}/#/p/${j.slug}) · [Ver na plataforma](${SITE}/#/jornada/${j.slug}) · [Branch \`prototipo-${j.slug}\`](${REPO}/tree/prototipo-${j.slug})`,
+    `[Protótipo navegável](${SITE}/#/p/${j.slug}) · [Ver na plataforma](${SITE}/#/jornada/${j.slug}) · [Branch \`${j.branch || 'prototipo-' + j.slug}\`](${REPO}/tree/${j.branch || 'prototipo-' + j.slug})`,
     '',
   ]),
   FIM,
