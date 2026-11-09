@@ -209,6 +209,8 @@ export const journeys: Journey[] = [
       { id: 'emitir', label: 'Emitir credencial', icon: './3d/sparkles.png' },
       { id: 'reemitir', label: 'Reemitir', icon: './3d/bulb.png' },
       { id: 'imprimir', label: 'Imprimir carteirinha', icon: './3d/notes.png' },
+      { id: 'revogar', label: 'Revogar: escolher acessos', icon: './3d/pencil.png' },
+      { id: 'bloquear', label: 'Bloquear: escolher acessos', icon: './3d/locked.png' },
       { id: 'revogada', label: 'Credencial revogada', icon: './3d/pencil.png' },
       { id: 'bloqueado', label: 'Acesso bloqueado', icon: './3d/locked.png' },
       { id: 'leitor', label: 'Perfil Leitor', icon: './3d/girl-2.png' },
