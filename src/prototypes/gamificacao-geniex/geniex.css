@@ -269,7 +269,7 @@
 .gx-conteudo {
   max-width: 1216px;
   margin: 0 auto;
-  padding: 36px 48px 56px;
+  padding: 36px 64px 56px;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 24px;
@@ -280,15 +280,18 @@
   gap: 24px;
 }
 .gx-cab__titulo {
-  display: flex;
-  gap: 16px;
+  /* breadcrumb, título e subtítulo alinhados à borda esquerda do conteúdo (banner);
+     no desktop a seta fica pendurada na margem, fora da coluna de texto */
+  position: relative;
   flex: 1;
   min-width: 0;
 }
 .gx-voltar {
-  width: 44px;
-  height: 44px;
-  flex: none;
+  position: absolute;
+  left: -48px;
+  top: 21px; /* centrada na linha do título */
+  width: 38px;
+  height: 38px;
   display: grid;
   place-items: center;
   border: 1px solid var(--linha);
@@ -1690,6 +1693,10 @@ button.gx-resumo__card:hover {
   left: 72px;
 }
 @media (max-width: 1199px) {
+  .gx-voltar {
+    position: static;
+    margin-bottom: 12px;
+  }
   .gx-conteudo {
     padding: 24px 24px 48px;
     gap: 20px;
@@ -1883,10 +1890,6 @@ button.gx-resumo__card:hover {
   }
   .gx-cab p {
     font-size: 14px;
-  }
-  .gx-voltar {
-    width: 40px;
-    height: 40px;
   }
   .gx-card {
     padding: 20px 16px;
