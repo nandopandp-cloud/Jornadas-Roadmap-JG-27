@@ -20,6 +20,8 @@ export type Journey = {
   icon: string
   accent: string
   status: 'navegavel' | 'em-breve'
+  /** branch da jornada no GitHub (padrão: prototipo-<slug>) */
+  branch?: string
   /** dispositivo inicial da prévia na plataforma */
   dispositivo?: 'desktop' | 'tablet' | 'mobile'
   /** endereço exibido na moldura do navegador (prévia desktop) */
@@ -158,6 +160,7 @@ export const journeys: Journey[] = [
   },
   {
     slug: 'login-exploradores',
+    branch: 'login-simplificado',
     name: 'Login simplificado · Exploradores',
     product: 'Exploradores · Plataforma do Estudante',
     audience: 'Estudantes do Fundamental I · em fase de alfabetização',
@@ -187,6 +190,7 @@ export const journeys: Journey[] = [
   },
   {
     slug: 'login-admin',
+    branch: 'login-simplificado-admin',
     name: 'Login simplificado · Admins',
     product: 'Admins Jovens Gênios',
     audience: 'Gestores, administradores e secretarias escolares',
