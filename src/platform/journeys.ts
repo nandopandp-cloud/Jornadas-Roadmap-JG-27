@@ -64,7 +64,7 @@ export const journeys: Journey[] = [
     product: 'Plataforma Educadores',
     audience: 'Gestores e professores',
     description:
-      'Gestor importa o cronograma da escola em CSV, revisa as inconsistências sugeridas, ajusta as atividades e publica; o calendário escolar é preenchido e os professores recebem as recomendações.',
+      'Gestor cria o cronograma na plataforma ou importa uma planilha CSV com várias escolas; a validação roda em segundo plano enquanto ele navega, depois revisa as inconsistências sugeridas, ajusta as atividades e publica; o calendário escolar é preenchido e os professores recebem as recomendações.',
     icon: './3d/calendar.png',
     accent: '#4c1d95',
     status: 'navegavel',
@@ -78,6 +78,9 @@ export const journeys: Journey[] = [
       { id: 'ajustar', label: 'Plataforma: revisar', icon: './3d/bulb.png' },
       { id: 'finalizar', label: 'Plataforma: publicar', icon: './3d/rocket.png' },
       { id: 'importar', label: 'Planilha: importar CSV', icon: './3d/clipboard.png' },
+      { id: 'analise', label: 'Planilha: validação', icon: './3d/glowing-star.png' },
+      { id: 'validando', label: 'Validação em segundo plano', icon: './3d/seedling.png' },
+      { id: 'validada', label: 'Validação concluída', icon: './3d/party.png' },
       { id: 'inconsistencias', label: 'Inconsistências', icon: './3d/bulb.png' },
       { id: 'revisar', label: 'Revisar cronograma', icon: './3d/memo.png' },
       { id: 'publicar', label: 'Publicar', icon: './3d/rocket.png' },

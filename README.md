@@ -43,7 +43,7 @@ Trilha de letras com narração, desafios de toque e arrastar, conquistas, mural
 
 **Plataforma Educadores** · Gestores e professores
 
-Gestor importa o cronograma da escola em CSV, revisa as inconsistências sugeridas, ajusta as atividades e publica; o calendário escolar é preenchido e os professores recebem as recomendações.
+Gestor cria o cronograma na plataforma ou importa uma planilha CSV com várias escolas; a validação roda em segundo plano enquanto ele navega, depois revisa as inconsistências sugeridas, ajusta as atividades e publica; o calendário escolar é preenchido e os professores recebem as recomendações.
 
 [Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/cronograma) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/cronograma) · [Branch `prototipo-cronograma`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/prototipo-cronograma)
 

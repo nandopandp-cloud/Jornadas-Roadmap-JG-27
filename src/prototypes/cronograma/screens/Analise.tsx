@@ -1,63 +1,61 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { Check } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { Etapas, IlustraAnalise } from '../components/ui'
+import { ArrowRight, Check, Clock, LayoutList } from 'lucide-react'
+import { useEffect } from 'react'
+import { Btn, Etapas, IlustraAnalise } from '../components/ui'
 import { MESES_CURTOS } from '../data'
-import { nomeEscola, useCron } from '../store'
+import { ETAPAS_VALIDACAO, VALIDACAO_MIN, etapaValidacao, nomesEscolas, restanteTexto, useCron } from '../store'
 import { tamanhoTexto } from './Importar'
-
-const PASSOS = [
-  { titulo: 'Upload do arquivo', feito: 'Arquivo recebido com sucesso.', fazendo: 'Enviando arquivo...' },
-  { titulo: 'Leitura e validação dos dados', feito: '24 registros lidos e validados.', fazendo: 'Identificando informações, conferindo padrões e procurando inconsistências...' },
-  { titulo: 'Preparando sugestões de ajuste', feito: '12 pontos de atenção encontrados.', fazendo: 'Comparando com educadores, turmas e componentes da sua rede...' },
-  { titulo: 'Organizando o cronograma', feito: 'Cronograma organizado por mês.', fazendo: 'Agrupando as atividades por mês e tipo...' },
-]
-/** duração de cada passo (ms) */
-const TEMPOS = [600, 1900, 1500, 1100]
 
 const dataEnvio = (d: Date) => `${String(d.getDate()).padStart(2, '0')} de ${MESES_CURTOS[d.getMonth()]} de ${d.getFullYear()} às ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
 
+/** Validação da planilha. Roda em segundo plano: a pessoa pode sair daqui e acompanhar pela caixinha flutuante. */
 export default function Analise() {
-  const { s, concluirAnalise } = useCron()
+  const { s, ir, iniciarValidacao, concluirAnalise } = useCron()
   const w = s.wizard!
-  const escola = nomeEscola(s.escolas, w.escola)
+  const v = s.validacao
   const arq = w.arquivo!
-  const [passo, setPasso] = useState(0) // passo em andamento (0–3); 4 = terminou
-  const [pct, setPct] = useState(4)
 
+  // entrou aqui sem validação em andamento (ex.: atalho): começa agora
   useEffect(() => {
-    const ts: number[] = []
-    let t = 0
-    TEMPOS.forEach((d, i) => {
-      t += d
-      ts.push(window.setTimeout(() => setPasso(i + 1), t))
-    })
-    ts.push(window.setTimeout(concluirAnalise, t + 700))
-    // barra de progresso contínua
-    const total = t
-    const t0 = performance.now()
-    let raf = 0
-    const loop = () => {
-      const p = Math.min(1, (performance.now() - t0) / total)
-      setPct(Math.round(4 + p * 96))
-      if (p < 1) raf = requestAnimationFrame(loop)
-    }
-    raf = requestAnimationFrame(loop)
-    return () => {
-      ts.forEach(window.clearTimeout)
-      cancelAnimationFrame(raf)
-    }
-  }, [concluirAnalise])
+    if (!v) iniciarValidacao()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const pct = v?.pct ?? 0
+  const passo = etapaValidacao(pct)
+  const fim = v?.estado === 'concluida'
+  const escolasLidas = passo >= 2
 
   return (
     <div className="cr-wizard">
-      <Etapas atual={1} progresso={0.5 + pct / 200} />
+      <Etapas atual={1} progresso={0.5 + pct / 2} />
       <header className="cr-titulo">
-        <h1>{passo >= 4 ? 'Análise concluída!' : 'Analisando seu arquivo'}</h1>
+        <h1>{fim ? 'Validação concluída!' : 'Validando sua planilha'}</h1>
         <p>
-          Estamos lendo o arquivo {arq.nome} e verificando as informações. Em breve, mostraremos os pontos de atenção e sugestões de ajuste.
+          Estamos lendo o arquivo {arq.nome}, identificando as escolas e verificando as informações. Em seguida, mostraremos os pontos de atenção e as sugestões de ajuste.
         </p>
       </header>
+
+      <motion.div className={`cr-segundo-plano ${fim ? 'is-fim' : ''}`} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
+        <span className="cr-segundo-plano__ic">{fim ? <Check size={20} strokeWidth={2.6} /> : <Clock size={20} />}</span>
+        <div>
+          <strong>{fim ? '12 pontos de atenção em 4 escolas' : `Isso pode levar até ${VALIDACAO_MIN} minutos`}</strong>
+          <p>
+            {fim
+              ? 'Revise as sugestões de ajuste antes de publicar os cronogramas.'
+              : 'A validação continua em segundo plano. Você pode usar a plataforma normalmente e acompanhar o progresso pela caixinha no canto da tela. Avisamos quando terminar.'}
+          </p>
+        </div>
+        {fim ? (
+          <Btn iconeDir={<ArrowRight size={18} />} onClick={concluirAnalise}>
+            Revisar pontos de atenção
+          </Btn>
+        ) : (
+          <Btn variante="contorno" icone={<LayoutList size={18} />} onClick={() => ir({ id: 'lista' }, -1)}>
+            Continuar navegando
+          </Btn>
+        )}
+      </motion.div>
 
       <div className="cr-analise">
         <div className="cr-analise__arquivo">
@@ -68,11 +66,18 @@ export default function Analise() {
           <span>
             {tamanhoTexto(arq.tamanho)} • Enviado em {dataEnvio(arq.enviadoEm)}
           </span>
+          <AnimatePresence>
+            {escolasLidas && (
+              <motion.span className="cr-analise__escolas" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
+                {w.escolas.length} escolas identificadas: {nomesEscolas(s.escolas, w.escolas)}
+              </motion.span>
+            )}
+          </AnimatePresence>
         </div>
 
         <div className="cr-analise__passos">
           <ul>
-            {PASSOS.map((p, i) => {
+            {ETAPAS_VALIDACAO.map((p, i) => {
               const estado = i < passo ? 'feito' : i === passo ? 'fazendo' : 'espera'
               return (
                 <motion.li key={p.titulo} className={`is-${estado}`} layout transition={{ type: 'spring', stiffness: 300, damping: 30 }}>
@@ -104,17 +109,11 @@ export default function Analise() {
           </ul>
           <div className="cr-progresso">
             <span className="cr-progresso__trilho">
-              <span className="cr-progresso__barra" style={{ width: `${pct}%` }} />
+              <span className="cr-progresso__barra" style={{ width: `${Math.round(pct * 100)}%` }} />
             </span>
-            <b>{pct}%</b>
+            <b>{Math.round(pct * 100)}%</b>
           </div>
-          <AnimatePresence>
-            {passo >= 4 && (
-              <motion.p className="cr-analise__fim" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-                Tudo pronto! Abrindo a revisão da {escola}…
-              </motion.p>
-            )}
-          </AnimatePresence>
+          <p className="cr-analise__resta">{fim ? 'Tudo pronto para a revisão.' : `Tempo estimado: ${restanteTexto(pct)}`}</p>
         </div>
       </div>
     </div>

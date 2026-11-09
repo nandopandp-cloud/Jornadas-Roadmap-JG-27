@@ -19,8 +19,9 @@ import {
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import type { PrototypeProps } from '../../platform/journeys'
-import { CronProvider, nomeEscola, useCron, type Inicio, type View } from './store'
+import { CronProvider, nomeEscola, nomesEscolas, useCron, type Inicio, type View } from './store'
 import { Btn, Modal, Toasts } from './components/ui'
+import ValidacaoFlutuante from './components/ValidacaoFlutuante'
 import Lista from './screens/Lista'
 import Importar from './screens/Importar'
 import Analise from './screens/Analise'
@@ -37,7 +38,7 @@ import Ajustar from './screens/Ajustar'
 import Finalizar from './screens/Finalizar'
 import './cron.css'
 
-const ATALHOS: Inicio[] = ['lista', 'importar', 'inconsistencias', 'revisar', 'publicar', 'calendario', 'professor', 'inicio', 'escolha', 'escopo', 'configurar', 'ajustar', 'finalizar']
+const ATALHOS: Inicio[] = ['lista', 'importar', 'analise', 'validando', 'validada', 'inconsistencias', 'revisar', 'publicar', 'calendario', 'professor', 'inicio', 'escolha', 'escopo', 'configurar', 'ajustar', 'finalizar']
 
 export default function Cronograma({ startScreen }: PrototypeProps) {
   const start = (ATALHOS.includes(startScreen as Inicio) ? startScreen : 'lista') as Inicio
@@ -74,6 +75,10 @@ function Shell() {
   }
 
   const escola = 'escola' in v ? nomeEscola(s.escolas, v.escola) : ''
+  // planilha: pode trazer várias escolas
+  const escolasPlanilha = s.wizard?.escolas ?? []
+  const rotuloPlanilha = escolasPlanilha.length > 1 ? `${escolasPlanilha.length} escolas` : escolasPlanilha.length ? escola : ''
+  const caixa = !!s.validacao && s.perfil === 'gestor' && v.id !== 'analise'
   const migalhas: { texto: string; ir?: View }[] =
     v.id === 'inicio'
       ? [{ texto: 'Início' }]
@@ -83,10 +88,10 @@ function Shell() {
           ? [{ texto: 'Cronograma', ir: s.perfil === 'gestor' ? { id: 'lista' } : undefined }, { texto: 'Calendário Escolar' }]
           : ['escolha', 'escopo', 'configurar', 'ajustar', 'finalizar'].includes(v.id)
             ? [{ texto: 'Cronograma', ir: { id: 'lista' } }, { texto: 'Criar cronograma' }]
-            : [{ texto: 'Cronograma', ir: { id: 'lista' } }, { texto: `Criar cronograma — ${escola}` }]
+            : [{ texto: 'Cronograma', ir: { id: 'lista' } }, { texto: `Criar cronograma por planilha${rotuloPlanilha ? ` — ${rotuloPlanilha}` : ''}` }]
 
   return (
-    <div className={`cr ${s.sidebarFechada ? 'is-recolhida' : ''}`}>
+    <div className={`cr ${s.sidebarFechada ? 'is-recolhida' : ''} ${caixa ? (s.validacao!.minimizada ? 'tem-validacao-min' : 'tem-validacao') : ''}`}>
       <AnimatePresence>{gaveta && <motion.div className="cr-veu" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setGaveta(false)} />}</AnimatePresence>
       <Sidebar aberta={gaveta} onNavegar={navegar} onRecolher={toggleSidebar} />
 
@@ -154,7 +159,11 @@ function Shell() {
                   toast('Rascunho do cronograma salvo para as escolas do escopo.')
                 } else {
                   publicar(true)
-                  toast(`Rascunho da ${escola} salvo. Você pode continuar depois.`)
+                  toast(
+                    escolasPlanilha.length > 1
+                      ? `Rascunho salvo para ${nomesEscolas(s.escolas, escolasPlanilha)}. Você pode continuar depois.`
+                      : `Rascunho da ${escola} salvo. Você pode continuar depois.`,
+                  )
                 }
                 const d = saida!
                 setSaida(null)
@@ -169,6 +178,7 @@ function Shell() {
         <p className="cr-texto">Suas correções e ajustes ficam guardados como rascunho. Você pode retomar quando quiser pela lista de escolas.</p>
       </Modal>
 
+      <ValidacaoFlutuante />
       <Toasts />
     </div>
   )

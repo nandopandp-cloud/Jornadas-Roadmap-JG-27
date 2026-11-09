@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { MODELOS_PADRAO, escopoInicial, formInicial, periodoListaPlano, progsIniciais, progsParaAtividades, type Escopo, type Modelo, type Prog } from './plano'
 import {
   ATIVIDADES_ESCOLA_F,
@@ -39,7 +39,10 @@ export type Resolucao = { modo: Modo; /** valor escolhido por ocorrência (índi
 export type Arquivo = { nome: string; tamanho: number; enviadoEm: Date; exemplo?: boolean }
 
 type Wizard = {
+  /** escola de referência (a primeira identificada na planilha; vazia antes da leitura) */
   escola: string
+  /** escolas identificadas na planilha — uma planilha pode trazer várias escolas */
+  escolas: string[]
   arquivo: Arquivo | null
   resolucoes: Record<string, Resolucao>
   atividades: Atividade[]
@@ -57,6 +60,29 @@ export type Plano = {
   publicacao: { modo: 'agora' | 'agendar'; data: string; hora: string }
 }
 
+/** validação da planilha em segundo plano (leva em média até 15 min; acelerada no protótipo) */
+export type Validacao = { inicio: number; pct: number; estado: 'rodando' | 'concluida'; minimizada: boolean }
+/** duração real da simulação (ms) e o tempo que ela representa (min) */
+export const VALIDACAO_MS = 45000
+export const VALIDACAO_MIN = 15
+/** etapas da validação: [título, texto em andamento, texto concluído, fim da etapa (0–1)] */
+export const ETAPAS_VALIDACAO: { titulo: string; fazendo: string; feito: string; ate: number }[] = [
+  { titulo: 'Upload do arquivo', fazendo: 'Enviando arquivo...', feito: 'Arquivo recebido com sucesso.', ate: 0.04 },
+  { titulo: 'Leitura e validação dos dados', fazendo: 'Lendo as programações de cada escola e conferindo padrões...', feito: '96 registros de 4 escolas lidos e validados.', ate: 0.55 },
+  { titulo: 'Preparando sugestões de ajuste', fazendo: 'Comparando com educadores, turmas e componentes da sua rede...', feito: '12 pontos de atenção encontrados.', ate: 0.85 },
+  { titulo: 'Organizando os cronogramas', fazendo: 'Agrupando as atividades por escola, mês e tipo...', feito: 'Cronogramas organizados por escola e mês.', ate: 1 },
+]
+export const etapaValidacao = (pct: number) => {
+  const i = ETAPAS_VALIDACAO.findIndex((e) => pct < e.ate)
+  return i === -1 ? ETAPAS_VALIDACAO.length : i
+}
+export function restanteTexto(pct: number) {
+  const min = (1 - pct) * VALIDACAO_MIN
+  if (min <= 0) return 'concluída'
+  if (min < 1) return 'menos de 1 min restante'
+  return `cerca de ${Math.ceil(min)} min restantes`
+}
+
 type Toast = { id: number; texto: string; tipo?: 'ok' | 'info' | 'erro'; acao?: { rotulo: string; fn: () => void } }
 
 type State = {
@@ -71,7 +97,11 @@ type State = {
   professor: Record<string, 'pendente' | 'criada' | 'dispensada'>
   sidebarFechada: boolean
   plano: Plano | null
+  validacao: Validacao | null
 }
+
+/** escolas que a planilha de exemplo traz (as da rede que ainda não têm cronograma) */
+export const ESCOLAS_PLANILHA = ESCOLAS.filter((e) => e.status === 'nao-iniciado').map((e) => e.id)
 
 /* ---------------- aplicar valores da planilha ---------------- */
 const clone = (l: Atividade[]) => l.map((x) => ({ ...x, turmas: [...x.turmas] }))
@@ -122,7 +152,7 @@ function agoraTexto() {
 }
 
 /* ---------------- estado inicial ---------------- */
-export type Inicio = 'lista' | 'importar' | 'inconsistencias' | 'revisar' | 'publicar' | 'calendario' | 'professor' | 'inicio' | 'escolha' | 'escopo' | 'configurar' | 'ajustar' | 'finalizar'
+export type Inicio = 'lista' | 'importar' | 'analise' | 'validando' | 'validada' | 'inconsistencias' | 'revisar' | 'publicar' | 'calendario' | 'professor' | 'inicio' | 'escolha' | 'escopo' | 'configurar' | 'ajustar' | 'finalizar'
 
 const novoPlano = (escola?: string, comExemplo = false): Plano => {
   const escopo = escopoInicial(escola)
@@ -142,7 +172,7 @@ function inicial(start: Inicio): State {
   const professor: State['professor'] = {}
   for (const at of ATIVIDADES_ESCOLA_F) if (at.professor) professor[at.id] = at.professor
 
-  const s: State = { perfil: 'gestor', view: { id: 'lista' }, dir: 1, escolas, wizard: null, publicados, professor, sidebarFechada: false, plano: null }
+  const s: State = { perfil: 'gestor', view: { id: 'lista' }, dir: 1, escolas, wizard: null, publicados, professor, sidebarFechada: false, plano: null, validacao: null }
   if (start === 'escolha') return { ...s, view: { id: 'escolha' } }
   if (start === 'escopo') return { ...s, plano: novoPlano(), view: { id: 'escopo' } }
   if (start === 'configurar') return { ...s, plano: novoPlano(), view: { id: 'configurar' } }
@@ -153,16 +183,22 @@ function inicial(start: Inicio): State {
     return { ...s, plano: p, view: { id: start } }
   }
   const wizardF = (resolvido: boolean): Wizard => ({
-    escola: 'f',
-    arquivo: { nome: 'cronograma_escola_f.csv', tamanho: 34 * 1024, enviadoEm: new Date(2025, 10, 6, 10, 24), exemplo: true },
+    escola: 'c',
+    escolas: ESCOLAS_PLANILHA,
+    arquivo: { nome: 'cronograma_rede_2025.csv', tamanho: 34 * 1024, enviadoEm: new Date(2025, 10, 6, 10, 24), exemplo: true },
     resolucoes: resolvido ? Object.fromEntries(INCONSISTENCIAS.map((i) => [i.id, { modo: 'aceitar' as Modo, valores: [] }])) : {},
     atividades: resolvido ? clone(ATIVIDADES_ESCOLA_F) : planilhaOriginal(),
   })
   // atalhos de fluxo (plataforma) — já deixam os dados no ponto certo
-  if (start === 'importar') return { ...s, wizard: { ...wizardF(false), arquivo: null }, view: { id: 'importar', escola: 'f' } }
-  if (start === 'inconsistencias') return { ...s, wizard: wizardF(false), view: { id: 'inconsistencias', escola: 'f' } }
-  if (start === 'revisar') return { ...s, wizard: wizardF(true), view: { id: 'revisar', escola: 'f' } }
-  if (start === 'publicar') return { ...s, wizard: wizardF(true), view: { id: 'publicar', escola: 'f' } }
+  if (start === 'importar') return { ...s, wizard: { ...wizardF(false), escola: '', escolas: [], arquivo: null }, view: { id: 'importar', escola: '' } }
+  // validação em segundo plano: na tela de análise, rodando na lista ou já concluída
+  const rodando = (pct: number): Validacao => ({ inicio: Date.now() - pct * VALIDACAO_MS, pct, estado: 'rodando', minimizada: false })
+  if (start === 'analise') return { ...s, wizard: wizardF(false), validacao: rodando(0.38), view: { id: 'analise', escola: 'c' } }
+  if (start === 'validando') return { ...s, wizard: wizardF(false), validacao: rodando(0.38), view: { id: 'lista' } }
+  if (start === 'validada') return { ...s, wizard: wizardF(false), validacao: { inicio: Date.now() - VALIDACAO_MS, pct: 1, estado: 'concluida', minimizada: false }, view: { id: 'lista' } }
+  if (start === 'inconsistencias') return { ...s, wizard: wizardF(false), view: { id: 'inconsistencias', escola: 'c' } }
+  if (start === 'revisar') return { ...s, wizard: wizardF(true), view: { id: 'revisar', escola: 'c' } }
+  if (start === 'publicar') return { ...s, wizard: wizardF(true), view: { id: 'publicar', escola: 'c' } }
   const comF = (): State => ({
     ...s,
     escolas: escolas.map((e) => (e.id === 'f' ? { ...e, status: 'publicado', periodo: 'Jan/2025 – Dez/2025', atualizado: '06 de nov de 2025 às 10:32', minha: true } : e)),
@@ -196,8 +232,9 @@ function useCronState(start: Inicio) {
   const toggleSidebar = useCallback(() => set((st) => ({ ...st, sidebarFechada: !st.sidebarFechada })), [])
 
   /* ----- assistente de criação ----- */
-  const iniciar = useCallback((escola: string) => {
-    set((st) => ({ ...st, dir: 1, wizard: { escola, arquivo: null, resolucoes: {}, atividades: [] }, view: { id: 'importar', escola } }))
+  /** planilha: não pede escola — as escolas são identificadas na leitura do arquivo */
+  const iniciar = useCallback(() => {
+    set((st) => ({ ...st, dir: 1, wizard: { escola: '', escolas: [], arquivo: null, resolucoes: {}, atividades: [] }, view: { id: 'importar', escola: '' } }))
   }, [])
 
   /** retomar rascunho: dados já revisados */
@@ -207,6 +244,7 @@ function useCronState(start: Inicio) {
       dir: 1,
       wizard: {
         escola,
+        escolas: [escola],
         arquivo: { nome: `cronograma_escola_${escola}.csv`, tamanho: 31 * 1024, enviadoEm: new Date(2025, 0, 27, 16, 20), exemplo: true },
         resolucoes: Object.fromEntries(INCONSISTENCIAS.map((i) => [i.id, { modo: 'aceitar' as Modo, valores: [] }])),
         atividades: clone(st.publicados[escola] ?? ATIVIDADES_ESCOLA_F),
@@ -218,8 +256,44 @@ function useCronState(start: Inicio) {
   const setArquivo = useCallback((arquivo: Arquivo | null) => set((st) => (st.wizard ? { ...st, wizard: { ...st.wizard, arquivo } } : st)), [])
 
   const concluirAnalise = useCallback(() => {
-    set((st) => (st.wizard ? { ...st, dir: 1, wizard: { ...st.wizard, resolucoes: {}, atividades: planilhaOriginal() }, view: { id: 'inconsistencias', escola: st.wizard.escola } } : st))
+    set((st) =>
+      st.wizard
+        ? { ...st, dir: 1, validacao: null, wizard: { ...st.wizard, resolucoes: {}, atividades: planilhaOriginal() }, view: { id: 'inconsistencias', escola: st.wizard.escola } }
+        : st,
+    )
   }, [])
+
+  /* ----- validação em segundo plano ----- */
+  const iniciarValidacao = useCallback(() => {
+    set((st) =>
+      st.wizard
+        ? {
+            ...st,
+            dir: 1,
+            wizard: { ...st.wizard, escola: ESCOLAS_PLANILHA[0], escolas: ESCOLAS_PLANILHA },
+            validacao: { inicio: Date.now(), pct: 0, estado: 'rodando', minimizada: false },
+            view: { id: 'analise', escola: ESCOLAS_PLANILHA[0] },
+          }
+        : st,
+    )
+  }, [])
+  const minimizarValidacao = useCallback((minimizada: boolean) => set((st) => (st.validacao ? { ...st, validacao: { ...st.validacao, minimizada } } : st)), [])
+  const dispensarValidacao = useCallback(() => set((st) => ({ ...st, validacao: null })), [])
+  const verValidacao = useCallback(() => set((st) => (st.wizard ? { ...st, dir: 1, view: { id: 'analise', escola: st.wizard.escola } } : st)), [])
+
+  // relógio da validação: segue rodando enquanto a pessoa navega pela plataforma
+  const rodando = s.validacao?.estado === 'rodando'
+  useEffect(() => {
+    if (!rodando) return
+    const t = window.setInterval(() => {
+      set((st) => {
+        if (!st.validacao || st.validacao.estado !== 'rodando') return st
+        const pct = Math.min(1, (Date.now() - st.validacao.inicio) / VALIDACAO_MS)
+        return { ...st, validacao: { ...st.validacao, pct, estado: pct >= 1 ? 'concluida' : 'rodando', minimizada: pct >= 1 ? false : st.validacao.minimizada } }
+      })
+    }, 250)
+    return () => window.clearInterval(t)
+  }, [rodando])
 
   const resolver = useCallback((incId: string, r: Resolucao | null) => {
     set((st) => {
@@ -273,10 +347,11 @@ function useCronState(start: Inicio) {
     set((st) => {
       if (!st.wizard) return st
       const w = st.wizard
+      const alvo = w.escolas.length ? w.escolas : [w.escola]
       const escolas = st.escolas.map((e) =>
-        e.id === w.escola ? { ...e, status: (comoRascunho ? 'rascunho' : 'publicado') as Escola['status'], periodo: periodoDe(w.atividades), atualizado: agoraTexto(), minha: true } : e,
+        alvo.includes(e.id) ? { ...e, status: (comoRascunho ? 'rascunho' : 'publicado') as Escola['status'], periodo: periodoDe(w.atividades), atualizado: agoraTexto(), minha: true } : e,
       )
-      const publicados = comoRascunho ? st.publicados : { ...st.publicados, [w.escola]: clone(w.atividades) }
+      const publicados = comoRascunho ? st.publicados : { ...st.publicados, ...Object.fromEntries(alvo.map((id) => [id, clone(w.atividades)])) }
       return { ...st, escolas, publicados }
     })
   }, [])
@@ -308,8 +383,8 @@ function useCronState(start: Inicio) {
   const setProfessor = useCallback((id: string, v: 'pendente' | 'criada' | 'dispensada') => set((st) => ({ ...st, professor: { ...st.professor, [id]: v } })), [])
 
   const acoes = useMemo(
-    () => ({ toast, fecharToast, ir, setPerfil, toggleSidebar, iniciarPlano, setPlano, publicarPlano, iniciar, continuar, setArquivo, concluirAnalise, resolver, resolverPendentes, salvarAtividade, removerAtividades, publicar, setProfessor }),
-    [toast, fecharToast, ir, setPerfil, toggleSidebar, iniciarPlano, setPlano, publicarPlano, iniciar, continuar, setArquivo, concluirAnalise, resolver, resolverPendentes, salvarAtividade, removerAtividades, publicar, setProfessor],
+    () => ({ toast, fecharToast, ir, setPerfil, toggleSidebar, iniciarPlano, setPlano, publicarPlano, iniciar, continuar, setArquivo, concluirAnalise, iniciarValidacao, minimizarValidacao, dispensarValidacao, verValidacao, resolver, resolverPendentes, salvarAtividade, removerAtividades, publicar, setProfessor }),
+    [toast, fecharToast, ir, setPerfil, toggleSidebar, iniciarPlano, setPlano, publicarPlano, iniciar, continuar, setArquivo, concluirAnalise, iniciarValidacao, minimizarValidacao, dispensarValidacao, verValidacao, resolver, resolverPendentes, salvarAtividade, removerAtividades, publicar, setProfessor],
   )
   return { s, toasts, ...acoes }
 }
@@ -327,4 +402,9 @@ export function useCron() {
 }
 
 export const nomeEscola = (escolas: Escola[], id?: string) => escolas.find((e) => e.id === id)?.nome ?? 'Escola'
+/** “Escola C, Escola F, Escola G e Escola I” */
+export const nomesEscolas = (escolas: Escola[], ids: string[]) => {
+  const n = ids.map((id) => nomeEscola(escolas, id))
+  return n.length > 1 ? `${n.slice(0, -1).join(', ')} e ${n[n.length - 1]}` : (n[0] ?? '')
+}
 export { TOTAL_OCORRENCIAS }

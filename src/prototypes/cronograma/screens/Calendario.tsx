@@ -9,7 +9,7 @@ import { useCron } from '../store'
 type Evento = Atividade & { sugerida?: boolean }
 
 export default function Calendario({ escola: escolaInicial, dia }: { escola?: string; dia?: string }) {
-  const { s, iniciar, continuar, salvarAtividade, toast } = useCron()
+  const { s, ir, continuar, salvarAtividade, toast } = useCron()
   const gestor = s.perfil === 'gestor'
   const [escola, setEscola] = useState(escolaInicial ?? 'f')
   const [mes, setMes] = useState(() => (dia ?? HOJE).slice(0, 7))
@@ -109,7 +109,7 @@ export default function Calendario({ escola: escolaInicial, dia }: { escola?: st
           <h2>A {info.nome} ainda não tem cronograma publicado</h2>
           <p>{info.status === 'rascunho' ? 'Existe um rascunho em andamento. Finalize e publique para ver as atividades aqui.' : 'Importe a planilha do cronograma para preencher o calendário automaticamente.'}</p>
           {gestor && (
-            <Btn icone={<Plus size={18} />} onClick={() => (info.status === 'rascunho' ? continuar(escola) : iniciar(escola))}>
+            <Btn icone={<Plus size={18} />} onClick={() => (info.status === 'rascunho' ? continuar(escola) : ir({ id: 'escolha', escola }))}>
               {info.status === 'rascunho' ? 'Continuar rascunho' : 'Criar cronograma'}
             </Btn>
           )}
