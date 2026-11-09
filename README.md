@@ -89,11 +89,11 @@ Gestão da credencial simplificada no cadastro do estudante: lista com status de
 
 ### Gamificação GenieX
 
-**GenieX · Plataforma do Estudante** · Estudantes do Fundamental II e do Ensino Médio · _em construção_
+**GenieX · Plataforma do Estudante** · Estudantes do Fundamental II e do Ensino Médio
 
 Estudante acompanha a própria evolução na GenieX, a partir do perfil: XP válido, elos (Bronze a Cósmico) com progressão e regressão, 25 badges permanentes, extrato de XP com a validade de cada lote e avisos de novo elo, elo alterado e badge desbloqueada.
 
-[Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/gamificacao-geniex) · [Branch `gamificacao-geniex`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/gamificacao-geniex)
+[Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/gamificacao-geniex) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/gamificacao-geniex) · [Branch `gamificacao-geniex`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/gamificacao-geniex)
 
 <!-- jornadas:fim -->
 

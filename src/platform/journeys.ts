@@ -232,7 +232,7 @@ export const journeys: Journey[] = [
       'Estudante acompanha a própria evolução na GenieX, a partir do perfil: XP válido, elos (Bronze a Cósmico) com progressão e regressão, 25 badges permanentes, extrato de XP com a validade de cada lote e avisos de novo elo, elo alterado e badge desbloqueada.',
     icon: './3d/trophy.png',
     accent: '#5258e4',
-    status: 'em-breve',
+    status: 'navegavel',
     dispositivo: 'desktop',
     dominio: 'geniex.jovensgenios.com',
     etapas: [
@@ -241,12 +241,25 @@ export const journeys: Journey[] = [
       { nome: 'Telas nas 3 larguras', estado: 'feito' },
       { nome: 'Componentes da jornada', estado: 'feito' },
       { nome: 'Protótipo e handoff', estado: 'feito' },
-      { nome: 'Navegável', estado: 'atual' },
+      { nome: 'Navegável', estado: 'feito' },
     ],
     links: [
       { label: 'Figma da jornada', url: 'https://www.figma.com/design/BuFp19bdYy4ycLOk9vXCLH/Gamifica%C3%A7%C3%A3o-Geniex' },
       { label: 'Referência (Campeonato GenieX)', url: 'https://www.figma.com/design/CFgSTHDpGqyNluCYfHxj7U/CAMPEONATO---GENIEX--CONCEITO-?node-id=28-140' },
     ],
+    flows: [
+      { id: 'inicio', label: 'Minha evolução', icon: './3d/glowing-star.png' },
+      { id: 'menu', label: 'Menu do perfil', icon: './3d/boy-2.png' },
+      { id: 'elos', label: 'Os elos', icon: './3d/crown.png' },
+      { id: 'elo', label: 'Meu elo atual', icon: './3d/trophy.png' },
+      { id: 'elo-regressao', label: 'Após regressão', icon: './3d/bullseye.png' },
+      { id: 'badges', label: 'Minhas badges', icon: './3d/gem.png' },
+      { id: 'extrato', label: 'Extrato de XP', icon: './3d/notes.png' },
+      { id: 'lotes', label: 'XP a expirar', icon: './3d/calendar.png' },
+      { id: 'aviso-badge', label: 'Badge desbloqueada', icon: './3d/party.png' },
+      { id: 'aviso-elo', label: 'Novo elo', icon: './3d/rocket.png' },
+    ],
+    component: lazy(() => import('../prototypes/gamificacao-geniex')),
   },
 ]
 
