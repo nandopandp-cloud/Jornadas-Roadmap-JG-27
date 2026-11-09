@@ -16,16 +16,16 @@ A gestão fica dentro do cadastro existente do estudante, sem criar conta ou cad
 
 | Tela | O que mostra |
 | --- | --- |
-| **A1 · Lista de estudantes** | Colunas novas de credencial (Ativa, Não emitida, Revogada), permissão (Permitida, Bloqueada), métodos habilitados e último acesso, com filtros por credencial, permissão, escola e turma. |
+| **A1 · Lista de estudantes** | Colunas novas de credencial (Ativa, Não emitida, Revogada, Revogada em parte), permissão (Permitida, Bloqueada, Bloqueio parcial), estado de cada método de acesso e último acesso, com filtros por credencial, permissão, escola e turma. |
 | **A2 · Seleção em lote** | Barra para imprimir carteirinhas e emitir credenciais de vários estudantes (se o lote entrar no MVP). |
-| **A3 · Credencial ativa** | Aba “Credencial de acesso”: status independentes, carteirinha sem QR Code nem sequência (só aparecem na impressão), datas de emissão e reemissão, métodos habilitados, ações e histórico. |
+| **A3 · Credencial ativa** | Aba “Credencial de acesso”: status independentes, carteirinha com QR Code e sequência ocultos por padrão (botão Exibir/Ocultar, e cada exibição entra no histórico), datas de emissão e reemissão, estado de cada método (Habilitado, Bloqueado, Revogado, Não emitido) com o resumo “Hoje entra com…”, ações e histórico. |
 | **A4 · Sem credencial** | Estado vazio com “Emitir credencial”. |
-| **A5 · Credencial revogada** | QR Code e ícones param; e-mail e senha continuam. |
-| **A6 · Acesso bloqueado** | Nenhum método entra; alerta com responsável, data e motivo. |
+| **A5 · Credencial revogada** | Os métodos revogados param (todos ou só alguns); os demais continuam. |
+| **A6 · Acesso bloqueado** | Bloqueio total ou parcial; alerta com os métodos bloqueados, responsável, data e motivo. |
 | **A7 · Perfil Leitor** | Consulta sem poder emitir, reemitir, revogar, bloquear ou imprimir. |
 | **A8 · Histórico de tentativas** | Data, evento, método, dispositivo e resultado, sem expor sequência, QR Code ou senha. |
 
-Diálogos (página 08): emitir, reemitir com motivo, revogar e bloquear com o quadro do que muda, permitir de novo, imprimir carteirinha, emissão em lote (confirmação e resultado com pendência) e avisos de confirmação e erro.
+Diálogos (página 08): emitir, reemitir com motivo, revogar e bloquear com a escolha dos acessos (todos os métodos ou só alguns: QR Code, código de ícones, e-mail e senha) e o resumo de como o estudante entra depois, permitir de novo, imprimir carteirinha, emissão em lote (confirmação e resultado com pendência) e avisos de confirmação e erro.
 
 ## Atalhos de fluxo
 
@@ -36,6 +36,7 @@ Use `#/p/login-admin?screen=<fluxo>` para abrir direto numa tela:
 | `lista` · `lote` | Lista de estudantes (padrão) · seleção em lote |
 | `ativa` · `sem` | Credencial ativa (Ana Clara) · sem credencial (Laura) |
 | `emitir` · `reemitir` · `imprimir` | Diálogos de emitir, reemitir com motivo e imprimir |
+| `revogar` · `bloquear` | Diálogos de revogar e bloquear com a escolha dos acessos (Ana Clara) |
 | `revogada` · `bloqueado` | Credencial revogada (Mariana) · acesso bloqueado (Théo) |
 | `leitor` | Mesma tela vista por um perfil Leitor |
 | `historico` | Histórico de tentativas de acesso |
