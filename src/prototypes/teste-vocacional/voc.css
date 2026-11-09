@@ -4517,7 +4517,65 @@
     display: flex;
   }
 }
-@media (max-width: 900px) {
+/* menu recolhido só com ícones (padrão GenieX, como na Gamificação): automático no tablet (768–1199),
+   e alternável no desktop pelo botão do topo */
+.tv {
+  transition: grid-template-columns 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.tv.is-recolhida {
+  --side: 72px;
+}
+.tv.is-recolhida .tv-side__marca {
+  padding: 20px 0 18px;
+  display: grid;
+  place-items: center;
+}
+.tv.is-recolhida .tv-side__marca img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  object-position: left center;
+}
+.tv.is-recolhida .tv-side__nav {
+  padding: 0 12px;
+  align-items: center;
+}
+.tv.is-recolhida .tv-side__sec {
+  font-size: 0;
+  width: 100%;
+  height: 1px;
+  padding: 0;
+  margin: 12px 0;
+  background: #eceef3;
+}
+.tv.is-recolhida .tv-side__item {
+  width: 46px;
+  padding: 0;
+  justify-content: center;
+  gap: 0;
+}
+.tv.is-recolhida .tv-side__nome,
+.tv.is-recolhida .tv-side__novo {
+  display: none;
+}
+.tv.is-recolhida .tv-side__usuario {
+  justify-content: center;
+  padding: 16px 0;
+}
+.tv.is-recolhida .tv-side__usuario > :not(img) {
+  display: none;
+}
+.tv-topo__painel.is-on {
+  color: var(--roxo);
+  background: var(--roxo-claro);
+}
+@media (max-width: 767px) {
+  .tv-topo__painel {
+    display: none !important;
+  }
+}
+/* celular: menu em gaveta abaixo de 768 px */
+@media (max-width: 767px) {
   .tv {
     grid-template-columns: 1fr;
     --side: 0px;
@@ -4549,6 +4607,17 @@
   .tv-topo__menu {
     display: inline-grid !important;
   }
+  .tv-btn--bloco {
+    white-space: normal;
+    text-align: center;
+    line-height: 1.25;
+    height: auto;
+    min-height: 52px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+}
+@media (max-width: 900px) {
   .tv-topo__busca {
     flex: 1;
     width: auto;
@@ -4664,11 +4733,13 @@
     flex-direction: column-reverse;
     border-radius: 20px 20px 0 0;
   }
-  .tv-hero__txt {
+  .tv-hero__txt,
+  .tv-hero--visao .tv-hero__txt {
     max-width: none;
     padding: 18px 16px 10px;
   }
-  .tv-hero__arte {
+  .tv-hero__arte,
+  .tv-hero--visao .tv-hero__arte {
     width: 100%;
     height: 170px;
   }

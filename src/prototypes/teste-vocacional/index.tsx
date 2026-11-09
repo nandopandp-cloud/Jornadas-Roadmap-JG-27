@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { Activity, Bell, Book, Building2, CalendarDays, ChevronDown, Columns3, Ellipsis, FileCheck2, GraduationCap, Menu as MenuIc, MessageSquareMore, PenLine, Search, WifiOff, X, type LucideIcon } from 'lucide-react'
+import { Activity, Bell, Book, Building2, CalendarDays, ChevronDown, Columns3, Ellipsis, FileCheck2, GraduationCap, Menu as MenuIc, MessageSquareMore, PanelLeft, PenLine, Search, WifiOff, X, type LucideIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import type { PrototypeProps } from '../../platform/journeys'
 import { CARREIRA } from './carreiras'
@@ -30,6 +30,19 @@ export default function TesteVocacional({ startScreen }: PrototypeProps) {
   )
 }
 
+/** acompanha uma media query (ex.: largura da janela) */
+function useMidia(q: string) {
+  const [ok, setOk] = useState(() => typeof window !== 'undefined' && window.matchMedia(q).matches)
+  useEffect(() => {
+    const m = window.matchMedia(q)
+    const f = () => setOk(m.matches)
+    f()
+    m.addEventListener('change', f)
+    return () => m.removeEventListener('change', f)
+  }, [q])
+  return ok
+}
+
 const chave = (v: View) => (v.id === 'carreira' ? `carreira-${v.carreira}` : v.id === 'relatorio' ? `relatorio-${v.tentativa ?? ''}` : v.id)
 
 function Shell() {
@@ -38,6 +51,12 @@ function Shell() {
   const [sair, setSair] = useState<View | null>(null)
   const [busca, setBusca] = useState('')
   const [offline, setOffline] = useState(typeof navigator !== 'undefined' && !navigator.onLine)
+  // menu lateral: automático pela largura (expandido ≥1200, recolhido no tablet, gaveta no celular); o botão do topo sobrepõe
+  const larga = useMidia('(min-width: 1200px)')
+  const celular = useMidia('(max-width: 767px)')
+  const [recolherManual, setRecolherManual] = useState<boolean | null>(null)
+  const recolhida = !celular && (recolherManual ?? !larga)
+  const rotuloPainel = recolhida ? 'Expandir menu' : 'Recolher menu'
   const v = s.view
 
   useEffect(() => {
@@ -64,7 +83,7 @@ function Shell() {
   }
 
   return (
-    <div className="tv">
+    <div className={`tv ${recolhida ? 'is-recolhida' : ''}`}>
       <AnimatePresence>{gaveta && <motion.div className="tv-veu" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setGaveta(false)} />}</AnimatePresence>
       <Sidebar aberta={gaveta} onNavegar={navegar} foraDoEscopo={(n) => toast(`“${n}” não faz parte deste protótipo.`, 'info')} />
 
@@ -72,6 +91,9 @@ function Shell() {
         <header className="tv-topo">
           <button className="tv-iconbtn tv-topo__menu" onClick={() => setGaveta(true)} aria-label="Abrir menu">
             <MenuIc size={22} />
+          </button>
+          <button className={`tv-iconbtn tv-topo__painel ${recolhida ? 'is-on' : ''}`} onClick={() => setRecolherManual(!recolhida)} aria-label={rotuloPainel} title={rotuloPainel} aria-pressed={recolhida}>
+            <PanelLeft size={21} strokeWidth={1.8} />
           </button>
           <label className="tv-topo__busca">
             <Search size={19} />

@@ -60,6 +60,7 @@ Cada atalho abre o protótipo direto numa etapa, com os dados prontos para demon
 
 - **Atalho do protótipo no questionário:** “Preencher etapa (atalho do protótipo)” responde a etapa atual com as respostas da persona (João Silva, perfil I · A · E como nos frames).
 - **Teclado:** teclas 1 a 5 nas escalas, 1 e 2 nos pares, ← → para navegar.
+- **Menu lateral:** o botão ao lado da busca recolhe e expande o menu (só ícones). Ele abre expandido a partir de 1200 px, recolhido no tablet (768 a 1199 px) e vira gaveta abaixo de 768 px, como na Gamificação GenieX.
 - **Sair e retomar:** “Sair do teste” guarda as respostas; a abertura mostra “Continue de onde parou”.
 - **Transparência:** “Entenda o modelo” e “Como chegamos a este resultado” explicam soma, código, comparação e diversidade.
 - **Eventos de produto:** o botão “Eventos” lista em tempo real os eventos do PRD (§9.3), sem dados pessoais.
