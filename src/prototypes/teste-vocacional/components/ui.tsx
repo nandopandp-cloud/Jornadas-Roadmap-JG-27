@@ -1,5 +1,5 @@
 import { AnimatePresence, animate, motion, useMotionValue, useTransform } from 'framer-motion'
-import { Check, ChevronDown, ChevronLeft, CircleAlert, Info, Star, X } from 'lucide-react'
+import { Check, ChevronDown, CircleAlert, Heart, Info, X } from 'lucide-react'
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { useTv } from '../store'
@@ -7,7 +7,7 @@ import { useTv } from '../store'
 /* ---------------- botão ---------------- */
 type BtnProps = {
   children?: ReactNode
-  variante?: 'primario' | 'contorno' | 'fantasma' | 'suave' | 'branco'
+  variante?: 'primario' | 'contorno' | 'fantasma' | 'suave' | 'claro'
   icone?: ReactNode
   iconeDir?: ReactNode
   grande?: boolean
@@ -34,11 +34,28 @@ export function Btn({ children, variante = 'primario', icone, iconeDir, grande, 
   )
 }
 
-/* ---------------- barra de progresso ---------------- */
+/* ---------------- barra e anel de progresso ---------------- */
 export function Barra({ valor, className = '', cor, rotulo }: { valor: number; className?: string; cor?: string; rotulo?: string }) {
   return (
     <span className={`tv-barra ${className}`} role="progressbar" aria-valuenow={Math.round(valor)} aria-valuemin={0} aria-valuemax={100} aria-label={rotulo}>
       <motion.span className="tv-barra__fill" style={cor ? { background: cor } : undefined} initial={false} animate={{ width: `${Math.max(0, Math.min(100, valor))}%` }} transition={{ type: 'spring', stiffness: 120, damping: 22 }} />
+    </span>
+  )
+}
+
+export function Anel({ valor, total, tam = 92, rotulo }: { valor: number; total: number; tam?: number; rotulo?: string }) {
+  const r = tam / 2 - 7
+  const c = 2 * Math.PI * r
+  const f = total ? Math.min(1, valor / total) : 0
+  return (
+    <span className="tv-anel" style={{ width: tam, height: tam }} role="img" aria-label={rotulo ?? `${valor} de ${total}`}>
+      <svg width={tam} height={tam} viewBox={`0 0 ${tam} ${tam}`}>
+        <circle cx={tam / 2} cy={tam / 2} r={r} className="tv-anel__trilho" />
+        <motion.circle cx={tam / 2} cy={tam / 2} r={r} className="tv-anel__arco" strokeDasharray={c} initial={false} animate={{ strokeDashoffset: c * (1 - Math.max(f, 0.03)) }} transition={{ type: 'spring', stiffness: 90, damping: 20 }} />
+      </svg>
+      <b>
+        {valor}/{total}
+      </b>
     </span>
   )
 }
@@ -54,19 +71,6 @@ export function Num({ v, sufixo = '' }: { v: number; sufixo?: string }) {
   return <motion.span>{r}</motion.span>
 }
 
-/** “< Texto” (cabeçalho com voltar) */
-export function Voltar({ texto, onClick, children }: { texto: string; onClick: () => void; children?: ReactNode }) {
-  return (
-    <div className="tv-voltar">
-      <button className="tv-voltar__btn" onClick={onClick} aria-label="Voltar">
-        <ChevronLeft size={17} />
-      </button>
-      <span>{texto}</span>
-      {children}
-    </div>
-  )
-}
-
 /** texto com **destaques** */
 export function Rico({ texto }: { texto: string }) {
   const partes = texto.split(/\*\*(.+?)\*\*/g)
@@ -77,41 +81,42 @@ export function Rico({ texto }: { texto: string }) {
   )
 }
 
-/* ---------------- estrela de salvar ---------------- */
-export function Estrela({ on, onClick, tam = 20, rotulo }: { on: boolean; onClick?: () => void; tam?: number; rotulo?: string }) {
-  const r = rotulo ?? (on ? 'Remover de Minhas carreiras' : 'Salvar em Minhas carreiras')
+/** etiqueta “TESTE VOCACIONAL” das telas */
+export const Etiqueta = ({ children = 'Teste vocacional' }: { children?: ReactNode }) => <span className="tv-etiqueta">{children}</span>
+
+/* ---------------- coração de favorito ---------------- */
+export function Coracao({ on, onClick, tam = 20, rotulo, comTexto }: { on: boolean; onClick?: () => void; tam?: number; rotulo?: string; comTexto?: boolean }) {
+  const r = rotulo ?? (on ? 'Remover dos favoritos' : 'Adicionar aos favoritos')
   return (
     <motion.button
-      className={`tv-estrela ${on ? 'is-on' : ''}`}
+      className={`tv-coracao ${on ? 'is-on' : ''} ${comTexto ? 'tv-coracao--texto' : ''}`}
       onClick={(e) => {
         e.stopPropagation()
         onClick?.()
       }}
-      whileTap={{ scale: 0.8 }}
+      whileTap={{ scale: 0.85 }}
       aria-pressed={on}
-      aria-label={r}
+      aria-label={comTexto ? undefined : r}
       title={r}
     >
-      <motion.span key={String(on)} initial={on ? { scale: 0.3, rotate: -40 } : false} animate={{ scale: 1, rotate: 0 }} transition={{ type: 'spring', stiffness: 500, damping: 14 }}>
-        <Star size={tam} strokeWidth={on ? 0 : 1.8} fill={on ? 'currentColor' : 'none'} />
+      <motion.span key={String(on)} initial={on ? { scale: 0.3 } : false} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 500, damping: 12 }}>
+        <Heart size={tam} strokeWidth={on ? 0 : 1.9} fill={on ? 'currentColor' : 'none'} />
       </motion.span>
-      <AnimatePresence initial={false}>{on && <motion.span className="tv-estrela__brilho" initial={{ scale: 0.4, opacity: 0.9 }} animate={{ scale: 2.2, opacity: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />}</AnimatePresence>
+      {comTexto && <span>{on ? 'Nos favoritos' : 'Adicionar aos favoritos'}</span>}
+      <AnimatePresence initial={false}>{on && <motion.i className="tv-coracao__pulso" initial={{ scale: 0.4, opacity: 0.8 }} animate={{ scale: 2, opacity: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />}</AnimatePresence>
     </motion.button>
   )
 }
 
-/* ---------------- listas suspensas (portal, posição fixa) ---------------- */
+/* ---------------- lista suspensa (portal, posição fixa) ---------------- */
 function usePosicao(aberto: boolean, ancora: React.RefObject<HTMLElement | null>, fechar: () => void) {
   const [pos, setPos] = useState<{ top?: number; bottom?: number; left: number; minWidth: number; acima: boolean } | null>(null)
   useLayoutEffect(() => {
     if (!aberto) return
-    const calc = () => {
-      const r = ancora.current?.getBoundingClientRect()
-      if (!r) return
-      const acima = r.bottom + 300 > window.innerHeight && r.top > 320
-      setPos({ ...(acima ? { bottom: window.innerHeight - r.top + 6 } : { top: r.bottom + 6 }), left: Math.max(8, Math.min(r.left, window.innerWidth - 280)), minWidth: r.width, acima })
-    }
-    calc()
+    const r = ancora.current?.getBoundingClientRect()
+    if (!r) return
+    const acima = r.bottom + 300 > window.innerHeight && r.top > 320
+    setPos({ ...(acima ? { bottom: window.innerHeight - r.top + 6 } : { top: r.bottom + 6 }), left: Math.max(8, Math.min(r.left, window.innerWidth - 280)), minWidth: r.width, acima })
     const rolar = (e: Event) => !(e.target as HTMLElement)?.closest?.('.tv-pop') && fechar()
     window.addEventListener('resize', fechar)
     window.addEventListener('scroll', rolar, true)
@@ -194,7 +199,7 @@ export function Select<T extends string>({ valor, opcoes, onChange, icone, class
 }
 
 /* ---------------- modal ---------------- */
-export function Modal({ aberto, onFechar, titulo, children, rodape, largura = 480 }: { aberto: boolean; onFechar: () => void; titulo: string; children: ReactNode; rodape?: ReactNode; largura?: number }) {
+export function Modal({ aberto, onFechar, titulo, children, rodape, largura = 480, semTitulo }: { aberto: boolean; onFechar: () => void; titulo: string; children: ReactNode; rodape?: ReactNode; largura?: number; semTitulo?: boolean }) {
   useEffect(() => {
     if (!aberto) return
     const esc = (e: KeyboardEvent) => e.key === 'Escape' && onFechar()
@@ -202,14 +207,14 @@ export function Modal({ aberto, onFechar, titulo, children, rodape, largura = 48
     return () => document.removeEventListener('keydown', esc)
   }, [aberto, onFechar])
   return (
-    <AnimatePresence>
+    <AnimatePresence initial={false}>
       {aberto && (
         <motion.div className="tv-modal" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={(e) => e.target === e.currentTarget && onFechar()}>
           <motion.div className="tv-modal__caixa" style={{ maxWidth: largura }} role="dialog" aria-modal aria-label={titulo} initial={{ y: 24, scale: 0.97, opacity: 0 }} animate={{ y: 0, scale: 1, opacity: 1 }} exit={{ y: 12, opacity: 0 }} transition={{ type: 'spring', stiffness: 380, damping: 30 }}>
-            <header>
-              <h3>{titulo}</h3>
+            <header className={semTitulo ? 'is-sem' : ''}>
+              {!semTitulo && <h3>{titulo}</h3>}
               <button className="tv-iconbtn" onClick={onFechar} aria-label="Fechar">
-                <X size={17} />
+                <X size={18} />
               </button>
             </header>
             <div className="tv-modal__corpo">{children}</div>
@@ -249,41 +254,5 @@ export function Toasts() {
         ))}
       </AnimatePresence>
     </div>
-  )
-}
-
-/** brilhos animados em volta das ilustrações */
-export function Brilhos({ n = 5, className = '' }: { n?: number; className?: string }) {
-  const pos = [
-    [4, 22, 20],
-    [92, 30, 16],
-    [12, 80, 14],
-    [88, 80, 20],
-    [52, 2, 13],
-    [72, 58, 11],
-    [0, 52, 13],
-    [96, 6, 13],
-  ]
-  return (
-    <span className={`tv-brilhos ${className}`} aria-hidden>
-      {pos.slice(0, n).map(([x, y, t], i) => (
-        <motion.i key={i} style={{ left: `${x}%`, top: `${y}%`, width: t, height: t }} animate={{ scale: [0.65, 1.15, 0.65], opacity: [0.45, 1, 0.45], rotate: [0, 25, 0] }} transition={{ duration: 2.2 + i * 0.35, repeat: Infinity, ease: 'easeInOut', delay: i * 0.3 }}>
-          <svg viewBox="0 0 24 24" width="100%" height="100%">
-            <path d="M12 1c.6 5.6 4.4 9.4 11 11-6.6 1.6-10.4 5.4-11 11-.6-5.6-4.4-9.4-11-11 6.6-1.6 10.4-5.4 11-11z" fill="currentColor" />
-          </svg>
-        </motion.i>
-      ))}
-    </span>
-  )
-}
-
-/** ícone do Teste Vocacional (bússola) para o menu lateral */
-export function IconeBussola({ size = 24, strokeWidth = 2, className }: { size?: number; strokeWidth?: number; className?: string }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
-      <circle cx="12" cy="12" r="9" />
-      <path d="m15.6 8.4-2.1 5.1-5.1 2.1 2.1-5.1z" />
-      <path d="M12 3v1.6M12 19.4V21M3 12h1.6M19.4 12H21" strokeWidth={strokeWidth * 0.8} />
-    </svg>
   )
 }

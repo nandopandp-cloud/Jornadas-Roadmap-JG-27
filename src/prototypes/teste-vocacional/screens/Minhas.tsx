@@ -1,8 +1,8 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowRight, Columns3, ListChecks, Search, Star } from 'lucide-react'
-import type { CSSProperties } from 'react'
+import { ArrowRight, Columns3, Heart, ListChecks, Search } from 'lucide-react'
 import { AREA, CARREIRA } from '../carreiras'
-import { Btn, Estrela, Select } from '../components/ui'
+import { Btn, Coracao, Etiqueta, Select } from '../components/ui'
+import { FotoProf } from '../components/perfil'
 import { CATEGORIA } from '../motor'
 import { quando, useTv, type Etapa } from '../store'
 
@@ -24,14 +24,14 @@ export default function Minhas() {
         <Cabecalho />
         <motion.div className="tv-cartao tv-vazio tv-vazio--grande" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <span className="tv-vazio__estrela">
-            <Star size={30} fill="currentColor" strokeWidth={0} />
+            <Heart size={30} fill="currentColor" strokeWidth={0} />
           </span>
-          <strong>Você ainda não salvou profissões</strong>
-          <span>Toque na estrela de qualquer profissão para guardá-la aqui e investigar com calma, quando quiser.</span>
+          <strong>Você ainda não tem favoritos</strong>
+          <span>Toque no coração de qualquer profissão para guardá-la aqui e investigar com calma, quando quiser.</span>
           <div className="tv-vazio__acoes">
             {ultima && (
-              <Btn variante="contorno" onClick={() => ir({ id: 'relatorio', secao: 'possibilidades' })}>
-                Ver minhas sugestões
+              <Btn variante="contorno" onClick={() => ir({ id: 'relatorio', aba: 'profissoes' })}>
+                Ver profissões recomendadas
               </Btn>
             )}
             <Btn icone={<Search size={15} />} onClick={() => ir({ id: 'explorar' })}>
@@ -81,20 +81,18 @@ export default function Minhas() {
                   return (
                     <motion.article key={f.id} layout className="tv-cartao tv-salva" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.15 } }}>
                       <div className="tv-salva__topo">
-                        <span className="tv-salva__ic" style={{ '--c': AREA[c.area].cor } as CSSProperties}>
-                          <img src={c.icone} alt="" />
-                        </span>
+                        <FotoProf c={c} className="tv-salva__foto" />
                         <div className="tv-salva__txt">
                           <strong>{c.nome}</strong>
                           <small>
                             {rec ? CATEGORIA[rec.categoria] : AREA[c.area].nome} · salva {quando(f.em).toLowerCase()}
                           </small>
                         </div>
-                        <Estrela
+                        <Coracao
                           on
                           onClick={() => {
                             favoritar(f.id)
-                            toast(`${c.nome} removida de Minhas carreiras.`, 'info', { rotulo: 'Desfazer', fn: () => favoritar(f.id) })
+                            toast(`${c.nome} removido(a) dos favoritos.`, 'info', { rotulo: 'Desfazer', fn: () => favoritar(f.id) })
                           }}
                         />
                       </div>
@@ -126,10 +124,11 @@ function Cabecalho({ children }: { children?: React.ReactNode }) {
   return (
     <header className="tv-pagcab">
       <div>
-        <h1 className="tv-h1">Minhas carreiras</h1>
-        <p>Profissões que você salvou. Organize por etapa de investigação e volte quando quiser: elas ficam guardadas mesmo se você refizer o teste.</p>
+        <Etiqueta>Favoritos</Etiqueta>
+        <h1 className="tv-h1">Suas profissões favoritas</h1>
+        <p className="tv-lead">Organize por etapa de investigação e volte quando quiser: elas ficam guardadas mesmo se você refizer o teste.</p>
       </div>
-      {children ?? <img src="./voc/bookmark-tabs.webp" alt="" className="tv-pagcab__arte" />}
+      {children ?? <img src="./voc/ref/banner-valores.webp" alt="" className="tv-pagcab__arte" />}
     </header>
   )
 }

@@ -12,19 +12,31 @@ Parte da iniciativa **Orientação Vocacional e Exploração de Carreiras** do R
 
 ## A jornada
 
-| Etapa | O que acontece | PRD |
-| --- | --- | --- |
-| Entrada | Ponto de acesso na GenieX com finalidade, duração, “sem resposta certa ou errada” e limites do teste. Retoma um teste interrompido. | §5.2 |
-| Clareza inicial | “Quanto você sente que sabe quais caminhos profissionais gostaria de explorar?” (1 a 5, opcional). | §5.3 |
-| Como funciona | As 4 etapas, como as respostas são usadas e o que o teste não faz. | §5.1 |
-| Questionário | 52 perguntas em 4 etapas (interesses, valores, preferências, habilidades), uma por vez, com progresso, voltar, salvamento e retomada. | §5.4 |
-| Revisão | Mostra respostas faltantes e permite editar qualquer uma antes de concluir. | §5.4, §6.2 |
-| Processamento | Cálculo determinístico e versionado. | §5.5 |
-| Meu perfil | Visão geral, mapa de interesses, características, possibilidades com justificativa e orientações de exploração. | §5.6, §5.7 |
-| Conheça a profissão | Conteúdo mínimo de 13 itens, com fontes e data de revisão. | §5.8 |
-| Comparar, Minhas carreiras, Meu plano | Comparação lado a lado, favoritos organizados e plano de ações. | §5.9 a §5.11 |
-| Como você se sente agora? | Mesma pergunta de clareza, sem bloquear o relatório. | §5.12 |
-| Minha jornada | Histórico de tentativas, com a versão do instrumento de cada uma. | §5.13 |
+O visual reproduz as 14 telas de referência do Figma (página “Teste Vocacional - Geniex”), exportadas em `public/teste-vocacional/` (fora do build). As artes foram recortadas dessas telas e ficam em `public/voc/ref/`.
+
+| Etapa | Referência | O que acontece | PRD |
+| --- | --- | --- | --- |
+| Abertura | Frame 3 | Finalidade, benefícios, duração, “Começar teste agora” e aviso de confidencialidade. Retoma um teste interrompido. | §5.2 |
+| Clareza inicial | — | Janela “Antes de começar” com a pergunta de clareza (1 a 5), opcional. | §5.3 |
+| Questionário | Frames 2, 1, 4 e 5 | 52 perguntas em 4 etapas, uma por vez: etapas de 1 a 5, barra “X de 52”, ilustração, carinhas na escala, pares com ilustração, painel “O que são…” e anel de progresso do bloco. Salva e retoma. | §5.4 |
+| Revisão | — | Só aparece se faltar resposta obrigatória: mostra o que falta e permite editar. | §5.4, §6.2 |
+| Você concluiu o teste! | Frame 6 | Processamento com estado compreensível e “Enquanto isso…”. | §5.5 |
+| Resultado · Visão geral | Frame 7 | Radar RIASEC, principais interesses, resumo do perfil e profissões recomendadas. | §5.6 |
+| Áreas de interesse | Frame 8 | Perfil RIASEC, código de 3 letras e as 6 dimensões com personagens e detalhes. | §5.6 |
+| Profissões recomendadas | Frame 9 | 6 profissões com fotos e painel lateral (o que faz, por que combina, atividades). | §5.7 |
+| Conheça a profissão | Frame 10 | Foto, 7 abas, dimensões RIASEC, vídeo, mercado, próximos passos e relacionadas. | §5.8 |
+| Valores · Preferências · Habilidades | Frames 11, 12 e 13 | Ranking dos valores, estilo de trabalho e ambientes, habilidades percebidas e como aparecem nas profissões. | §5.6 |
+| Próximos passos | Frame 14 | Plano de desenvolvimento, “Seu futuro é uma jornada”, conteúdos, universidades e eventos, e a clareza final. | §5.11, §5.12 |
+| Explorar, Comparar, Favoritos, Meu Plano, Histórico | — | No mesmo padrão visual, a partir do menu lateral. | §5.9 a §5.13 |
+
+### Onde o protótipo difere das referências (de propósito)
+
+- **Sem ranking nem “afinidade”:** as profissões não são numeradas e os selos “Alta/Média afinidade” viram “Vale a pena explorar” e “Possibilidade complementar” (PRD §5.7 e metodologia §8). Os rótulos ficam em `CATEGORIA`, no `motor.ts`.
+- **Sem percentual:** “Alinhamento de valores 85%” (Frame 11) virou “X de 3” valores em comum.
+- **Preferências:** o instrumento usa escolhas entre dois lados (metodologia §5), então o “estilo de trabalho” mostra para que lado cada par pendeu, em vez de níveis de 1 a 5.
+- **Textos do instrumento:** perguntas e escalas seguem a `METODOLOGIA.md`, não os textos de exemplo dos frames.
+- **Clareza antes e depois:** não aparece nos frames; entrou como janela leve porque o PRD a exige (§5.3 e §5.12).
+- **Universidades em destaque** (Frame 14) foram mantidas como no frame, mas o PRD lista recomendação de instituições como fora do MVP (§14.1).
 
 ## Atalhos de fluxo
 
@@ -32,41 +44,32 @@ Cada atalho abre o protótipo direto numa etapa, com os dados prontos para demon
 
 | Atalho | O que mostra |
 | --- | --- |
-| `inicio` | Página Inicial da GenieX com o card “Seu futuro” e profissões pouco conhecidas |
-| `entrada` | Entrada do teste: finalidade, duração, limites e “Começar” |
-| `clareza` | Clareza inicial (1 a 5), opcional |
-| `intro` | Como funciona: 4 etapas, uso das respostas e o que o teste não faz |
-| `questionario` | Pergunta 8 de 30 da etapa Interesses |
-| `pares` | Capa da etapa Preferências (“Etapa Valores concluída!”) |
-| `retomar` | Entrada com um teste interrompido em 23 de 52 |
+| `entrada` | Abertura do teste (Frame 3) |
+| `clareza` | Janela “Antes de começar” com a pergunta de clareza |
+| `questionario`, `q-valores`, `q-preferencias`, `q-habilidades` | Primeira pergunta de cada etapa (Frames 2, 1, 4 e 5) |
+| `retomar` | Abertura com um teste interrompido em 23 de 52 |
 | `revisao` | Revisão com 2 respostas obrigatórias faltando |
-| `processando` | Cálculo do perfil, que termina no relatório |
-| `relatorio` | Meu perfil: visão geral, mapa, perfil em detalhes, carreiras e próximos passos |
-| `recomendacoes` | Relatório já na seção de carreiras sugeridas |
-| `carreira` | Conheça a profissão: Design de Produto (UX) |
-| `explorar` | Catálogo com busca e filtros por área e interesse |
-| `comparar` | Comparação de 3 profissões lado a lado |
-| `minhas` | Minhas carreiras organizadas por etapa de investigação |
-| `plano` | Meu plano de exploração com ações pendentes e concluídas |
+| `processando` | “Você concluiu o teste!” (Frame 6) |
+| `relatorio`, `areas`, `recomendacoes`, `res-valores`, `res-preferencias`, `res-habilidades`, `passos` | Cada aba do resultado (Frames 7, 8, 9, 11, 12, 13 e 14) |
 | `clareza-pos` | “Como você se sente agora?”, com a resposta inicial marcada |
-| `historico` | Minha jornada com duas tentativas de versões diferentes |
+| `carreira` | Conheça a profissão: Cientista de Dados (Frame 10) |
+| `explorar`, `comparar`, `minhas`, `plano`, `historico`, `inicio` | Explorar Profissões, Comparar, Favoritos, Meu Plano, Histórico de testes e Início |
 
 ## Para apresentar
 
-- **Atalho do protótipo no questionário:** o botão “Preencher etapa (atalho do protótipo)” responde a etapa atual com as respostas da persona, para chegar rápido ao resultado.
+- **Atalho do protótipo no questionário:** “Preencher etapa (atalho do protótipo)” responde a etapa atual com as respostas da persona (João Silva, perfil I · A · E como nos frames).
 - **Teclado:** teclas 1 a 5 nas escalas, 1 e 2 nos pares, ← → para navegar.
-- **Pausar e retomar:** “Sair e continuar depois” guarda as respostas; a entrada mostra “Continue de onde parou”.
-- **Transparência:** no relatório, “Como chegamos a este resultado” explica soma, pistas, comparação e diversidade.
-- **Eventos de produto:** o botão “Eventos”, no canto inferior esquerdo, lista em tempo real os eventos do PRD (§9.3) que a jornada dispara, sem dados pessoais.
+- **Sair e retomar:** “Sair do teste” guarda as respostas; a abertura mostra “Continue de onde parou”.
+- **Transparência:** “Entenda o modelo” e “Como chegamos a este resultado” explicam soma, código, comparação e diversidade.
+- **Eventos de produto:** o botão “Eventos” lista em tempo real os eventos do PRD (§9.3), sem dados pessoais.
 - **Sem conexão:** desligar a rede do navegador mostra o aviso de que as respostas ficam guardadas no dispositivo.
-- **Estados vazios:** Minhas carreiras e Meu plano começam vazios quando o teste é feito do zero (atalho `inicio`).
 
 ## Núcleo do teste
 
 Separado da interface, como pede o PRD (§5.5 e §10.5), em `src/prototypes/teste-vocacional/`:
 
 - **`instrumento.ts`:** as 52 perguntas da metodologia, escalas, etapas e versão (`TV-GX 1.0 · piloto`). O Bloco A é exibido intercalando as dimensões, para o estudante não responder cinco itens seguidos da mesma área.
-- **`carreiras.ts`:** catálogo inicial com 30 profissões de 8 áreas (graduações, cursos técnicos e tecnólogos, incluindo profissões pouco conhecidas), perfil de referência RIASEC, contexto de trabalho, valores, formações, ingresso obrigatório × desejável, desafios, relacionadas, fontes e data de revisão. Conteúdo ilustrativo, pendente de revisão especializada.
+- **`carreiras.ts`:** catálogo inicial com 32 profissões de 8 áreas (graduações, cursos técnicos e tecnólogos, incluindo profissões pouco conhecidas), perfil de referência RIASEC, contexto de trabalho, valores, formações, ingresso obrigatório × desejável, desafios, relacionadas, fontes e data de revisão. Conteúdo ilustrativo, pendente de revisão especializada.
 - **`motor.ts`:** soma por dimensão (5 a 25), normalização 0 a 100, até três pistas com empates preservados, perfil distribuído e inconclusivo; recomendação por distância ponderada (wₖ = 1 + Sₖ/100) com diversidade (no máximo 2 por dimensão principal e por área, ao menos uma pouco conhecida), categorias “Vale a pena explorar” e “Possibilidade complementar” e justificativas ligadas às respostas registradas. Sem percentual de compatibilidade.
 - **`dados.ts`:** respostas fictícias da persona do protótipo.
 
@@ -76,11 +79,11 @@ Separado da interface, como pede o PRD (§5.5 e §10.5), em `src/prototypes/test
 src/prototypes/teste-vocacional/
   instrumento.ts, carreiras.ts, motor.ts, dados.ts   # núcleo, sem interface
   store.tsx       # estado (tentativas, favoritos, comparação, plano, eventos)
-  index.tsx       # shell da GenieX, abas da funcionalidade, bandeja de comparação, painel de eventos
-  components/     # botões, modal, avisos, radar de interesses, card de profissão
-  screens/        # Inicial, Entrada, Clareza, Intro, Questionario, Revisao, Processando,
-                  # Relatorio, Carreira, Explorar, Comparar, Minhas, Plano, ClarezaPos, Historico
-  voc.css         # estilos (prefixo tv-), com a base do shell GenieX da jornada Flashcards
+  index.tsx       # shell da GenieX (menu, busca, perfil), bandeja de comparação, painel de eventos
+  components/     # ui (botões, modal, avisos, anel), perfil (radar, card de profissão), clareza
+  screens/        # Inicial, Entrada, Questionario, Revisao, Processando, Relatorio (7 abas),
+                  # Carreira, Explorar, Comparar, Minhas, Plano, Historico
+  voc.css         # estilos (prefixo tv-) reproduzidos das telas de referência
 ```
 
-Ícones 3D das profissões e das dimensões: [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji) (licença MIT), em `public/voc/`.
+Artes recortadas das telas de referência em `public/voc/ref/`. Ícones 3D extras: [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji) (licença MIT), em `public/voc/`.

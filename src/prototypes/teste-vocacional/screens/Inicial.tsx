@@ -1,86 +1,80 @@
 import { motion } from 'framer-motion'
-import { ArrowRight, Search } from 'lucide-react'
-import { useEffect } from 'react'
+import { ArrowRight, CalendarDays, Heart } from 'lucide-react'
 import { CARREIRA } from '../carreiras'
+import { CardProf } from '../components/perfil'
+import { Barra, Btn, Etiqueta } from '../components/ui'
 import { N_ITENS, contar } from '../instrumento'
-import { Barra, Brilhos, Btn } from '../components/ui'
 import { useTv } from '../store'
 
-/** Página Inicial da GenieX, com o ponto de entrada do Teste Vocacional (PRD §5.2) */
+/** Início da GenieX com o ponto de entrada do Teste Vocacional (PRD §5.2) */
 export default function Inicial() {
-  const { ir, toast, track, ultima, atual } = useTv()
-  useEffect(() => track('career_test_entry_viewed', { origem: 'pagina_inicial', interface: 'v1' }), [track])
-  const curiosas = ['oceanografia', 'design-ux', 'gestao-publica'].map((id) => CARREIRA[id])
-
+  const { s, ir, ultima, atual } = useTv()
+  const curiosas = ['oceanografia', 'design-ux', 'gestao-publica', 'pesquisa-cientifica'].map((id) => CARREIRA[id])
+  const n = atual ? contar(atual.respostas) : 0
   return (
     <div className="tv-ini">
-      <section className="tv-ini__para">
-        <h2 className="tv-h2g">Para você</h2>
-        <motion.div className="tv-banner" whileHover={{ scale: 1.006 }} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-          <img src="./flash/banner.webp" alt="GenieX — Aprenda. Jogue. Evolua sempre." />
-        </motion.div>
+      <section className="tv-ini__boas">
+        <h1 className="tv-h1 tv-h1--m">Olá, João! 👋</h1>
+        <p className="tv-lead">Que tal dar um passo a mais na construção do seu futuro hoje?</p>
       </section>
 
-      <section className="tv-ini__voc">
-        <h2 className="tv-h2g">Seu futuro</h2>
-        <motion.div className="tv-cartao tv-promo" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-          <div className="tv-promo__txt">
-            <span className="tv-promo__tag">Novo · Teste Vocacional</span>
-            <strong>{ultima ? 'Seu perfil está pronto' : atual ? 'Continue de onde parou' : 'Descubra caminhos para explorar'}</strong>
-            <p>
-              {ultima
-                ? 'Revise seus interesses, conheça profissões e siga seu plano de exploração.'
-                : atual
-                  ? `Você respondeu ${contar(atual.respostas)} de ${N_ITENS} perguntas. Suas respostas estão salvas.`
-                  : 'Conheça seus interesses e profissões que combinam com eles. Sem resposta certa ou errada.'}
-            </p>
-            <Btn onClick={() => ir(ultima ? { id: 'relatorio' } : { id: 'entrada' })}>{ultima ? 'Ver meu perfil' : atual ? 'Continuar teste' : 'Conhecer o teste'}</Btn>
-          </div>
-          <div className="tv-promo__arte" aria-hidden>
-            <Brilhos n={5} />
-            <motion.img src="./voc/compass.webp" alt="" animate={{ rotate: [0, 8, -6, 0], y: [0, -6, 0] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }} />
-          </div>
-        </motion.div>
-      </section>
+      <motion.section className="tv-ini__promo" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+        <div className="tv-ini__promotxt">
+          <Etiqueta>Novo · Teste vocacional</Etiqueta>
+          <h2>{ultima && !atual ? 'Seu perfil profissional está pronto' : atual ? 'Continue de onde parou' : 'Descubra caminhos que combinam com você'}</h2>
+          <p>
+            {ultima && !atual
+              ? 'Revise suas áreas de interesse, conheça as profissões recomendadas e siga seus próximos passos.'
+              : atual
+                ? `Você respondeu ${n} de ${N_ITENS} perguntas. Suas respostas estão salvas.`
+                : 'Entenda seus interesses, valores e habilidades e conheça profissões que fazem sentido com o seu perfil. Cerca de 15 minutos.'}
+          </p>
+          {atual && <Barra valor={(n / N_ITENS) * 100} rotulo="Progresso do teste" />}
+          <Btn grande iconeDir={<ArrowRight size={18} />} onClick={() => ir(ultima && !atual ? { id: 'relatorio' } : atual ? { id: 'questionario' } : { id: 'entrada' })}>
+            {ultima && !atual ? 'Ver meu resultado' : atual ? 'Continuar teste' : 'Conhecer o teste'}
+          </Btn>
+        </div>
+        <img src="./voc/ref/banner-visao.webp" alt="" />
+      </motion.section>
 
-      <section className="tv-ini__curso">
-        <h2 className="tv-h2g">Continue aprendendo</h2>
-        <motion.div className="tv-cartao tv-curso" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <div className="tv-curso__img">
-            <img src="./flash/livro-curso.webp" alt="" />
+      <section className="tv-ini__sec">
+        <div className="tv-card__cab">
+          <div>
+            <h2>Profissões que talvez você não conheça</h2>
+            <p>Amplie seu repertório: explore carreiras além das mais lembradas.</p>
           </div>
-          <div className="tv-curso__txt">
-            <span className="tv-curso__tag">Curso</span>
-            <strong>Literatura - Ensino Médio</strong>
-            <p>Amplie a leitura e a interpretação de textos literários, compreendendo diferentes estilos, linguagens e contextos históricos.</p>
-            <div className="tv-curso__prog">
-              <Barra valor={7} />
-              <span>7%</span>
-            </div>
-            <Btn bloco grande onClick={() => toast('O curso completo não faz parte deste protótipo.', 'info')}>
-              Ir para o curso
-            </Btn>
-          </div>
-        </motion.div>
-      </section>
-
-      <section className="tv-ini__curiosas">
-        <h2 className="tv-h2g">Profissões que talvez você não conheça</h2>
-        <motion.div className="tv-cartao tv-curiosas" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-          {curiosas.map((c) => (
-            <button key={c.id} className="tv-curiosa" onClick={() => ir({ id: 'carreira', carreira: c.id, de: 'explorar' })}>
-              <img src={c.icone} alt="" />
-              <span>
-                <strong>{c.nome}</strong>
-                <small>{c.descricao.split(/\.\s/)[0].replace(/\.$/, '')}.</small>
-              </span>
-              <ArrowRight size={16} />
-            </button>
-          ))}
-          <button className="tv-curiosas__mais" onClick={() => ir({ id: 'explorar' })}>
-            <Search size={15} /> Explorar todas as profissões
+          <button className="tv-link tv-link--seta" onClick={() => ir({ id: 'explorar' })}>
+            Explorar profissões <ArrowRight size={15} />
           </button>
-        </motion.div>
+        </div>
+        <div className="tv-faixa tv-faixa--4">
+          {curiosas.map((c, i) => (
+            <CardProf key={c.id} c={c} indice={i} compacto onAbrir={() => ir({ id: 'carreira', carreira: c.id, de: 'explorar' })} />
+          ))}
+        </div>
+      </section>
+
+      <section className="tv-ini__atalhos">
+        <button className="tv-card tv-ini__atalho" onClick={() => ir({ id: 'plano' })}>
+          <span className="tv-benef__ic tv-benef__ic--roxo">
+            <CalendarDays size={24} />
+          </span>
+          <span>
+            <strong>Meu Plano</strong>
+            <small>{s.acoes.filter((a) => !a.feita).length ? `${s.acoes.filter((a) => !a.feita).length} ações para fazer` : 'Monte ações para investigar profissões'}</small>
+          </span>
+          <ArrowRight size={18} />
+        </button>
+        <button className="tv-card tv-ini__atalho" onClick={() => ir({ id: 'minhas' })}>
+          <span className="tv-benef__ic tv-benef__ic--rosa">
+            <Heart size={24} />
+          </span>
+          <span>
+            <strong>Favoritos</strong>
+            <small>{s.favoritos.length ? `${s.favoritos.length} profissões salvas` : 'Salve profissões para ver depois'}</small>
+          </span>
+          <ArrowRight size={18} />
+        </button>
       </section>
     </div>
   )

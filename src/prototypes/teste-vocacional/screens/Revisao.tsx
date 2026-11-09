@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowRight, Check, ChevronDown, CircleAlert, PencilLine } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, ChevronDown, CircleAlert, PencilLine } from 'lucide-react'
 import { useRef, useState } from 'react'
-import { Btn, Voltar } from '../components/ui'
+import { Btn, Etiqueta } from '../components/ui'
 import { BLOCO, BLOCOS, ESCALA, HABILIDADES, ITENS, N_ITENS, contar, itensDo, respondido, type Bloco, type Item, type Resposta } from '../instrumento'
 import { faltando } from '../motor'
 import { useTv } from '../store'
@@ -31,12 +31,16 @@ export default function Revisao() {
   }
 
   return (
-    <div className="tv-foco tv-revisao">
-      <Voltar texto="Voltar às perguntas" onClick={() => ir({ id: 'questionario' }, -1)} />
+    <div className="tv-revisao">
+      <div className="tv-quest__topo">
+        <button className="tv-voltar" onClick={() => ir({ id: 'questionario' }, -1)}>
+          <ArrowLeft size={20} /> Voltar ao teste
+        </button>
+      </div>
       <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}>
-        <span className="tv-sobre">Quase lá</span>
-        <h1 className="tv-h1 tv-h1--m">Revise suas respostas</h1>
-        <p className="tv-texto tv-texto--suave">
+        <Etiqueta>Quase lá</Etiqueta>
+        <h1 className="tv-h1">Revise suas respostas</h1>
+        <p className="tv-lead">
           Você respondeu {contar(r)} de {N_ITENS} perguntas. Pode mudar qualquer resposta antes de ver seu resultado.
         </p>
       </motion.div>

@@ -8,21 +8,22 @@ export const DIA = 86_400_000
 export const HOJE = new Date(2026, 10, 9, 10, 0).getTime()
 
 /** respostas do Bloco A por dimensão (na ordem R01…R05, I01…I05 etc.) */
+/** somas que reproduzem o perfil das telas de referência: I 90 · A 75 · E 70 · R 65 · C 60 · S 50 */
 const PERSONA_A: Record<Dim, number[]> = {
-  R: [2, 3, 2, 2, 3],
+  R: [4, 4, 3, 4, 3],
   I: [5, 5, 4, 5, 4],
-  A: [4, 5, 4, 4, 5],
-  S: [4, 3, 4, 3, 4],
-  E: [2, 3, 2, 3, 3],
-  C: [3, 4, 2, 3, 3],
+  A: [4, 5, 3, 4, 4],
+  S: [3, 3, 3, 3, 3],
+  E: [4, 4, 3, 4, 4],
+  C: [4, 3, 3, 4, 3],
 }
 
 export function respostasPersona(): Respostas {
   const r: Respostas = {}
   for (const i of itensDo('A')) if (i.bloco === 'A') r[i.id] = PERSONA_A[i.dim][Number(i.id.slice(1)) - 1]
-  Object.assign(r, { V01: 3, V02: 4, V03: 4, V04: 5, V05: 5, V06: 5, V07: 3, V08: 4 })
-  Object.assign(r, { P01: 'b', P02: 'b', P03: 'b', P04: 'b', P05: 'a', P06: 'b' })
-  Object.assign(r, { H01: 4, H02: 4, H03: 3, H04: 2, H05: 4, H06: 5, H07: 3, H08: 3, 'H-DEV': ['H03', 'H04', 'H07'] })
+  Object.assign(r, { V01: 3, V02: 3, V03: 4, V04: 5, V05: 2, V06: 4, V07: 2, V08: 2 })
+  Object.assign(r, { P01: 'a', P02: 'b', P03: 'b', P04: 'b', P05: 'a', P06: 'b' })
+  Object.assign(r, { H01: 5, H02: 3, H03: 4, H04: 3, H05: 3, H06: 4, H07: 2, H08: 4, 'H-DEV': ['H07', 'H04', 'H02'] })
   return r
 }
 

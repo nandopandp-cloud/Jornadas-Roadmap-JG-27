@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Check, ChevronDown, MessageCircleHeart, PencilLine, Plus, Trash2 } from 'lucide-react'
 import { useRef, useState, type CSSProperties } from 'react'
 import { AREA, CARREIRA, CARREIRAS } from '../carreiras'
-import { Barra, Btn, Select } from '../components/ui'
+import { Barra, Btn, Etiqueta, Select } from '../components/ui'
 import { acoesSugeridas, perguntasReflexao } from '../motor'
 import { useTv, type Acao } from '../store'
 
@@ -35,10 +35,11 @@ export default function Plano() {
     <div className="tv-plano">
       <header className="tv-pagcab">
         <div>
+          <Etiqueta>Meu plano</Etiqueta>
           <h1 className="tv-h1">Meu plano de exploração</h1>
-          <p>Ações concretas para investigar suas possibilidades, no seu ritmo. Não existe ordem certa: escolha por onde começar.</p>
+          <p className="tv-lead">Ações concretas para investigar suas possibilidades, no seu ritmo. Não existe ordem certa: escolha por onde começar.</p>
         </div>
-        <img src="./voc/memo.webp" alt="" className="tv-pagcab__arte" />
+        <img src="./voc/ref/banner-passos.webp" alt="" className="tv-pagcab__arte" />
       </header>
 
       <div className="tv-plano__grade">

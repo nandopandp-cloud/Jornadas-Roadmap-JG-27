@@ -2,14 +2,15 @@ import { motion } from 'framer-motion'
 import { ArrowRight, GitCompareArrows, Hourglass, Info, RotateCcw } from 'lucide-react'
 import { useState } from 'react'
 import { CARREIRA } from '../carreiras'
-import { Selo } from '../components/perfil'
-import { Barra, Btn, Modal } from '../components/ui'
+import { DimBola } from '../components/perfil'
+import { DIM } from '../instrumento'
+import { Barra, Btn, Etiqueta, Modal } from '../components/ui'
 import { N_ITENS, contar } from '../instrumento'
 import { dataLonga, quando, useTv } from '../store'
 
 /** Minha jornada profissional (PRD §5.13): tentativas, versões e evolução */
 export default function Historico() {
-  const { s, ir, iniciar, atual } = useTv()
+  const { s, ir, atual } = useTv()
   const [novo, setNovo] = useState(false)
   const feitas = s.tentativas.filter((t) => t.status === 'concluida').sort((a, b) => b.fim! - a.fim!)
 
@@ -17,8 +18,9 @@ export default function Historico() {
     <div className="tv-hist">
       <header className="tv-pagcab">
         <div>
-          <h1 className="tv-h1">Minha jornada</h1>
-          <p>Todos os seus testes ficam guardados como eram. Interesses mudam com o tempo, e resultados diferentes não significam erro.</p>
+          <Etiqueta />
+          <h1 className="tv-h1">Histórico de testes</h1>
+          <p className="tv-lead">Todos os seus testes ficam guardados como eram. Interesses mudam com o tempo, e resultados diferentes não significam erro.</p>
         </div>
         {!atual && (
           <Btn icone={<RotateCcw size={16} />} onClick={() => setNovo(true)}>
@@ -39,7 +41,7 @@ export default function Historico() {
             </span>
             <Barra valor={(contar(atual.respostas) / N_ITENS) * 100} rotulo="Progresso" />
           </div>
-          <Btn iconeDir={<ArrowRight size={16} />} onClick={() => ir(atual.clarezaPre === undefined ? { id: 'clareza' } : { id: 'questionario' })}>
+          <Btn iconeDir={<ArrowRight size={16} />} onClick={() => ir({ id: 'questionario' })}>
             Continuar
           </Btn>
         </motion.div>
@@ -78,7 +80,7 @@ export default function Historico() {
                       <small className="tv-tent__rot">Pistas de interesse</small>
                       <div className="tv-tent__selos">
                         {res.perfil.destaques.map((d) => (
-                          <Selo key={d} d={d} tam="p" />
+                          <span key={d} className="tv-tent__dim"><DimBola d={d} tam={26} /> {DIM[d].tecnico}</span>
                         ))}
                       </div>
                     </div>
@@ -129,8 +131,7 @@ export default function Historico() {
             <Btn
               onClick={() => {
                 setNovo(false)
-                iniciar()
-                ir({ id: 'clareza' })
+                ir({ id: 'entrada', clareza: true })
               }}
             >
               Começar nova tentativa

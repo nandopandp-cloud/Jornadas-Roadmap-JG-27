@@ -2,7 +2,8 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight, Check, Columns3, Plus, X } from 'lucide-react'
 import { Fragment, useEffect, type CSSProperties, type ReactNode } from 'react'
 import { AREA, CARREIRA, CARREIRAS, type Carreira } from '../carreiras'
-import { Btn, Estrela, Select } from '../components/ui'
+import { Btn, Coracao, Etiqueta, Select } from '../components/ui'
+import { FotoProf } from '../components/perfil'
 import { DIM, ITEM, type Dim } from '../instrumento'
 import { nivel, preferencias, valoresDestacados } from '../motor'
 import { useTv } from '../store'
@@ -115,10 +116,11 @@ export default function Comparar() {
     <div className="tv-comparar">
       <header className="tv-pagcab">
         <div>
+          <Etiqueta>Explorar profissões</Etiqueta>
           <h1 className="tv-h1">Compare suas possibilidades</h1>
-          <p>Veja lado a lado semelhanças, diferenças e trade-offs. Nenhuma profissão é melhor que outra: o que importa é o que faz sentido para você.</p>
+          <p className="tv-lead">Veja lado a lado semelhanças, diferenças e trade-offs. Nenhuma profissão é melhor que outra: o que importa é o que faz sentido para você.</p>
         </div>
-        <img src="./voc/balance-scale.webp" alt="" className="tv-pagcab__arte" />
+        <img src="./voc/ref/banner-preferencias.webp" alt="" className="tv-pagcab__arte" />
       </header>
 
       {cs.length < 2 && (
@@ -126,7 +128,7 @@ export default function Comparar() {
           <Columns3 size={28} />
           <div>
             <strong>{cs.length ? 'Escolha mais uma profissão para comparar' : 'Escolha de 2 a 3 profissões'}</strong>
-            <span>Use “Comparar” nos cards ou escolha aqui. {s.favoritos.length > 0 && 'Atalho: suas carreiras salvas.'}</span>
+            <span>Escolha aqui ou use “Comparar” na página de cada profissão. {s.favoritos.length > 0 && 'Atalho: seus favoritos.'}</span>
             {s.favoritos.length > 0 && (
               <div className="tv-chips">
                 {s.favoritos
@@ -148,15 +150,13 @@ export default function Comparar() {
           <AnimatePresence initial={false}>
             {cs.map((c, i) => (
               <motion.div key={c.id} layout className="tv-cmp__col-cab" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }}>
+                <FotoProf c={c} className="tv-cmp__foto" />
                 <div className="tv-cmp__topo">
-                  <span className="tv-cmp__ic" style={{ '--c': AREA[c.area].cor } as CSSProperties}>
-                    <img src={c.icone} alt="" />
-                  </span>
-                  <Estrela
+                  <Coracao
                     on={s.favoritos.some((f) => f.id === c.id)}
                     onClick={() => {
                       const on = favoritar(c.id)
-                      toast(on ? `${c.nome} salva em Minhas carreiras.` : `${c.nome} removida de Minhas carreiras.`, on ? 'ok' : 'info')
+                      toast(on ? `${c.nome} adicionado(a) aos favoritos.` : `${c.nome} removido(a) dos favoritos.`, on ? 'ok' : 'info')
                     }}
                   />
                   <button className="tv-iconbtn" onClick={() => toggleComparar(c.id)} aria-label={`Tirar ${c.nome} da comparação`}>

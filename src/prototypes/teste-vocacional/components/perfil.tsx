@@ -1,41 +1,43 @@
 import { motion } from 'framer-motion'
-import { ArrowRight, Columns3, Sparkles, TriangleAlert } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import type { CSSProperties } from 'react'
 import { AREA, perfilDe, type Carreira } from '../carreiras'
 import { DIM, DIMS, type Dim } from '../instrumento'
 import { CATEGORIA, type Recomendacao } from '../motor'
 import { useTv } from '../store'
-import { Estrela, Rico } from './ui'
+import { Coracao } from './ui'
 
-/* ---------------- selo de dimensão (nunca só cor: ícone + nome + sigla) ---------------- */
-export function Selo({ d, tam = 'm', sigla = true }: { d: Dim; tam?: 'p' | 'm' | 'g'; sigla?: boolean }) {
-  const x = DIM[d]
+/* ---------------- bolinha com a letra RIASEC ---------------- */
+export function DimBola({ d, tam = 30, titulo = true }: { d: Dim; tam?: number; titulo?: boolean }) {
   return (
-    <span className={`tv-selo tv-selo--${tam}`} style={{ '--c': x.cor, '--cc': x.claro } as CSSProperties}>
-      <img src={x.icone} alt="" />
-      <span>{x.nome}</span>
-      {sigla && <em title={`Dimensão ${x.tecnico} do modelo RIASEC`}>{d}</em>}
+    <span className="tv-bola" style={{ width: tam, height: tam, fontSize: tam * 0.46, background: DIM[d].cor } as CSSProperties} title={titulo ? DIM[d].tecnico : undefined} aria-label={DIM[d].tecnico}>
+      {d}
     </span>
   )
 }
 
-/* ---------------- mapa de interesses (hexágono de Holland) ---------------- */
-const ANG = DIMS.map((_, i) => -Math.PI / 2 + (i * Math.PI) / 3)
-const pt = (i: number, v: number, R: number, c: number) => [c + Math.cos(ANG[i]) * (R * v) / 100, c + Math.sin(ANG[i]) * (R * v) / 100]
-const pontos = (vals: number[], R: number, c: number) => vals.map((v, i) => pt(i, Math.max(v, 4), R, c).map((n) => n.toFixed(1)).join(',')).join(' ')
+/* ---------------- radar RIASEC (Frames 7 e 8) ---------------- */
+/** ordem do hexágono como nas referências: Investigativa no topo, sentido horário */
+const ORDEM: Dim[] = ['I', 'A', 'E', 'C', 'S', 'R']
+const ANG = ORDEM.map((_, i) => -Math.PI / 2 + (i * Math.PI) / 3)
+const pt = (i: number, v: number, R: number, cx: number, cy: number) => [cx + (Math.cos(ANG[i]) * R * v) / 100, cy + (Math.sin(ANG[i]) * R * v) / 100]
+const pontos = (vals: number[], R: number, cx: number, cy: number) => vals.map((v, i) => pt(i, Math.max(v, 4), R, cx, cy).map((n) => n.toFixed(1)).join(',')).join(' ')
 
-export function Radar({ norm, referencia, tam = 320, destaques = [] }: { norm: Record<Dim, number>; referencia?: Record<Dim, number>; tam?: number; destaques?: Dim[] }) {
-  const c = tam / 2
-  const R = tam * 0.33
-  const vals = DIMS.map((d) => norm[d])
+export function Radar({ norm, referencia, largura = 440, notas = true }: { norm: Record<Dim, number>; referencia?: Record<Dim, number>; largura?: number; notas?: boolean }) {
+  const W = largura
+  const H = largura * 0.86
+  const cx = W / 2
+  const cy = H / 2 + 6
+  const R = H * 0.3
+  const vals = ORDEM.map((d) => norm[d])
   return (
-    <svg className="tv-radar" viewBox={`0 0 ${tam} ${tam}`} width="100%" role="img" aria-label={`Mapa de interesses: ${DIMS.map((d) => `${DIM[d].nome} ${norm[d]} de 100`).join('; ')}`}>
-      {[25, 50, 75, 100].map((n) => (
-        <polygon key={n} points={pontos([n, n, n, n, n, n], R, c)} className={`tv-radar__anel ${n === 100 ? 'is-borda' : ''}`} />
+    <svg className="tv-radar" viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={`Perfil de interesses: ${ORDEM.map((d) => `${DIM[d].tecnico} ${norm[d]}`).join(', ')}`}>
+      {[20, 40, 60, 80, 100].map((n) => (
+        <polygon key={n} points={pontos([n, n, n, n, n, n], R, cx, cy)} className={`tv-radar__anel ${n === 100 ? 'is-borda' : ''}`} />
       ))}
-      {DIMS.map((d, i) => {
-        const [x, y] = pt(i, 100, R, c)
-        return <line key={d} x1={c} y1={c} x2={x} y2={y} className="tv-radar__eixo" />
+      {ORDEM.map((d, i) => {
+        const [x, y] = pt(i, 100, R, cx, cy)
+        return <line key={d} x1={cx} y1={cy} x2={x} y2={y} className="tv-radar__eixo" />
       })}
       {referencia && (
         <motion.polygon
@@ -44,32 +46,35 @@ export function Radar({ norm, referencia, tam = 320, destaques = [] }: { norm: R
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
           points={pontos(
-            DIMS.map((d) => referencia[d]),
+            ORDEM.map((d) => referencia[d]),
             R,
-            c,
+            cx,
+            cy,
           )}
         />
       )}
-      <motion.polygon
-        className="tv-radar__area"
-        initial={{ points: pontos([4, 4, 4, 4, 4, 4], R, c) }}
-        animate={{ points: pontos(vals, R, c) }}
-        transition={{ type: 'spring', stiffness: 70, damping: 14, delay: 0.15 }}
-      />
+      <motion.polygon className="tv-radar__area" initial={{ points: pontos([4, 4, 4, 4, 4, 4], R, cx, cy) }} animate={{ points: pontos(vals, R, cx, cy) }} transition={{ type: 'spring', stiffness: 70, damping: 14, delay: 0.1 }} />
       {vals.map((v, i) => {
-        const [x, y] = pt(i, Math.max(v, 4), R, c)
-        return <motion.circle key={i} className="tv-radar__ponto" r={4.2} initial={{ cx: c, cy: c, opacity: 0 }} animate={{ cx: x, cy: y, opacity: 1 }} transition={{ type: 'spring', stiffness: 70, damping: 14, delay: 0.15 }} style={{ fill: DIM[DIMS[i]].cor }} />
+        const [x, y] = pt(i, Math.max(v, 4), R, cx, cy)
+        return <motion.circle key={i} r={5} style={{ fill: DIM[ORDEM[i]].cor }} className="tv-radar__ponto" initial={{ cx, cy, opacity: 0 }} animate={{ cx: x, cy: y, opacity: 1 }} transition={{ type: 'spring', stiffness: 70, damping: 14, delay: 0.1 }} />
       })}
-      {DIMS.map((d, i) => {
-        const [x, y] = pt(i, 128, R, c)
-        const on = destaques.includes(d)
+      {ORDEM.map((d, i) => {
+        const [x, y] = pt(i, 128, R, cx, cy)
+        const lado = Math.abs(x - cx) < 4 ? 'middle' : x > cx ? 'start' : 'end'
+        const dx = lado === 'start' ? -8 : lado === 'end' ? 8 : 0
         return (
-          <g key={d} transform={`translate(${x} ${y})`} className={`tv-radar__rot ${on ? 'is-on' : ''}`}>
-            <circle r={on ? 21 : 18} style={{ fill: on ? DIM[d].claro : '#fff', stroke: on ? DIM[d].cor : '#e6e7ee' }} />
-            <image href={DIM[d].icone} x={-12} y={-12} width={24} height={24} />
-            <text y={on ? 36 : 33} textAnchor="middle">
-              {DIM[d].nome.split(' e ')[0]}
+          <g key={d} transform={`translate(${x + (lado === 'middle' ? 0 : lado === 'start' ? -16 : 16)} ${y + (i === 0 ? -14 : i === 3 ? 4 : -8)})`}>
+            <text className="tv-radar__nome" textAnchor="middle" x={dx}>
+              {DIM[d].tecnico}
             </text>
+            {notas && (
+              <g transform={`translate(${dx} 10)`}>
+                <rect x={-17} y={0} width={34} height={22} rx={11} style={{ fill: DIM[d].cor }} />
+                <text className="tv-radar__nota" textAnchor="middle" y={15.5}>
+                  {norm[d]}
+                </text>
+              </g>
+            )}
           </g>
         )
       })}
@@ -77,73 +82,70 @@ export function Radar({ norm, referencia, tam = 320, destaques = [] }: { norm: R
   )
 }
 
-/* ---------------- card de profissão ---------------- */
-export function CardCarreira({ c, rec, onAbrir, compacto, indice = 0 }: { c: Carreira; rec?: Recomendacao; onAbrir: () => void; compacto?: boolean; indice?: number }) {
-  const { s, favoritar, toggleComparar, toast, ir } = useTv()
+/* ---------------- foto da profissão (ou ícone 3D quando não houver foto) ---------------- */
+export function FotoProf({ c, className = '' }: { c: Carreira; className?: string }) {
+  return c.foto ? (
+    <span className={`tv-foto ${className}`}>
+      <img src={c.foto} alt="" draggable={false} />
+    </span>
+  ) : (
+    <span className={`tv-foto tv-foto--icone ${className}`} style={{ '--c': AREA[c.area].cor } as CSSProperties}>
+      <img src={c.icone} alt="" draggable={false} />
+    </span>
+  )
+}
+
+/** selo da categoria da sugestão (no lugar de “Alta/Média afinidade” das referências) */
+export function SeloCategoria({ rec }: { rec?: Pick<Recomendacao, 'categoria'> }) {
+  if (!rec) return null
+  return <span className={`tv-afin tv-afin--${rec.categoria}`}>{CATEGORIA[rec.categoria]}</span>
+}
+
+/* ---------------- card de profissão (Frame 9) ---------------- */
+export function CardProf({ c, rec, onAbrir, selecionado, indice = 0, compacto }: { c: Carreira; rec?: Recomendacao; onAbrir: () => void; selecionado?: boolean; indice?: number; compacto?: boolean }) {
+  const { s, favoritar, toast, ir } = useTv()
   const salvo = s.favoritos.some((f) => f.id === c.id)
-  const comparando = s.comparar.includes(c.id)
-  const letras = [...c.codigo] as Dim[]
   return (
     <motion.article
-      className={`tv-cartao tv-ccard ${compacto ? 'tv-ccard--compacto' : ''}`}
+      className={`tv-cprof ${selecionado ? 'is-sel' : ''} ${compacto ? 'tv-cprof--compacto' : ''}`}
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: Math.min(indice, 8) * 0.05 }}
       whileHover={{ y: -3 }}
+      onClick={onAbrir}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), onAbrir())}
+      aria-label={`${c.nome}${rec ? ` · ${CATEGORIA[rec.categoria]}` : ''}`}
     >
-      <div className="tv-ccard__topo">
-        <span className="tv-ccard__ic" style={{ '--c': AREA[c.area].cor } as CSSProperties}>
-          <img src={c.icone} alt="" />
+      <div className="tv-cprof__foto">
+        <FotoProf c={c} />
+        <span className="tv-cprof__fav">
+          <Coracao
+            on={salvo}
+            tam={17}
+            onClick={() => {
+              const on = favoritar(c.id)
+              toast(on ? `${c.nome} adicionado(a) aos favoritos.` : `${c.nome} removido(a) dos favoritos.`, on ? 'ok' : 'info', on ? { rotulo: 'Ver favoritos', fn: () => ir({ id: 'minhas' }) } : undefined)
+            }}
+          />
         </span>
-        <div className="tv-ccard__tags">
-          {rec && <span className={`tv-tag tv-tag--${rec.categoria}`}>{rec.categoria === 'explorar' ? <Sparkles size={12} /> : <ArrowRight size={12} />} {CATEGORIA[rec.categoria]}</span>}
-          {c.poucoConhecida && <span className="tv-tag tv-tag--nova">Pouco conhecida</span>}
-        </div>
-        <Estrela
-          on={salvo}
-          onClick={() => {
-            const on = favoritar(c.id)
-            toast(on ? `${c.nome} salva em Minhas carreiras.` : `${c.nome} removida de Minhas carreiras.`, on ? 'ok' : 'info', on ? { rotulo: 'Ver lista', fn: () => ir({ id: 'minhas' }) } : undefined)
-          }}
-        />
+        <SeloCategoria rec={rec} />
+        {!rec && c.poucoConhecida && <span className="tv-afin tv-afin--nova">Pouco conhecida</span>}
       </div>
-      <small className="tv-ccard__area">{AREA[c.area].nome}</small>
-      <h3 className="tv-ccard__nome">{c.nome}</h3>
-      {rec ? (
-        <p className="tv-ccard__porque">
-          <Rico texto={rec.motivos[0]} />
-        </p>
-      ) : (
-        <p className="tv-ccard__porque">{c.descricao}</p>
-      )}
-      {rec?.atencao && !compacto && (
-        <p className="tv-ccard__atencao">
-          <TriangleAlert size={14} /> <span>{rec.atencao}</span>
-        </p>
-      )}
-      <div className="tv-ccard__dims" aria-label="Interesses relacionados">
-        {letras.map((d) => (
-          <span key={d} className={`tv-mini ${rec?.combina.includes(d) ? 'is-on' : ''}`} style={{ '--c': DIM[d].cor, '--cc': DIM[d].claro } as CSSProperties} title={DIM[d].nome}>
-            <img src={DIM[d].icone} alt="" />
-            {DIM[d].curto}
+      <div className="tv-cprof__corpo">
+        <h3>{c.nome}</h3>
+        <p>{c.descricao.split(/\.\s/)[0].replace(/\.$/, '')}.</p>
+        <div className="tv-cprof__rodape">
+          <span className="tv-cprof__dims">
+            {([...c.codigo] as Dim[]).map((d) => (
+              <DimBola key={d} d={d} tam={compacto ? 26 : 30} />
+            ))}
           </span>
-        ))}
-      </div>
-      <div className="tv-ccard__acoes">
-        <button className="tv-ccard__abrir" onClick={onAbrir}>
-          Conhecer a profissão <ArrowRight size={15} />
-        </button>
-        <button
-          className={`tv-ccard__comp ${comparando ? 'is-on' : ''}`}
-          aria-pressed={comparando}
-          title={comparando ? 'Tirar da comparação' : 'Adicionar à comparação'}
-          onClick={() => {
-            const r = toggleComparar(c.id)
-            if (r === 'cheio') toast('Você pode comparar até 3 profissões. Remova uma para adicionar outra.', 'info')
-          }}
-        >
-          <Columns3 size={15} /> {comparando ? 'Comparando' : 'Comparar'}
-        </button>
+          <span className="tv-cprof__seta" aria-hidden>
+            <ArrowRight size={16} />
+          </span>
+        </div>
       </div>
     </motion.article>
   )
@@ -151,3 +153,4 @@ export function CardCarreira({ c, rec, onAbrir, compacto, indice = 0 }: { c: Car
 
 /** perfil de referência da ocupação (para comparar com o do estudante) */
 export const referenciaDe = (c: Carreira) => perfilDe(c.codigo)
+export { DIMS }

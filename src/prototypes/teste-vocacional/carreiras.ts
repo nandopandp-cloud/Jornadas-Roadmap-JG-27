@@ -26,6 +26,10 @@ export type Carreira = {
   nome: string
   area: Area
   icone: string
+  /** foto da profissão (recortada das telas de referência), quando houver */
+  foto?: string
+  /** vídeo “um dia na vida”, quando houver */
+  video?: { capa: string; titulo: string; duracao: string }
   /** código Holland de referência (2–3 letras, da mais à menos característica) */
   codigo: string
   /** profissão pouco lembrada pelos estudantes (ajuda a ampliar repertório) */
@@ -70,10 +74,12 @@ const ctx = (s: string): Contexto => {
 export const CARREIRAS: Carreira[] = [
   {
     id: 'ciencia-dados',
-    nome: 'Ciência de Dados',
+    nome: 'Cientista de Dados',
+    foto: './voc/ref/foto-ciencia-dados.webp',
+    video: { capa: './voc/ref/video-ciencia-dados.webp', titulo: 'Veja um dia na vida de um Cientista de Dados', duracao: '2:18' },
     area: 'ciencia',
     icone: './voc/bar-chart.webp',
-    codigo: 'ICR',
+    codigo: 'IAE',
     descricao: 'Transforma grandes volumes de dados em respostas para perguntas reais: por que as vendas caíram, quais alunos precisam de apoio, como prever a demanda de um hospital.',
     atividades: ['Coletar e limpar bases de dados', 'Criar análises e modelos estatísticos', 'Construir painéis e visualizações', 'Apresentar descobertas para quem toma decisões'],
     problemas: ['Prever comportamentos e demandas', 'Encontrar padrões escondidos em dados', 'Medir se uma ação funcionou'],
@@ -94,10 +100,11 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'desenvolvimento-software',
-    nome: 'Desenvolvimento de Software',
+    nome: 'Engenheiro(a) de Software',
+    foto: './voc/ref/foto-software.webp',
     area: 'ciencia',
     icone: './voc/laptop.webp',
-    codigo: 'IRC',
+    codigo: 'IEC',
     descricao: 'Planeja, escreve e testa os programas que fazem aplicativos, sites e sistemas funcionarem, do jogo no celular ao sistema de matrícula da escola.',
     atividades: ['Escrever e revisar código', 'Investigar e corrigir erros', 'Conversar com quem vai usar o sistema', 'Trabalhar em equipe com design e produto'],
     problemas: ['Automatizar tarefas repetitivas', 'Criar serviços digitais acessíveis', 'Manter sistemas seguros e estáveis'],
@@ -119,7 +126,7 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'medicina',
-    nome: 'Medicina',
+    nome: 'Médico(a)',
     area: 'saude',
     icone: './voc/stethoscope.webp',
     codigo: 'ISR',
@@ -140,7 +147,7 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'enfermagem',
-    nome: 'Enfermagem',
+    nome: 'Enfermeiro(a)',
     area: 'saude',
     icone: './voc/adhesive-bandage.webp',
     codigo: 'SIC',
@@ -164,7 +171,8 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'psicologia',
-    nome: 'Psicologia',
+    nome: 'Psicólogo(a)',
+    foto: './voc/ref/foto-psicologia.webp',
     area: 'saude',
     icone: './voc/brain.webp',
     codigo: 'SIA',
@@ -185,7 +193,7 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'biomedicina',
-    nome: 'Biomedicina',
+    nome: 'Biomédico(a)',
     area: 'saude',
     icone: './voc/test-tube.webp',
     codigo: 'IRS',
@@ -206,7 +214,7 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'fisioterapia',
-    nome: 'Fisioterapia',
+    nome: 'Fisioterapeuta',
     area: 'saude',
     icone: './voc/bone.webp',
     codigo: 'SRI',
@@ -227,7 +235,7 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'engenharia-mecanica',
-    nome: 'Engenharia Mecânica',
+    nome: 'Engenheiro(a) Mecânico(a)',
     area: 'engenharia',
     icone: './voc/gear.webp',
     codigo: 'RIC',
@@ -273,7 +281,7 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'agronomia',
-    nome: 'Agronomia',
+    nome: 'Agrônomo(a)',
     area: 'ambiente',
     icone: './voc/sheaf-of-rice.webp',
     codigo: 'RIE',
@@ -297,7 +305,8 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'arquitetura',
-    nome: 'Arquitetura e Urbanismo',
+    nome: 'Arquiteto(a) e Urbanista',
+    foto: './voc/ref/foto-arquitetura.webp',
     area: 'artes',
     icone: './voc/building-construction.webp',
     codigo: 'AIR',
@@ -318,7 +327,8 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'design-ux',
-    nome: 'Design de Produto (UX)',
+    nome: 'Designer de Produto',
+    foto: './voc/ref/foto-design-ux.webp',
     area: 'artes',
     icone: './voc/triangular-ruler.webp',
     codigo: 'AIE',
@@ -344,7 +354,7 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'jornalismo',
-    nome: 'Jornalismo',
+    nome: 'Jornalista',
     area: 'artes',
     icone: './voc/newspaper.webp',
     codigo: 'AES',
@@ -365,7 +375,7 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'producao-audiovisual',
-    nome: 'Produção Audiovisual',
+    nome: 'Produtor(a) Audiovisual',
     area: 'artes',
     icone: './voc/movie-camera.webp',
     codigo: 'AER',
@@ -388,7 +398,7 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'design-games',
-    nome: 'Design de Games',
+    nome: 'Game Designer',
     area: 'artes',
     icone: './voc/video-game.webp',
     codigo: 'ARI',
@@ -433,7 +443,7 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'servico-social',
-    nome: 'Serviço Social',
+    nome: 'Assistente Social',
     area: 'sociedade',
     icone: './voc/dove.webp',
     codigo: 'SEA',
@@ -455,7 +465,7 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'administracao',
-    nome: 'Administração',
+    nome: 'Administrador(a)',
     area: 'negocios',
     icone: './voc/briefcase.webp',
     codigo: 'ECS',
@@ -480,7 +490,8 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'marketing',
-    nome: 'Marketing Digital',
+    nome: 'Analista de Marketing',
+    foto: './voc/ref/foto-marketing.webp',
     area: 'negocios',
     icone: './voc/chart-increasing.webp',
     codigo: 'EAC',
@@ -504,7 +515,7 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'direito',
-    nome: 'Direito',
+    nome: 'Advogado(a)',
     area: 'sociedade',
     icone: './voc/balance-scale.webp',
     codigo: 'EIS',
@@ -525,7 +536,7 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'relacoes-internacionais',
-    nome: 'Relações Internacionais',
+    nome: 'Internacionalista',
     area: 'sociedade',
     icone: './voc/globe-showing-americas.webp',
     codigo: 'ESI',
@@ -546,7 +557,7 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'gestao-publica',
-    nome: 'Gestão de Políticas Públicas',
+    nome: 'Gestor(a) de Políticas Públicas',
     area: 'sociedade',
     icone: './voc/classical-building.webp',
     codigo: 'ESC',
@@ -567,7 +578,7 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'contabeis',
-    nome: 'Ciências Contábeis',
+    nome: 'Contador(a)',
     area: 'negocios',
     icone: './voc/ledger.webp',
     codigo: 'CEI',
@@ -591,7 +602,7 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'logistica',
-    nome: 'Logística',
+    nome: 'Analista de Logística',
     area: 'negocios',
     icone: './voc/package.webp',
     codigo: 'CER',
@@ -617,7 +628,7 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'biblioteconomia',
-    nome: 'Ciência da Informação',
+    nome: 'Bibliotecário(a)',
     area: 'educacao',
     icone: './voc/bookmark-tabs.webp',
     codigo: 'CSA',
@@ -638,7 +649,7 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'oceanografia',
-    nome: 'Oceanografia',
+    nome: 'Oceanógrafo(a)',
     area: 'ambiente',
     icone: './voc/water-wave.webp',
     codigo: 'IRC',
@@ -659,7 +670,7 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'veterinaria',
-    nome: 'Medicina Veterinária',
+    nome: 'Médico(a) Veterinário(a)',
     area: 'ambiente',
     icone: './voc/paw-prints.webp',
     codigo: 'IRS',
@@ -680,7 +691,7 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'gastronomia',
-    nome: 'Gastronomia',
+    nome: 'Chef de Cozinha',
     area: 'artes',
     icone: './voc/cooking.webp',
     codigo: 'ARE',
@@ -703,7 +714,7 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'letras-traducao',
-    nome: 'Letras · Tradução e Revisão',
+    nome: 'Tradutor(a) e Revisor(a)',
     area: 'artes',
     icone: './voc/spiral-notepad.webp',
     codigo: 'ACS',
@@ -724,7 +735,7 @@ export const CARREIRAS: Carreira[] = [
   },
   {
     id: 'estatistica',
-    nome: 'Estatística e Atuária',
+    nome: 'Estatístico(a) e Atuário(a)',
     area: 'ciencia',
     icone: './voc/magnifying-glass-tilted-left.webp',
     codigo: 'ICE',
@@ -743,6 +754,53 @@ export const CARREIRAS: Carreira[] = [
     valores: ['V01', 'V02', 'V06'],
     remuneracao: { faixa: 'R$ 4 mil a R$ 10 mil', recorte: 'júnior a pleno · Brasil' },
     autonomo: 'Possível em consultoria de pesquisa.',
+  },
+  {
+    id: 'gestao-projetos',
+    nome: 'Gestor(a) de Projetos',
+    foto: './voc/ref/foto-gestao.webp',
+    area: 'negocios',
+    icone: './voc/spiral-notepad.webp',
+    codigo: 'ECS',
+    descricao: 'Planeja, organiza e lidera projetos de diferentes áreas, garantindo que pessoas, prazos e recursos trabalhem juntos para entregar um resultado.',
+    atividades: ['Planejar etapas, prazos e orçamento', 'Coordenar equipes de diferentes áreas', 'Acompanhar riscos e indicadores', 'Apresentar o andamento para quem decide'],
+    problemas: ['Entregar um projeto no prazo', 'Resolver conflitos entre equipes', 'Ajustar o plano quando algo muda'],
+    competencias: ['Liderança', 'Organização', 'Comunicação', 'Negociação'],
+    ambientes: ['Empresas de tecnologia', 'Construção e engenharia', 'Agências', 'Setor público'],
+    formacoes: [
+      { tipo: 'Bacharelado', nome: 'Administração ou Engenharia de Produção', duracao: '4 a 5 anos' },
+      { tipo: 'Tecnólogo', nome: 'Gestão de Projetos ou Processos Gerenciais', duracao: '2 anos' },
+    ],
+    ingresso: { obrigatorio: ['Não há registro profissional obrigatório'], desejavel: ['Experiência coordenando projetos', 'Certificações da área (ex.: métodos ágeis)'] },
+    especializacoes: ['Métodos ágeis', 'Gestão de portfólio', 'Projetos sociais', 'Gestão de produtos'],
+    desafios: ['Muitas demandas ao mesmo tempo', 'Responsabilidade pelo resultado da equipe', 'Mediar interesses diferentes'],
+    relacionadas: ['administracao', 'marketing', 'design-ux'],
+    contexto: ctx('aabbba'),
+    valores: ['V02', 'V07', 'V03', 'V06'],
+    remuneracao: { faixa: 'R$ 5 mil a R$ 12 mil', recorte: 'pleno · Brasil' },
+    autonomo: 'Possível como consultoria.',
+  },
+  {
+    id: 'pesquisa-cientifica',
+    nome: 'Pesquisador(a) Científico(a)',
+    foto: './voc/ref/foto-pesquisa.webp',
+    area: 'ciencia',
+    icone: './voc/telescope.webp',
+    codigo: 'IAR',
+    poucoConhecida: true,
+    descricao: 'Investiga fenômenos e produz conhecimento novo em universidades, institutos e empresas, da física à saúde e às ciências sociais.',
+    atividades: ['Formular perguntas e hipóteses', 'Planejar e conduzir experimentos', 'Analisar resultados', 'Escrever e apresentar artigos'],
+    problemas: ['Descobrir algo que ninguém sabia', 'Testar se uma solução funciona', 'Explicar fenômenos complexos'],
+    competencias: ['Investigação', 'Pensamento crítico', 'Escrita científica', 'Persistência'],
+    ambientes: ['Universidades', 'Institutos de pesquisa', 'Laboratórios', 'Empresas de inovação'],
+    formacoes: [{ tipo: 'Bacharelado', nome: 'Graduação na área de interesse + mestrado e doutorado', duracao: '4 anos + pós-graduação' }],
+    ingresso: { obrigatorio: ['Pós-graduação para a carreira acadêmica'], desejavel: ['Iniciação científica ainda na graduação'] },
+    especializacoes: ['Ciências naturais', 'Saúde', 'Ciências sociais', 'Tecnologia'],
+    desafios: ['Formação longa', 'Bolsas e financiamento limitados', 'Resultados podem levar anos'],
+    relacionadas: ['ciencia-dados', 'biomedicina', 'oceanografia'],
+    contexto: ctx('bbbbaa'),
+    valores: ['V06', 'V03', 'V04'],
+    autonomo: 'Pouco comum; mais em consultorias técnicas.',
   },
 ]
 

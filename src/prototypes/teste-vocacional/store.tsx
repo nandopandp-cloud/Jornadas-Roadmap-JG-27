@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from 'react'
 import { DIA, HOJE, respostasParciais, respostasPassadas, respostasPersona } from './dados'
-import { ITENS, VERSAO_INSTRUMENTO, itensDo, type Bloco, type Resposta, type Respostas } from './instrumento'
+import { ITENS, VERSAO_INSTRUMENTO, type Resposta, type Respostas } from './instrumento'
 import { acoesSugeridas, gerarResultado, type Resultado } from './motor'
 import { CARREIRA } from './carreiras'
 
@@ -27,21 +27,23 @@ export type Favorito = { id: string; em: number; etapa: Etapa }
 export type Acao = { id: string; texto: string; carreira?: string; tipo: string; feita: boolean; criadaEm: number; feitaEm?: number }
 export type Evento = { id: number; nome: string; props: Record<string, string | number>; t: number }
 
+/** abas do resultado (Frames 7, 8, 9, 11, 12, 13 e 14) */
+export type AbaRel = 'visao' | 'areas' | 'profissoes' | 'valores' | 'preferencias' | 'habilidades' | 'passos'
+/** abas da página da profissão (Frame 10) */
+export type AbaProf = 'visao' | 'dia' | 'onde' | 'formacao' | 'habilidades' | 'mercado' | 'conteudos'
+
 export type View =
   | { id: 'inicio' }
-  | { id: 'entrada' }
-  | { id: 'clareza' }
-  | { id: 'intro' }
-  | { id: 'questionario'; capa?: Bloco }
+  | { id: 'entrada'; clareza?: boolean }
+  | { id: 'questionario' }
   | { id: 'revisao' }
   | { id: 'processando' }
-  | { id: 'relatorio'; tentativa?: string; secao?: string }
-  | { id: 'carreira'; carreira: string; de?: 'relatorio' | 'explorar' | 'minhas' | 'comparar' | 'plano'; posicao?: number }
-  | { id: 'explorar'; dim?: string }
+  | { id: 'relatorio'; aba?: AbaRel; tentativa?: string; clarezaPos?: boolean; sel?: string }
+  | { id: 'carreira'; carreira: string; de?: 'relatorio' | 'explorar' | 'minhas' | 'comparar' | 'plano'; aba?: AbaProf }
+  | { id: 'explorar'; dim?: string; q?: string }
   | { id: 'comparar' }
   | { id: 'minhas' }
   | { id: 'plano' }
-  | { id: 'clareza-pos' }
   | { id: 'historico' }
 
 export type Toast = { id: number; texto: string; tipo: 'ok' | 'info' | 'erro'; acao?: { rotulo: string; fn: () => void } }
@@ -64,20 +66,26 @@ export type Inicio =
   | 'inicio'
   | 'entrada'
   | 'clareza'
-  | 'intro'
   | 'questionario'
-  | 'pares'
+  | 'q-valores'
+  | 'q-preferencias'
+  | 'q-habilidades'
   | 'retomar'
   | 'revisao'
   | 'processando'
   | 'relatorio'
+  | 'areas'
   | 'recomendacoes'
+  | 'res-valores'
+  | 'res-preferencias'
+  | 'res-habilidades'
+  | 'passos'
+  | 'clareza-pos'
   | 'carreira'
   | 'explorar'
   | 'comparar'
   | 'minhas'
   | 'plano'
-  | 'clareza-pos'
   | 'historico'
 
 /* ---------------- estados iniciais (atalhos de fluxo) ---------------- */
@@ -115,52 +123,55 @@ function concluida(): Tentativa {
 }
 
 const favPreset = (): Favorito[] => [
-  { id: 'design-ux', em: HOJE - 3 * 60_000, etapa: 'investigando' },
-  { id: 'psicologia', em: HOJE - 2 * 60_000, etapa: 'conhecer' },
-  { id: 'ciencia-dados', em: HOJE - 60_000, etapa: 'conhecer' },
+  { id: 'ciencia-dados', em: HOJE - 3 * 60_000, etapa: 'investigando' },
+  { id: 'design-ux', em: HOJE - 2 * 60_000, etapa: 'conhecer' },
+  { id: 'arquitetura', em: HOJE - 60_000, etapa: 'conhecer' },
   { id: 'jornalismo', em: HOJE - 30_000, etapa: 'conheci' },
 ]
 function acoesPreset(): Acao[] {
-  const ux = acoesSugeridas(CARREIRA['design-ux'])
-  const psi = acoesSugeridas(CARREIRA['psicologia'])
+  const ux = acoesSugeridas(CARREIRA['ciencia-dados'])
+  const psi = acoesSugeridas(CARREIRA['design-ux'])
   return [
-    { id: 'a1', texto: ux[0].texto, tipo: ux[0].tipo, carreira: 'design-ux', feita: true, criadaEm: HOJE - 3 * 60_000, feitaEm: HOJE - 60_000 },
-    { id: 'a2', texto: ux[1].texto, tipo: ux[1].tipo, carreira: 'design-ux', feita: false, criadaEm: HOJE - 3 * 60_000 },
-    { id: 'a3', texto: psi[2].texto, tipo: psi[2].tipo, carreira: 'psicologia', feita: false, criadaEm: HOJE - 2 * 60_000 },
+    { id: 'a1', texto: ux[0].texto, tipo: ux[0].tipo, carreira: 'ciencia-dados', feita: true, criadaEm: HOJE - 3 * 60_000, feitaEm: HOJE - 60_000 },
+    { id: 'a2', texto: ux[1].texto, tipo: ux[1].tipo, carreira: 'ciencia-dados', feita: false, criadaEm: HOJE - 3 * 60_000 },
+    { id: 'a3', texto: psi[2].texto, tipo: psi[2].tipo, carreira: 'design-ux', feita: false, criadaEm: HOJE - 2 * 60_000 },
     { id: 'a4', texto: 'Perguntar à orientadora da escola sobre feiras de profissões', tipo: 'pessoal', feita: false, criadaEm: HOJE - 60_000 },
   ]
 }
 
+const ABA: Partial<Record<Inicio, AbaRel>> = { relatorio: 'visao', areas: 'areas', recomendacoes: 'profissoes', 'res-valores': 'valores', 'res-preferencias': 'preferencias', 'res-habilidades': 'habilidades', passos: 'passos', 'clareza-pos': 'passos' }
+/** pergunta inicial de cada atalho do questionário (índice em ITENS) */
+const POS_Q: Partial<Record<Inicio, number>> = { questionario: 0, 'q-valores': 30, 'q-preferencias': 38, 'q-habilidades': 44 }
+
 function inicial(start: Inicio): State {
   const base: State = { view: { id: 'inicio' }, dir: 1, sidebarFechada: false, tentativas: [], favoritos: [], acoes: [], comparar: [], descartadas: [], eventos: [], salvando: 'ok' }
-  const comResultado = ['relatorio', 'recomendacoes', 'carreira', 'explorar', 'comparar', 'minhas', 'plano', 'clareza-pos', 'historico'].includes(start)
+  const comResultado = !!ABA[start] || ['carreira', 'explorar', 'comparar', 'minhas', 'plano', 'historico'].includes(start)
   const preset = ['comparar', 'minhas', 'plano', 'historico'].includes(start)
   const todas = respostasPersona()
+  const ate = (n: number) => Object.fromEntries(ITENS.slice(0, n).map((i) => [i.id, todas[i.id]]).filter(([, v]) => v !== undefined))
   const semDuas = Object.fromEntries(Object.entries(todas).filter(([k]) => k !== 'V07' && k !== 'P04'))
   const tent: Tentativa[] =
-    start === 'clareza' ? [nova({}, { clarezaPre: undefined, pos: 0 })]
-    : start === 'intro' ? [nova({}, { pos: 0 })]
-    : start === 'questionario' ? [nova(respostasParciais(7))]
-    : start === 'pares' ? [nova(Object.fromEntries(Object.entries(todas).filter(([k]) => /^[RIASEC]0|^V/.test(k))), { pos: itensDo('A').length + itensDo('B').length })]
+    start === 'clareza' ? []
+    : POS_Q[start] !== undefined ? [nova(ate(POS_Q[start]!), { pos: POS_Q[start]! })]
     : start === 'retomar' ? [nova(respostasParciais(23), { inicio: HOJE - DIA - 40 * 60_000 })]
     : start === 'revisao' ? [nova(semDuas, { pos: ITENS.length - 1 })]
     : start === 'processando' ? [nova(todas, { pos: ITENS.length - 1 })]
     : comResultado ? [concluida(), passada()]
     : []
   const view: View =
-    start === 'questionario' ? { id: 'questionario' }
-    : start === 'pares' ? { id: 'questionario', capa: 'C' }
+    ABA[start] ? { id: 'relatorio', aba: ABA[start], clarezaPos: start === 'clareza-pos' }
+    : POS_Q[start] !== undefined ? { id: 'questionario' }
+    : start === 'clareza' ? { id: 'entrada', clareza: true }
     : start === 'retomar' ? { id: 'entrada' }
-    : start === 'recomendacoes' ? { id: 'relatorio', secao: 'possibilidades' }
-    : start === 'carreira' ? { id: 'carreira', carreira: 'design-ux', de: 'relatorio', posicao: 1 }
-    : { id: start } as View
+    : start === 'carreira' ? { id: 'carreira', carreira: 'ciencia-dados', de: 'relatorio' }
+    : ({ id: start } as View)
   return {
     ...base,
     view,
     tentativas: tent,
     favoritos: preset ? favPreset() : [],
     acoes: preset ? acoesPreset() : [],
-    comparar: start === 'comparar' ? ['design-ux', 'psicologia', 'ciencia-dados'] : [],
+    comparar: start === 'comparar' ? ['ciencia-dados', 'design-ux', 'arquitetura'] : [],
   }
 }
 
@@ -226,6 +237,7 @@ export function TvProvider({ start, children }: { start: Inicio; children: React
       ir: (view: View, dir: 1 | -1 = 1) => {
         up((x) => ({ ...x, view, dir }))
         document.querySelector('.tv-main')?.scrollTo({ top: 0 })
+        document.querySelector('.tv-painel')?.scrollTo({ top: 0 })
       },
       toggleSidebar: () => up((x) => ({ ...x, sidebarFechada: !x.sidebarFechada })),
       iniciar: () => {

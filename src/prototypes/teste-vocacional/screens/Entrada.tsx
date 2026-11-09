@@ -1,135 +1,114 @@
 import { motion } from 'framer-motion'
-import { ArrowRight, Clock3, Compass, EyeOff, ListChecks, Map, RotateCcw, Save, Search, Sparkles, Signpost } from 'lucide-react'
+import { ArrowRight, BarChart3, BrainCircuit, Clock3, Compass, History, RotateCcw, ShieldCheck } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Barra, Brilhos, Btn, Modal } from '../components/ui'
-import { DIM, DIMS, ITENS, N_ITENS, contar } from '../instrumento'
+import { ClarezaInicial } from '../components/clareza'
+import { Barra, Btn, Etiqueta, Modal } from '../components/ui'
+import { ITENS, N_ITENS, contar } from '../instrumento'
 import { quando, useTv } from '../store'
 
-/** Entrada da funcionalidade (PRD §5.2): finalidade, limites, duração e início */
-export default function Entrada() {
-  const { ir, iniciar, track, atual, ultima } = useTv()
+/** Abertura do Teste Vocacional (Frame 3 · PRD §5.2 e §5.3) */
+export default function Entrada({ clareza }: { clareza?: boolean }) {
+  const { ir, iniciar, setClarezaPre, track, atual, ultima } = useTv()
+  const [modal, setModal] = useState(!!clareza)
   const [recomecar, setRecomecar] = useState(false)
   useEffect(() => track('career_test_entry_viewed', { origem: 'menu', interface: 'v1' }), [track])
-
   const respondidas = atual ? contar(atual.respostas) : 0
-  const comecar = () => {
+
+  const comecar = (v: number | null) => {
+    setModal(false)
     iniciar()
-    ir({ id: 'clareza' })
+    setClarezaPre(v)
+    ir({ id: 'questionario' })
   }
   const continuar = () => {
     track('career_questionnaire_resumed', { etapa: ITENS[atual!.pos]?.bloco ?? 'A' })
-    ir(atual!.clarezaPre === undefined ? { id: 'clareza' } : { id: 'questionario' })
+    ir({ id: 'questionario' })
   }
 
-  const recursos = [
-    { I: Compass, cor: 'roxo', t: 'Conheça seus interesses', d: 'Veja quais tipos de atividade despertam mais a sua vontade, em linguagem simples.' },
-    { I: Map, cor: 'azul', t: 'Explore profissões', d: 'Receba possibilidades com o porquê de cada uma, incluindo carreiras que você talvez não conheça.' },
-    { I: Signpost, cor: 'verde', t: 'Planeje próximos passos', d: 'Salve, compare e monte um plano com ações concretas para investigar seu futuro.' },
+  const beneficios = [
+    { I: BrainCircuit, cor: 'roxo', t: 'Baseado em metodologias científicas', d: 'Utiliza o modelo RIASEC e análise de competências, valores e preferências de trabalho.' },
+    { I: Clock3, cor: 'verde', t: 'Leva cerca de 15 minutos', d: `São ${N_ITENS} perguntas objetivas e intuitivas.` },
+    { I: BarChart3, cor: 'azul', t: 'Resultados personalizados', d: 'Você receberá um relatório completo com seu perfil e profissões recomendadas.' },
+    { I: Compass, cor: 'amarelo', t: 'Mais clareza para o seu futuro', d: 'Use os resultados para explorar conteúdos, universidades e construir seu plano na Geniex.' },
   ]
 
   return (
-    <div className="tv-entrada">
-      <section className="tv-entrada__hero">
-        <motion.div className="tv-entrada__txt" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}>
-          <span className="tv-sobre">Seu futuro · Teste Vocacional</span>
-          <h1 className="tv-h1">Descubra seus interesses. Explore possibilidades. Construa seu próximo passo.</h1>
-          <p>Responda perguntas sobre o que você gosta de fazer, o que é importante para você e como imagina seu trabalho. No final, você recebe um perfil com profissões para explorar.</p>
-          <ul className="tv-fatos">
-            <li>
-              <Clock3 size={16} /> Cerca de 12 minutos
-            </li>
-            <li>
-              <ListChecks size={16} /> {N_ITENS} perguntas em 4 etapas
-            </li>
-            <li>
-              <Save size={16} /> Salva automaticamente
-            </li>
-          </ul>
+    <div className="tv-abertura">
+      <div className="tv-abertura__txt">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+          <Etiqueta />
+          <h1 className="tv-h1">
+            Descubra caminhos
+            <br />
+            que combinam com você
+          </h1>
+          <p className="tv-lead">O teste vocacional da Geniex foi desenvolvido para te ajudar a entender melhor seus interesses, habilidades e valores, e apresentar profissões que fazem sentido com o seu perfil.</p>
         </motion.div>
-        <HeroArte />
-      </section>
 
-      {atual && (
-        <motion.section className="tv-cartao tv-retomar" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-          <span className="tv-retomar__ic">
-            <img src="./voc/hourglass-not-done.webp" alt="" />
-          </span>
-          <div className="tv-retomar__txt">
-            <strong>Continue de onde parou</strong>
-            <span>
-              Você respondeu {respondidas} de {N_ITENS} perguntas · começou {quando(atual.inicio).toLowerCase()}. Suas respostas estão salvas.
-            </span>
-            <Barra valor={(respondidas / N_ITENS) * 100} rotulo="Progresso do teste" />
-          </div>
-          <div className="tv-retomar__acoes">
-            <Btn variante="fantasma" icone={<RotateCcw size={15} />} onClick={() => setRecomecar(true)}>
-              Recomeçar
-            </Btn>
-            <Btn grande iconeDir={<ArrowRight size={17} />} onClick={continuar}>
-              Continuar teste
-            </Btn>
-          </div>
-        </motion.section>
-      )}
+        <ul className="tv-benef">
+          {beneficios.map(({ I, cor, t, d }, i) => (
+            <motion.li key={t} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.08 + i * 0.07 }}>
+              <span className={`tv-benef__ic tv-benef__ic--${cor}`}>
+                <I size={26} strokeWidth={1.8} />
+              </span>
+              <span>
+                <strong>{t}</strong>
+                <small>{d}</small>
+              </span>
+            </motion.li>
+          ))}
+        </ul>
 
-      <div className="tv-recursos">
-        {recursos.map(({ I, cor, t, d }, i) => (
-          <motion.div key={t} className="tv-cartao tv-recurso" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 + i * 0.07 }} whileHover={{ y: -3 }}>
-            <span className={`tv-recurso__ic tv-recurso__ic--${cor}`}>
-              <I size={26} strokeWidth={2} />
-            </span>
-            <strong>{t}</strong>
-            <p>{d}</p>
+        {atual ? (
+          <motion.div className="tv-retomar" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+            <div className="tv-retomar__txt">
+              <strong>Continue de onde parou</strong>
+              <span>
+                {respondidas} de {N_ITENS} perguntas respondidas · começou {quando(atual.inicio).toLowerCase()}
+              </span>
+              <Barra valor={(respondidas / N_ITENS) * 100} rotulo="Progresso do teste" />
+            </div>
+            <div className="tv-retomar__acoes">
+              <Btn grande iconeDir={<ArrowRight size={19} />} onClick={continuar}>
+                Continuar teste
+              </Btn>
+              <button className="tv-link" onClick={() => setRecomecar(true)}>
+                <RotateCcw size={14} /> Recomeçar do zero
+              </button>
+            </div>
           </motion.div>
-        ))}
+        ) : ultima ? (
+          <div className="tv-abertura__ctas">
+            <Btn grande iconeDir={<ArrowRight size={19} />} onClick={() => ir({ id: 'relatorio' })}>
+              Ver meu resultado
+            </Btn>
+            <Btn grande variante="claro" icone={<RotateCcw size={17} />} onClick={() => setModal(true)}>
+              Refazer o teste
+            </Btn>
+            <button className="tv-link" onClick={() => ir({ id: 'historico' })}>
+              <History size={14} /> Histórico de testes
+            </button>
+          </div>
+        ) : (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.36 }}>
+            <Btn grande className="tv-abertura__cta" iconeDir={<ArrowRight size={20} />} onClick={() => setModal(true)}>
+              Começar teste agora
+            </Btn>
+          </motion.div>
+        )}
+
+        <p className="tv-abertura__nota">
+          <ShieldCheck size={20} strokeWidth={1.6} />
+          Suas respostas são confidenciais e utilizadas apenas para gerar seus resultados. Este não é um teste clínico ou diagnóstico psicológico.
+        </p>
       </div>
 
-      <motion.section className="tv-saiba" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-        <h2 className="tv-h2">Antes de começar, saiba que</h2>
-        <ul>
-          <li>
-            <Sparkles size={18} />
-            <span>
-              <strong>Não existe resposta certa ou errada.</strong> Responda pensando no que você gosta, não no que esperam de você.
-            </span>
-          </li>
-          <li>
-            <Compass size={18} />
-            <span>
-              <strong>O resultado é um ponto de partida, não uma decisão.</strong> Ele mostra possibilidades para investigar, nunca uma profissão ideal.
-            </span>
-          </li>
-          <li>
-            <EyeOff size={18} />
-            <span>
-              <strong>Só você vê suas respostas.</strong> Elas não viram nota, não são compartilhadas com colegas e não limitam nada na escola.
-            </span>
-          </li>
-          <li>
-            <Map size={18} />
-            <span>
-              <strong>Não é um teste psicológico nem de aptidão.</strong> Ele organiza seus interesses; não mede inteligência nem capacidade.
-            </span>
-          </li>
-        </ul>
-      </motion.section>
+      <motion.div className="tv-abertura__arte" initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1, type: 'spring', stiffness: 160, damping: 20 }}>
+        <img src="./voc/ref/abertura.webp" alt="Estudante sorrindo, cercada por cartões: seus interesses, seus valores, suas habilidades e seu estilo de trabalho" />
+        <button className="tv-abertura__profs" onClick={() => ir({ id: 'explorar' })} aria-label="Profissões que combinam com o seu perfil: explorar profissões" />
+      </motion.div>
 
-      {!atual && (
-        <motion.div className="tv-entrada__cta" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.36 }}>
-          <Btn grande iconeDir={<ArrowRight size={18} />} onClick={comecar}>
-            {ultima ? 'Fazer o teste novamente' : 'Começar o teste'}
-          </Btn>
-          <button className="tv-link tv-link--seta" onClick={() => ir({ id: 'explorar' })}>
-            <Search size={15} /> Já tem uma profissão em mente? Explore o catálogo
-          </button>
-        </motion.div>
-      )}
-      {ultima && !atual && (
-        <p className="tv-entrada__nota">
-          Seu último resultado é de {quando(ultima.fim!).toLowerCase()}. Ao refazer, ele continua guardado em <button className="tv-link" onClick={() => ir({ id: 'historico' })}>Minha jornada</button>.
-        </p>
-      )}
-
+      <ClarezaInicial aberto={modal} onFechar={() => setModal(false)} onContinuar={comecar} />
       <Modal
         aberto={recomecar}
         onFechar={() => setRecomecar(false)}
@@ -142,7 +121,7 @@ export default function Entrada() {
             <Btn
               onClick={() => {
                 setRecomecar(false)
-                comecar()
+                setModal(true)
               }}
             >
               Recomeçar
@@ -152,24 +131,6 @@ export default function Entrada() {
       >
         <p className="tv-texto">As {respondidas} respostas desta tentativa serão descartadas e você começa uma nova. Resultados de testes já concluídos continuam guardados.</p>
       </Modal>
-    </div>
-  )
-}
-
-/** bússola com as seis áreas de interesse orbitando */
-function HeroArte() {
-  return (
-    <div className="tv-heroarte" aria-hidden>
-      <Brilhos n={6} />
-      <motion.span className="tv-heroarte__disco" initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: 'spring', stiffness: 160, damping: 16 }} />
-      <motion.img className="tv-heroarte__bussola" src="./voc/compass.webp" alt="" initial={{ scale: 0.4, rotate: -40 }} animate={{ scale: 1, rotate: [0, 10, -8, 0] }} transition={{ scale: { type: 'spring', stiffness: 180, damping: 14 }, rotate: { duration: 7, repeat: Infinity, ease: 'easeInOut' } }} />
-      <motion.div className="tv-heroarte__orbita" animate={{ rotate: 360 }} transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}>
-        {DIMS.map((d, i) => (
-          <span key={d} className="tv-heroarte__dim" style={{ transform: `rotate(${i * 60}deg) translateY(-118px) rotate(${-i * 60}deg)`, background: DIM[d].claro, borderColor: DIM[d].cor, animationDelay: `${0.25 + i * 0.08}s` }}>
-            <motion.img src={DIM[d].icone} alt="" animate={{ rotate: -360 }} transition={{ duration: 60, repeat: Infinity, ease: 'linear' }} />
-          </span>
-        ))}
-      </motion.div>
     </div>
   )
 }
