@@ -186,7 +186,8 @@
   border-bottom: 1px solid var(--linha);
   flex: none;
 }
-.gx-top__menu,
+/* o ≡ só existe no celular (abre a gaveta); no desktop e no tablet quem recolhe a sidebar é o botão de painel */
+.gx-icone-btn.gx-top__menu,
 .gx-top__logo {
   display: none;
 }
@@ -1858,7 +1859,7 @@ button.gx-resumo__card:hover {
     padding: 0 12px;
     gap: 6px;
   }
-  .gx-top__menu {
+  .gx-icone-btn.gx-top__menu {
     display: grid;
   }
   .gx-top__painel,
