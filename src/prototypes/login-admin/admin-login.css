@@ -1477,3 +1477,151 @@
     width: auto;
   }
 }
+
+/* --- estado por método -------------------------------------------------- */
+.la-met {
+  position: relative;
+  display: inline-grid;
+}
+.la-met.is-nao,
+.la-met.is-revogado {
+  opacity: 0.22;
+}
+.la-met.is-bloqueado {
+  color: var(--vermelho);
+}
+.la-met i {
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  top: 50%;
+  height: 2px;
+  border-radius: 1px;
+  background: currentColor;
+  transform: rotate(-40deg);
+}
+.la-met.is-revogado i {
+  background: var(--texto);
+}
+.la-metodos li.is-bloqueado .la-ic-caixa {
+  background: #fbe8e7;
+  color: var(--vermelho);
+}
+.la-metodos li.is-revogado .la-ic-caixa,
+.la-metodos li.is-nao .la-ic-caixa {
+  opacity: 0.5;
+}
+.la-resumo-entrada {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--muted);
+}
+.la-resumo-entrada b {
+  font-weight: 600;
+}
+.la-ver {
+  justify-self: start;
+  height: 32px;
+  color: var(--azul);
+}
+.la-aviso-ver {
+  color: var(--alerta) !important;
+}
+.la-switch.is-parcial i {
+  background: #f2b8b5;
+}
+.la-switch.is-parcial i::after {
+  transform: translateX(10px);
+}
+.la-switch {
+  text-align: left;
+}
+
+/* --- escolha dos métodos (revogar, bloquear, permitir) -------------------- */
+.la-escolha {
+  display: grid;
+  gap: 10px;
+}
+.la-escolha-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.la-escolha-topo b {
+  font-weight: 600;
+  color: var(--tinta);
+}
+.la-escolha-topo label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--suave);
+  cursor: pointer;
+}
+.la-escolha ul {
+  border: 1px solid var(--linha);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.la-escolha li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--linha);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.la-escolha li:first-child {
+  border-top: 0;
+}
+.la-escolha li:hover:not(.is-off) {
+  background: #fafafa;
+}
+.la-escolha li.is-on {
+  background: #fdf3f2;
+}
+.la-escolha li.is-off {
+  cursor: default;
+}
+.la-escolha li.is-off > svg,
+.la-escolha li.is-off > span b {
+  opacity: 0.5;
+}
+.la-escolha li > span {
+  flex: 1;
+  display: grid;
+  min-width: 0;
+}
+.la-escolha li b {
+  font-weight: 500;
+}
+.la-escolha li small {
+  font-size: 12px;
+  color: var(--suave);
+}
+.la-chk:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.la-escolha-resumo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #e5f2ed;
+  color: var(--verde);
+  font-weight: 500;
+}
+.la-escolha-resumo.is-nada {
+  background: #fbe8e7;
+  color: var(--vermelho);
+}
+.la-escolha-resumo svg {
+  flex: none;
+}
