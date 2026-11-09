@@ -19,6 +19,24 @@ export default function Hub({ slug }: { slug?: string }) {
   const [shareOpen, setShareOpen] = useState(false)
   const [drawer, setDrawer] = useState(false)
   const isNarrow = useMedia('(max-width: 860px)')
+  // sidebar recolhida (só ícones) — preferência lembrada neste navegador
+  const [recolhida, setRecolhida] = useState(() => {
+    try {
+      return localStorage.getItem('pf-sidebar-recolhida') === '1'
+    } catch {
+      return false
+    }
+  })
+  const alternarSidebar = () =>
+    setRecolhida((r) => {
+      try {
+        localStorage.setItem('pf-sidebar-recolhida', r ? '0' : '1')
+      } catch {
+        /* sem armazenamento: vale só nesta sessão */
+      }
+      return !r
+    })
+  const compacta = recolhida && !isNarrow
 
   useEffect(() => {
     document.title = `${journey.name} · Jornadas Jovens Gênios`
@@ -42,7 +60,7 @@ export default function Hub({ slug }: { slug?: string }) {
   const navegavel = journey.status === 'navegavel'
 
   return (
-    <div className="pf">
+    <div className={`pf ${compacta ? 'is-recolhida' : ''}`}>
       {/* ------- sidebar ------- */}
       <AnimatePresence>
         {isNarrow && drawer && (
@@ -58,10 +76,25 @@ export default function Hub({ slug }: { slug?: string }) {
       <aside className={`pf-side ${drawer ? 'is-open' : ''}`}>
         <div className="pf-brand">
           <BrandMark />
-          <div>
+          <div className="pf-brand__text">
             <strong>Jornadas</strong>
             <span>Roadmap 2027 · Jovens Gênios</span>
           </div>
+          {!isNarrow && (
+            <button
+              className="pf-collapse"
+              onClick={alternarSidebar}
+              aria-label={compacta ? 'Expandir menu' : 'Recolher menu'}
+              title={compacta ? 'Expandir menu' : 'Recolher menu'}
+              aria-expanded={!compacta}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="4" width="18" height="16" rx="3" />
+                <path d="M9 4v16" />
+                <path d={compacta ? 'M13.5 10l2 2-2 2' : 'M15.5 10l-2 2 2 2'} />
+              </svg>
+            </button>
+          )}
         </div>
 
         <p className="pf-side__label">Protótipos navegáveis</p>
@@ -71,6 +104,7 @@ export default function Hub({ slug }: { slug?: string }) {
               key={j.slug}
               className={`pf-item ${j.slug === journey.slug ? 'is-active' : ''} ${j.status !== 'navegavel' ? 'is-building' : ''}`}
               onClick={() => select(j)}
+              title={compacta ? j.name : undefined}
             >
               <span className="pf-item__icon">
                 <img src={j.icon} alt="" />
@@ -83,7 +117,7 @@ export default function Hub({ slug }: { slug?: string }) {
               {j.slug === journey.slug && <motion.span layoutId="pf-active" className="pf-item__bar" />}
             </button>
           ))}
-          <div className="pf-item pf-item--soon">
+          <div className="pf-item pf-item--soon" title={compacta ? 'Próxima jornada · em breve' : undefined}>
             <span className="pf-item__icon pf-item__icon--dashed">+</span>
             <span className="pf-item__text">
               <strong>Próxima jornada</strong>

@@ -41,6 +41,7 @@ button {
   grid-template-columns: 290px 1fr;
   height: 100dvh;
   overflow: hidden;
+  transition: grid-template-columns 0.25s ease;
 }
 
 /* ---------- sidebar ---------- */
@@ -52,12 +53,65 @@ button {
   padding: 22px 16px;
   gap: 8px;
   z-index: 30;
+  min-height: 0;
+  overflow: hidden;
 }
 .pf-brand {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 4px 8px 18px;
+}
+.pf-brand__text {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+}
+.pf-collapse {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--pf-muted);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.pf-collapse:hover {
+  background: var(--pf-soft);
+  color: var(--pf-accent);
+}
+/* ---------- sidebar recolhida ---------- */
+.pf.is-recolhida {
+  grid-template-columns: 84px 1fr;
+}
+.pf.is-recolhida .pf-side {
+  padding: 22px 12px;
+}
+.pf.is-recolhida .pf-brand {
+  flex-direction: column;
+  padding: 4px 0 12px;
+  gap: 10px;
+}
+.pf.is-recolhida .pf-brand__text,
+.pf.is-recolhida .pf-side__label,
+.pf.is-recolhida .pf-item__text,
+.pf.is-recolhida .pf-side__foot {
+  display: none;
+}
+.pf.is-recolhida .pf-list {
+  margin: 0 -12px;
+  padding: 2px 12px 8px;
+}
+.pf.is-recolhida .pf-item {
+  justify-content: center;
+  padding: 8px 0;
+}
+.pf.is-recolhida .pf-item__bar {
+  left: -12px;
 }
 .pf-brand strong {
   display: block;
@@ -67,6 +121,9 @@ button {
   letter-spacing: -0.01em;
 }
 .pf-brand span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 12.5px;
   color: var(--pf-muted);
   font-weight: 600;
@@ -83,6 +140,23 @@ button {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  /* a lista rola sozinha; marca e rodapé ficam fixos */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* respiro lateral para a barrinha do item ativo (left: -16px) não ser cortada */
+  margin: 0 -16px;
+  padding: 2px 16px 8px;
+  scrollbar-width: thin;
+  scrollbar-color: #d9cff2 transparent;
+}
+.pf-list::-webkit-scrollbar {
+  width: 6px;
+}
+.pf-list::-webkit-scrollbar-thumb {
+  background: #d9cff2;
+  border-radius: 6px;
 }
 .pf-item {
   position: relative;
@@ -151,7 +225,8 @@ button {
   background: transparent;
 }
 .pf-side__foot {
-  margin-top: auto;
+  flex: none;
+  margin-top: 4px;
   background: linear-gradient(135deg, #f3edff, #fff7e6);
   border-radius: 14px;
   padding: 14px;
