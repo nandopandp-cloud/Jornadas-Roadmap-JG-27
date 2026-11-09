@@ -24,6 +24,8 @@ export type Journey = {
   dispositivo?: 'desktop' | 'tablet' | 'mobile'
   /** endereço exibido na moldura do navegador (prévia desktop) */
   dominio?: string
+  /** branch da jornada, quando não segue o padrão prototipo-<slug> */
+  branch?: string
   /** atalhos de fluxo: abrem o protótipo direto numa tela */
   flows?: { id: string; label: string; icon: string }[]
   component?: LazyExoticComponent<ComponentType<PrototypeProps>>
@@ -155,6 +157,41 @@ export const journeys: Journey[] = [
       { id: 'config', label: 'Configurações', icon: './3d/crown.png' },
     ],
     component: lazy(() => import('../prototypes/gestao-lojinha')),
+  },
+  {
+    slug: 'teste-vocacional',
+    name: 'Teste Vocacional',
+    product: 'GenieX · Plataforma do Estudante',
+    audience: 'Ensino Médio',
+    description:
+      'Estudante responde 52 perguntas sobre interesses, valores, preferências e habilidades, recebe um perfil com profissões explicadas, explora e compara carreiras, salva favoritas e monta um plano de exploração.',
+    icon: './voc/compass.webp',
+    accent: '#4b55ec',
+    status: 'navegavel',
+    dispositivo: 'desktop',
+    dominio: 'geniex.jovensgenios.com',
+    branch: 'teste-vocacional-geniex',
+    flows: [
+      { id: 'inicio', label: 'Página inicial', icon: './3d/house.png' },
+      { id: 'entrada', label: 'Entrada do teste', icon: './voc/compass.webp' },
+      { id: 'clareza', label: 'Clareza inicial', icon: './voc/thinking-face.webp' },
+      { id: 'intro', label: 'Como funciona', icon: './voc/light-bulb.webp' },
+      { id: 'questionario', label: 'Questionário', icon: './3d/memo.png' },
+      { id: 'pares', label: 'Etapa de preferências', icon: './voc/world-map.webp' },
+      { id: 'retomar', label: 'Retomar teste', icon: './voc/hourglass-not-done.webp' },
+      { id: 'revisao', label: 'Revisão (faltando)', icon: './3d/clipboard.png' },
+      { id: 'processando', label: 'Processando', icon: './3d/rocket.png' },
+      { id: 'relatorio', label: 'Meu perfil', icon: './3d/glowing-star.png' },
+      { id: 'recomendacoes', label: 'Carreiras sugeridas', icon: './3d/sparkles.png' },
+      { id: 'carreira', label: 'Conheça a profissão', icon: './voc/triangular-ruler.webp' },
+      { id: 'explorar', label: 'Explorar carreiras', icon: './voc/globe-showing-americas.webp' },
+      { id: 'comparar', label: 'Comparar', icon: './voc/balance-scale.webp' },
+      { id: 'minhas', label: 'Minhas carreiras', icon: './3d/star.png' },
+      { id: 'plano', label: 'Meu plano', icon: './voc/spiral-notepad.webp' },
+      { id: 'clareza-pos', label: 'Clareza final', icon: './voc/rocket.webp' },
+      { id: 'historico', label: 'Minha jornada', icon: './3d/calendar.png' },
+    ],
+    component: lazy(() => import('../prototypes/teste-vocacional')),
   },
 ]
 

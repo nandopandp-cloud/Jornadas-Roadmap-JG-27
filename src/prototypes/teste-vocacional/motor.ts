@@ -120,7 +120,7 @@ const CONTEXTO_TXT: Record<string, [string, string]> = {
 }
 
 /** explicação vinculada às respostas efetivamente registradas (nada de traços que o instrumento não mede) */
-export function explicar(p: Perfil, r: Respostas, c: Carreira): Omit<Recomendacao, 'id' | 'categoria' | 'distancia'> {
+export function explicar(p: Perfil, r: Respostas, c: Carreira, jaUsados: Set<string> = new Set()): Omit<Recomendacao, 'id' | 'categoria' | 'distancia'> {
   const letras = [...c.codigo] as Dim[]
   const combina = letras.filter((d) => p.destaques.includes(d) || p.empatadas.includes(d))
   const motivos: string[] = []
@@ -138,7 +138,8 @@ export function explicar(p: Perfil, r: Respostas, c: Carreira): Omit<Recomendaca
   let atencao: string | undefined
   for (const pr of preferencias(r)) {
     const tipico = c.contexto[pr.id as keyof Carreira['contexto']]
-    if (tipico !== 'ambos' && tipico !== pr.lado) {
+    if (tipico !== 'ambos' && tipico !== pr.lado && !jaUsados.has(pr.id)) {
+      jaUsados.add(pr.id)
       const [ta, tb] = CONTEXTO_TXT[pr.id]
       atencao = `No dia a dia costuma envolver ${tipico === 'a' ? ta : tb}, e você indicou preferir ${pr.lado === 'a' ? ta : tb}. Vale investigar como isso funciona na prática.`
       break
@@ -165,12 +166,16 @@ export function recomendar(p: Perfil, r: Respostas, catalogo: Carreira[] = CARRE
     const extra = todas.find((x) => x.c.poucoConhecida && !escolhidas.includes(x))
     if (extra) escolhidas[escolhidas.length - 1] = extra
   }
-  const top = p.destaques
+  // “Vale a pena explorar”: a dimensão principal da ocupação está entre as 2 primeiras pistas e a segunda, entre as pistas
+  const top2 = p.ordem.slice(0, 2)
+  const pistas = [...p.destaques, ...p.empatadas]
+  // cada alerta de contexto aparece uma única vez na seleção, para não repetir o mesmo aviso em todos os cards
+  const alertas = new Set<string>()
   const selecao: Recomendacao[] = escolhidas.map(({ c, d }) => {
     const principal = c.codigo[0] as Dim
     const segunda = c.codigo[1] as Dim
-    const categoria: Categoria = principal === p.ordem[0] || (top.includes(principal) && top.includes(segunda)) ? 'explorar' : 'complementar'
-    return { id: c.id, categoria, distancia: Math.round(d * 10) / 10, ...explicar(p, r, c) }
+    const categoria: Categoria = top2.includes(principal) && pistas.includes(segunda) ? 'explorar' : 'complementar'
+    return { id: c.id, categoria, distancia: Math.round(d * 10) / 10, ...explicar(p, r, c, alertas) }
   })
   selecao.sort((a, b) => (a.categoria === b.categoria ? a.distancia - b.distancia : a.categoria === 'explorar' ? -1 : 1))
   return { selecao, todas: todas.map((x) => x.c.id) }
