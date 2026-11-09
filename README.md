@@ -1,138 +1,63 @@
-# Jornadas · Roadmap 2027 · Jovens Gênios
+# Jornada: Gamificação GenieX
 
-Plataforma de **protótipos navegáveis** das principais jornadas do Roadmap 2027 da Jovens Gênios.
+Gamificação da GenieX, parte do Roadmap 2027 da Jovens Gênios. O estudante acompanha a própria evolução: XP válido, elos (Bronze, Prata, Ouro, Diamante e Cósmico), progresso para o próximo elo e extrato de XP com a validade de cada lote. Os educadores veem o elo e o XP dos estudantes nos relatórios. Esta branch trata só desta jornada. A visão geral da plataforma e das demais jornadas está no README da branch `main`.
 
-**Acesse:** https://jornadas-roadmap-jg-27.vercel.app
+- **Figma da jornada:** https://www.figma.com/design/BuFp19bdYy4ycLOk9vXCLH/Gamifica%C3%A7%C3%A3o-Geniex
+- **Referência (conceito):** página “Gamificação Geniex” do arquivo [Campeonato GenieX (conceito)](https://www.figma.com/design/CFgSTHDpGqyNluCYfHxj7U/CAMPEONATO---GENIEX--CONCEITO-?node-id=28-140). São imagens de conceito: servem de referência, nunca de tela.
+- **Na plataforma:** https://jornadas-roadmap-jg-27.vercel.app/#/jornada/gamificacao-geniex (aparece como “Em construção” até o navegável ficar pronto)
+- **Status:** mapeamento das bibliotecas concluído. Próxima etapa: tela piloto para validação.
 
-## O que é a plataforma
+## A jornada (referência)
 
-Antes de uma iniciativa virar produto, o time precisa mostrar como ela vai funcionar de verdade: o caminho que cada pessoa percorre, as telas, os estados e as animações. A plataforma reúne esses protótipos num só lugar para que produto, design, pedagógico, comercial e escolas possam **ver, testar e opinar** sem instalar nada.
+| Tela | Plataforma | O que mostra |
+| --- | --- | --- |
+| **Minha evolução** | GenieX · estudante | Banner da jornada com a medalha do elo, elo atual, XP válido e progresso para o próximo elo; cartões de elo atual, XP acumulado e próximo elo; “Como evoluir” (quizzes, simulados e redações). |
+| **Os elos da GenieX** | GenieX · estudante | Os 5 elos com a faixa de XP e uma frase de cada um, posição atual e como conquistar XP. |
+| **Meu elo atual** | GenieX · estudante | Banner do elo, faixa de XP do elo com “Você está aqui”, próximo elo, como ganhar XP e histórico de elos. |
+| **Extrato de XP** | GenieX · estudante | XP válido, total conquistado, XP prestes a expirar e já expirado; tabela por atividade com validade e status; lotes prestes a expirar e regra de validade (0–3 meses: 100%; aos 3 meses expira 50%; aos 6 meses expira o resto). |
+| **Relatórios de Estudantes** | Educadores | Lista com XP válido (barra) e elo atual de cada estudante, filtros por turma, escola e ano escolar. |
+| **Gamificação do estudante** | Educadores | Aba “Gamificação” no relatório do estudante: elo, progresso, XP válido, conquistado e expirado, evolução do XP no tempo, distribuição por modalidade e últimas atividades com XP. |
 
-- **Um lugar para todas as jornadas:** à esquerda fica a lista de iniciativas; ao escolher uma, o protótipo abre ao lado.
-- **Prévia em qualquer tela:** cada jornada pode ser vista em Desktop, Tablet ou Celular, numa moldura que imita o produto real (navegador com o endereço da plataforma ou aparelho).
-- **Atalhos de fluxo:** botões que levam direto a cada etapa da jornada, para apresentar um ponto específico sem refazer o caminho todo.
-- **Link público para compartilhar:** cada jornada tem um link que abre só o protótipo, em tela cheia, e pode ser enviado por QR Code ou WhatsApp a quem vai testar.
-- **Fiel às referências:** os protótipos seguem as telas desenhadas pelo time, com as artes recortadas das próprias referências.
-- **100% navegável:** os botões funcionam, os dados reagem às ações e há micro-animações. Os dados são fictícios e ficam só no navegador; recarregar a página reinicia o protótipo.
-- **Independentes entre si:** cada jornada tem seu próprio visual, dados e regras, e pode evoluir sem afetar as demais.
+Regras que aparecem na referência: quizzes e simulados dão 10 XP por questão correta; redações dão 1 XP por ponto da nota (0 a 1.000). Faixas dos elos: Bronze 0–9.999, Prata 10.000–29.999, Ouro 30.000–59.999, Diamante 60.000–99.999 e Cósmico a partir de 100.000 XP válidos.
 
-## Como usar
+## Mapeamento das bibliotecas (arquivo da jornada)
 
-| Link | O que abre |
-| --- | --- |
-| `#/` | Plataforma com todas as jornadas |
-| `#/jornada/<slug>` | Plataforma já com uma jornada selecionada |
-| `#/p/<slug>` | **Link público:** só o protótipo, em tela cheia |
-| `#/p/<slug>?screen=<fluxo>` | Link público começando direto numa etapa (os mesmos atalhos da plataforma) |
+Bibliotecas plugadas no Figma da jornada: **🎨 Style Guide - GenieX**, **🎓 Cursos**, **Lucide Icons** e **Untitled UI Icons v7**.
 
-## Jornadas
+**Style Guide - GenieX**
+- **Variáveis:** coleções `1. Properties` (espaçamentos, raios, larguras e alturas no padrão Tailwind), `2. Themes` (paletas light, dark e navy) e `3. Modes` (cores semânticas com os modos **Light, Dark e Navy**), além de `4. WL Customize` (white label).
+- **Cores (modo Light):**
+  - primary #5258E4 (índigo), com foreground branco;
+  - secondary #D3D5FF, com foreground #4046CA;
+  - texto #0D0D0D, muted #6D6D6D;
+  - borda e input #E6E6E6, muted #F8F8F8, card branco;
+  - sucesso #007A4D, aviso #C59319, destrutivo #D31510;
+  - gráficos: #5258E4, #007772, #00719F, #F68511 e #C82269.
+- **Tipografia:** Geist (o logo usa Orbitron). Text styles no padrão Tailwind: `text small (14)`, `base (16)`, `large (18)`, `2x large (24)`, `3x large (30)` e `5x large (48)`, cada um com os pesos medium, bold e black.
+- **Componentes que a jornada usa:**
+  - estrutura: Sidebar (Desktop/Tablet/Mobile, recolhida ou não), Sidebar Items (o item “Ligas” já aparece como Ranking), Sidebar Profile, Top Bar (versão 2, com Button Streak e Counter), Logo GenieX, Container Grid;
+  - controles: Button (Default, Secondary, Destructive, Outline, Ghost, Link × sm/md/lg/icon), Badge, Tabs e Tabs Trigger, Progress Bars (0–100), Input / Basic, Tooltip, Avatar, Status, Sheet, Drawer, Calendar.
+- **Ícones dos componentes:** Untitled UI, estilo linha, 20 px (home-smile, trophy-01, calendar, genie-bot-02, file-check-02, edit-04…). As telas novas seguem o mesmo padrão, com Lucide quando o Untitled não tiver o ícone.
 
-<!-- jornadas:inicio (gerado automaticamente a partir de src/platform/journeys.ts — não edite à mão) -->
+**🎓 Cursos:** Card de Cursos (Default, In Progress e Completed), Sobre o curso, Título e Lições da Unidade, Filtros (Badges), Tooltip Animation. Servem de apoio para cartões e filtros.
 
-A plataforma tem hoje **8 jornadas**. Cada uma vive na sua própria branch, com um README dedicado.
+**O que não existe nas bibliotecas** e vira componente da jornada:
+- medalhas dos 5 elos e arte dos banners (espaço/planeta por elo);
+- selo de XP;
+- cartões de elo e de métrica de XP;
+- régua da faixa de XP com “Você está aqui”;
+- linha do extrato com validade e status;
+- linha do tempo de elos;
+- cartões de “Como ganhar XP”;
+- gráficos de evolução e distribuição do XP;
+- tabela e paginação: o Style Guide GenieX não tem tabela.
 
-### Alfabetização
+**Para decidir antes da tela piloto:**
+- **Marca:** a referência usa o white label “Prepara SP”. O piloto pode sair com o Logo GenieX ou com um white label.
+- **Telas de Educadores:** seguem outro produto, com sidebar e paleta próprias. A biblioteca do Educadores ainda não está plugada no arquivo da jornada.
+- **Item “Minha evolução” da sidebar:** não existe nos Sidebar Items. Dá para usar o item “Página Inicial” trocando o texto e o ícone.
 
-**App do Estudante** · 1º e 2º ano · Ensino Fundamental
+## Organização
 
-Trilha de letras com narração, desafios de toque e arrastar, conquistas, mural da turma com produção criativa e tarefas enviadas pelo professor.
-
-[Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/alfabetizacao) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/alfabetizacao) · [Branch `prototipo-alfabetizacao`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/prototipo-alfabetizacao)
-
-### Cronograma de Uso
-
-**Plataforma Educadores** · Gestores e professores
-
-Gestor importa o cronograma da escola em CSV, revisa as inconsistências sugeridas, ajusta as atividades e publica; o calendário escolar é preenchido e os professores recebem as recomendações.
-
-[Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/cronograma) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/cronograma) · [Branch `prototipo-cronograma`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/prototipo-cronograma)
-
-### Flashcards
-
-**GenieX · Plataforma do Estudante** · Ensino Médio
-
-Estudante escolhe até 5 disciplinas e seus tópicos, gera grupos de flashcards, estuda com “Não sei / Eu sei / Revisar depois”, favorita cards e acompanha o resultado de cada sessão.
-
-[Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/flashcards) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/flashcards) · [Branch `prototipo-flashcards`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/prototipo-flashcards)
-
-### Lojinha
-
-**Exploradores · Plataforma do Estudante** · Estudantes · Clube Jovens Gênios
-
-Estudante troca pontos por avatares, backgrounds, pets, cards e recompensas físicas; acompanha o cartão fidelidade com QR Code, o histórico de pontos, o status dos resgates e as regras.
-
-[Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/lojinha) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/lojinha) · [Branch `prototipo-lojinha`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/prototipo-lojinha)
-
-### Gestão da Lojinha
-
-**Admin Jovens Gênios** · Times internos · Exploradores, Educadores e GenieX
-
-Times internos administram a Lojinha das três plataformas: catálogo de itens e categorias, resgates com andamento e estorno, extrato de pontos, estudantes e configurações.
-
-[Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/gestao-lojinha) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/gestao-lojinha) · [Branch `prototipo-gestao-lojinha`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/prototipo-gestao-lojinha)
-
-### Login simplificado · Exploradores
-
-**Exploradores · Plataforma do Estudante** · Estudantes do Fundamental I · em fase de alfabetização
-
-Estudante entra sem digitar e-mail e senha: lê o QR Code da carteirinha pela câmera ou toca, na ordem, nos ícones espaciais do seu código. E-mail e senha continuam disponíveis; erros e pausa por tentativas orientam o próximo passo.
-
-[Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/login-exploradores) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/login-exploradores) · [Branch `login-simplificado`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/login-simplificado)
-
-### Login simplificado · Admins
-
-**Admins Jovens Gênios** · Gestores, administradores e secretarias escolares
-
-Gestão da credencial simplificada no cadastro do estudante: lista com status de credencial e permissão, emissão (individual e em lote), reemissão com motivo, revogação, bloqueio de acesso, impressão da carteirinha e histórico de tentativas.
-
-[Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/login-admin) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/login-admin) · [Branch `login-simplificado-admin`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/login-simplificado-admin)
-
-### Gamificação GenieX
-
-**GenieX · Estudante e Educadores** · Estudantes do Fundamental II e do Ensino Médio · Educadores · _em construção_
-
-Estudante acompanha a própria evolução na GenieX: XP válido, elos (Bronze, Prata, Ouro, Diamante e Cósmico), progresso para o próximo elo e extrato de XP com a validade de cada lote. Educadores veem o elo e o XP dos estudantes nos relatórios.
-
-[Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/gamificacao-geniex) · [Branch `gamificacao-geniex`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/gamificacao-geniex)
-
-<!-- jornadas:fim -->
-
-## Como o projeto é organizado
-
-- **Branch `main`:** a plataforma completa, que é o que vai para o ar. Este README fala da plataforma como um todo.
-- **Uma branch por jornada (`prototipo-<slug>`):** cada iniciativa tem sua branch, com um README que descreve só aquela jornada (funcionalidades, atalhos, estrutura e artes).
-- **Telas de referência** ficam em `public/<iniciativa>/` e servem de base para o protótipo; elas não são publicadas no site.
-
-### Adicionando uma nova jornada
-
-1. Crie a branch `prototipo-<slug>` a partir da `main`, com um README dedicado à jornada.
-2. Crie `src/prototypes/<slug>/index.tsx` exportando um componente `default` (recebe `startScreen` e `embedded`).
-3. Registre a jornada em `src/platform/journeys.ts` (nome, plataforma, público, descrição, dispositivo da prévia e atalhos de fluxo).
-4. Se houver uma pasta nova de artes em `public/`, inclua-a em `ARTE_DO_APP` no `vite.config.ts`.
-
-A seção **Jornadas** deste README é atualizada sozinha: a cada commit na `main`, um gancho de git (`.githooks/pre-commit`) lê o registro de jornadas e reescreve a lista, com o resumo e os links para a branch e para o protótipo. Para atualizar à mão: `npm run readme`.
-
-## Parte técnica
-
-- **Vite + React 19 + TypeScript**, animações com **Framer Motion**, ícones **lucide-react** e QR Codes com **qrcode**.
-- Roteamento por hash: o `dist/` funciona em qualquer hospedagem estática, sem configurar rewrites.
-- Hospedagem na **Vercel**. A única parte de servidor é `api/tts.ts`, que fala com a ElevenLabs para a voz do mascote da Alfabetização (a chave nunca vai para o navegador; variáveis `ELEVENLABS_API_KEY` e `ELEVENLABS_VOICE_ID`).
-- **Artes:** recortadas das referências com rembg (BiRefNet), textos e selos removidos com LaMa (inpainting) e nitidez melhorada com Real-ESRGAN quando necessário. Ícones 3D extras do [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji) (licença MIT), em `public/3d/`.
-
-```
-src/
-  platform/        # plataforma: lista de jornadas, prévia por dispositivo, link público, compartilhar
-  prototypes/      # uma pasta por jornada (index, estado, dados, componentes e telas)
-  shared/          # som e voz
-server/, api/      # proxy da ElevenLabs (local e Vercel)
-scripts/           # gerador da seção Jornadas deste README
-public/            # artes de cada jornada (.webp), ícones 3D e telas de referência
-```
-
-### Rodando
-
-```bash
-npm install      # também ativa o gancho que atualiza este README
-npm run dev      # http://localhost:5173
-npm run build    # gera dist/ (site estático)
-```
+- **Branch `main`:** plataforma completa (o que vai para o ar). Registro da jornada em `src/platform/journeys.ts`.
+- **Esta branch (`gamificacao-geniex`):** a `main` + este README. O navegável vai ficar em `src/prototypes/gamificacao-geniex/`.
