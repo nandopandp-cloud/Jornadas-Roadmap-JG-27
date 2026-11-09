@@ -5,7 +5,8 @@ Gamificação da GenieX, parte do Roadmap 2027 da Jovens Gênios. O estudante ac
 - **Figma da jornada:** https://www.figma.com/design/BuFp19bdYy4ycLOk9vXCLH/Gamifica%C3%A7%C3%A3o-Geniex
 - **Referência (conceito):** página “Gamificação Geniex” do arquivo [Campeonato GenieX (conceito)](https://www.figma.com/design/CFgSTHDpGqyNluCYfHxj7U/CAMPEONATO---GENIEX--CONCEITO-?node-id=28-140). São imagens de conceito: servem de referência, nunca de tela.
 - **Na plataforma:** https://jornadas-roadmap-jg-27.vercel.app/#/jornada/gamificacao-geniex (aparece como “Em construção” até o navegável ficar pronto)
-- **Status:** mapeamento das bibliotecas concluído e tela piloto pronta para validação (página “01 · Piloto · Validação” do Figma).
+- **PRD:** [`PRD.md`](PRD.md) (Sistema de Gamificação da GenieX v2.0: XP, elos e badges)
+- **Status:** piloto aprovado e telas prontas em Desktop 1440, Tablet 768 e Celular 375 (páginas 05 a 08 do Figma). Próximas etapas: componentes, protótipo e handoff.
 
 ## Decisões (09/11/2026)
 
@@ -19,6 +20,31 @@ Gamificação da GenieX, parte do Roadmap 2027 da Jovens Gênios. O estudante ac
   - banner “Sua jornada”.
 
   Todas ficam na página “02 · Assets” do Figma.
+
+- **Nomes das badges (09/11):** o tom espacial do PRD não combina com o público do ensino médio. Os nomes passaram a usar uma linguagem jovem e respeitosa, sem comparar o estudante com outros, já que ranking está fora do escopo. Os ícones viraram símbolos de foco, ritmo, ideia, meta e troféu. Os avatares vêm da biblioteca Open Peeps: menu do perfil e estado vazio do extrato.
+- **Dados de exemplo:** 6.420 XP válidos, elo Bronze, 3 de 25 badges, maior elo alcançado Bronze. Próxima badge “Mandando Bem” aos 8.000 XP e Prata aos 10.000. A regressão (G3.2 e O7) usa outro estudante: tinha Ouro e caiu para Prata com 28.000 XP.
+
+## Telas (Figma)
+
+| Código | Tela | O que mostra |
+| --- | --- | --- |
+| **G1** | Minha evolução | Banner com o elo, o XP válido, o maior elo e o progresso. Cartões de elo, XP e próximo elo. Bloco “Suas badges” com a próxima badge. Como evoluir: tarefas e provas não geram XP e vale 1 redação por dia. |
+| **G2** | Os elos da GenieX | Os 5 elos com faixa e frase, a posição atual e como conquistar XP. |
+| **G3** · G3.1 · G3.2 | Meu elo atual | Banner do elo, régua “Você está aqui”, próximo elo, histórico de elos com motivo e maior elo. G3.1 mostra o Cósmico, sem próximo elo e com a próxima badge. G3.2 mostra a regressão de Ouro para Prata, com alerta. |
+| **G4** · G4.1 | Extrato de XP | Lotes com XP concedido, XP válido do lote, próxima expiração (valor e data) e status: válido, 50% expirado, expira em breve, expirado ou limite diário. Mostra também os lotes que expiram em breve, a regra de validade e como se ganha XP. G4.1 é o estado vazio. |
+| **G5** | Minhas badges | As 25 badges por elo, conquistadas (com data) ou bloqueadas (com o requisito e quanto falta), mais o resumo. |
+| **O1–O3** | Sobrepostos | Menu do perfil (acesso), lotes que vão expirar e detalhe do lote. |
+| **O4–O7** | Sobrepostos | Detalhe da badge e as notificações do PRD 11.4: badge desbloqueada, novo elo e elo alterado por expiração. |
+
+## Badges (nomes propostos para validação)
+
+| Elo | 1 | 2 | 3 | 4 | 5 |
+| --- | --- | --- | --- | --- | --- |
+| Bronze | Dei o Play (2.000) | Pegando o Ritmo (4.000) | Modo Foco (6.000) | Mandando Bem (8.000) | Bronze com Orgulho (9.000) |
+| Prata | Rotina em Dia (14.000) | Constância é Tudo (18.000) | Mente Afiada (22.000) | Sem Pausa (26.000) | Prata da Casa (29.000) |
+| Ouro | Brilho Próprio (36.000) | Fera do Estudo (42.000) | Alto Nível (48.000) | Imparável (54.000) | Ouro Puro (59.000) |
+| Diamante | Lapidado (68.000) | Visão de Jogo (76.000) | Determinação Total (84.000) | Inspiração (92.000) | Excelência (99.000) |
+| Cósmico | Fora da Curva (140.000) | Sem Limites (180.000) | Inabalável (220.000) | Lendário (260.000) | Para a História (300.000) |
 
 ## A jornada (referência)
 
