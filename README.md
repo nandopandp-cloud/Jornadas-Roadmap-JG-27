@@ -29,7 +29,7 @@ Antes de uma iniciativa virar produto, o time precisa mostrar como ela vai funci
 
 <!-- jornadas:inicio (gerado automaticamente a partir de src/platform/journeys.ts — não edite à mão) -->
 
-A plataforma tem hoje **5 jornadas**. Cada uma vive na sua própria branch, com um README dedicado.
+A plataforma tem hoje **7 jornadas**. Cada uma vive na sua própria branch, com um README dedicado.
 
 ### Alfabetização
 
@@ -70,6 +70,22 @@ Estudante troca pontos por avatares, backgrounds, pets, cards e recompensas fís
 Times internos administram a Lojinha das três plataformas: catálogo de itens e categorias, resgates com andamento e estorno, extrato de pontos, estudantes e configurações.
 
 [Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/gestao-lojinha) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/gestao-lojinha) · [Branch `prototipo-gestao-lojinha`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/prototipo-gestao-lojinha)
+
+### Login simplificado · Exploradores
+
+**Exploradores · Plataforma do Estudante** · Estudantes do Fundamental I · em fase de alfabetização
+
+Estudante entra sem digitar e-mail e senha: lê o QR Code da carteirinha pela câmera ou toca, na ordem, nos ícones espaciais do seu código. E-mail e senha continuam disponíveis; erros e pausa por tentativas orientam o próximo passo.
+
+[Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/login-exploradores) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/login-exploradores) · [Branch `prototipo-login-exploradores`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/prototipo-login-exploradores)
+
+### Login simplificado · Admins
+
+**Admins Jovens Gênios** · Gestores, administradores e secretarias escolares
+
+Gestão da credencial simplificada no cadastro do estudante: lista com status de credencial e permissão, emissão (individual e em lote), reemissão com motivo, revogação, bloqueio de acesso, impressão da carteirinha e histórico de tentativas.
+
+[Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/login-admin) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/login-admin) · [Branch `prototipo-login-admin`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/prototipo-login-admin)
 
 <!-- jornadas:fim -->
 
