@@ -13,7 +13,7 @@ Protótipo navegável da **Plataforma Educadores** para gestores de rede e escol
 - **Como criar:** o gestor escolhe entre **Criar na plataforma** ou **Usar planilha (CSV)**.
 - **Criar na plataforma (4 etapas):** definir o escopo (anos de 1º ao 9º, escolas e turmas, vínculo automático de educadores) → configurar programações com aplicação em massa (componente, unidade temática, objeto de conhecimento, habilidade, período, turmas) → revisar e ajustar pendências, inclusive **escolher manualmente os educadores** por escola e ano → finalizar e publicar ou agendar.
 - **Volume alto:** busca e seleção em massa de escolas e turmas (turmas no formato “801 - Turma A”), cronograma sempre com os 12 meses do ano letivo, mostrando só os meses com atividades, e duplicar programação para outro mês.
-- **Usar planilha (CSV):** lista de escolas da rede → importar CSV (arrastar e soltar, modelo oficial, arquivo de exemplo) → análise animada → revisão das inconsistências (aceitar, escolher outra correspondência ou manter) → revisão por mês (filtros, busca, editar, excluir com desfazer, nova atividade) → resumo e publicação.
+- **Usar planilha (CSV):** sem escolher escola antes (uma planilha pode trazer várias escolas) → importar CSV (arrastar e soltar, modelo oficial, arquivo de exemplo) → **validação em segundo plano** (até ~15 min, acelerada no protótipo): a pessoa segue navegando e acompanha numa caixinha flutuante (etapa, %, tempo restante, minimizar), as escolas da planilha aparecem como “Validando planilha” na lista e, ao terminar, “Revisar agora” abre a revisão das inconsistências (aceitar, escolher outra correspondência ou manter) → revisão por mês (filtros, busca, editar, excluir com desfazer, nova atividade) → resumo e publicação.
 - **Exportar:** planilha no formato do modelo, uma linha por turma (rede, escola, ano, turma, educador e currículo).
 - **Calendário escolar:** grade mensal com atividades agendadas e sugeridas, painel do dia, filtros e visão em tabela.
 - **Professor:** troque o perfil clicando no usuário (rodapé do menu): início com recomendações, criar atividade/avaliação, minicalendário e próximos eventos.
@@ -31,6 +31,9 @@ Use `#/p/cronograma?screen=<fluxo>` para abrir direto numa tela:
 | `ajustar` | Plataforma: revisar |
 | `finalizar` | Plataforma: publicar |
 | `importar` | Planilha: importar CSV |
+| `analise` | Planilha: validação (tela de detalhes) |
+| `validando` | Validação em segundo plano (lista com a caixinha de progresso) |
+| `validada` | Validação concluída (caixinha com “Revisar agora”) |
 | `inconsistencias` | Inconsistências |
 | `revisar` | Revisar cronograma |
 | `publicar` | Publicar |
