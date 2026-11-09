@@ -132,3 +132,60 @@
 .lg-cart * {
   box-sizing: border-box;
 }
+.lg-cart-qr.is-botao {
+  position: relative;
+  font: inherit;
+  cursor: pointer;
+  background: #fff;
+  transition: border-color 0.15s, background 0.15s;
+}
+.lg-cart.is-oculta .lg-cart-qr.is-botao {
+  background: #f0f0f0;
+}
+.lg-cart-qr.is-botao:hover {
+  border-color: #0265dc;
+}
+.lg-cart-qr.is-botao:hover .lg-cart-oculto {
+  color: #0265dc;
+}
+.lg-cart-qr.is-botao:focus-visible {
+  outline: 2px solid #0265dc;
+  outline-offset: 2px;
+}
+.lg-cart-ocultar {
+  position: absolute;
+  left: 50%;
+  bottom: -11px;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #1f1f1f;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.lg-cart-qr.is-rev {
+  background: #fcebea;
+  border-color: #f2b8b5;
+}
+.lg-cart-oculto.is-revogado {
+  color: #d31510;
+}
+.lg-cart-seq.is-rev i {
+  opacity: 0.35;
+  position: relative;
+}
+.lg-cart-seq.is-rev i::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  top: 50%;
+  height: 1.5px;
+  background: #d31510;
+  transform: rotate(-35deg);
+}
