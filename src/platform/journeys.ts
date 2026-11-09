@@ -226,10 +226,10 @@ export const journeys: Journey[] = [
     slug: 'gamificacao-geniex',
     branch: 'gamificacao-geniex',
     name: 'Gamificação GenieX',
-    product: 'GenieX · Estudante e Educadores',
-    audience: 'Estudantes do Fundamental II e do Ensino Médio · Educadores',
+    product: 'GenieX · Plataforma do Estudante',
+    audience: 'Estudantes do Fundamental II e do Ensino Médio',
     description:
-      'Estudante acompanha a própria evolução na GenieX: XP válido, elos (Bronze, Prata, Ouro, Diamante e Cósmico), progresso para o próximo elo e extrato de XP com a validade de cada lote. Educadores veem o elo e o XP dos estudantes nos relatórios.',
+      'Estudante acompanha a própria evolução na GenieX, a partir do perfil: XP válido, elos (Bronze, Prata, Ouro, Diamante e Cósmico), progresso para o próximo elo e extrato de XP com a validade de cada lote.',
     icon: './3d/trophy.png',
     accent: '#5258e4',
     status: 'em-breve',
