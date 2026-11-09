@@ -12,8 +12,8 @@ Relatórios da gamificação da GenieX na **Plataforma Educadores**, parte do Ro
 ## Processo
 
 1. Mapeamento das bibliotecas do arquivo ✅
-2. Tela piloto para validação ⏳ (aguardando OK)
-3. Telas nas 3 larguras
+2. Tela piloto para validação ✅ (aprovada em 09/11/2026)
+3. Telas desktop ✅ · tablet e celular ⏳
 4. Componentes da jornada
 5. Protótipo e handoff
 6. Navegável e entrada na plataforma
@@ -31,6 +31,17 @@ Relatórios da gamificação da GenieX na **Plataforma Educadores**, parte do Ro
 
 | # | Tela | Base |
 | --- | --- | --- |
-| P1 | Gamificação · Relatório por turma | Teste Vocacional (turma) + métricas do PRD |
-| G2 | Relatórios de Estudantes · aba Gamificação | Conceito (lista com XP válido e elo) |
-| G3 | Estudante · Gamificação (visão geral, XP, elos, badges, extrato) | Conceito + Teste Vocacional (perfil com abas) |
+| T1 | Relatórios de Turmas · aba Gamificação (todas as turmas) | Tela atual de Relatórios de Turmas + indicadores da gamificação |
+| T2 | Gamificação · Relatório da turma (piloto aprovado) | Teste Vocacional (turma) + métricas do PRD |
+| T3 | Relatórios de Estudantes · aba Gamificação | Conceito (lista com XP válido e elo) |
+| T4.1 | Estudante · Gamificação · Resumo | Conceito: elo, progresso, XP, evolução, modalidades, últimas atividades, badges |
+| T4.2 | Estudante · Gamificação · Elos | Os 5 elos, histórico e regressão |
+| T4.3 | Estudante · Gamificação · Badges | 25 badges por elo (PRD §11.3) |
+| T4.4 | Estudante · Gamificação · Extrato de XP | Lotes com validade (PRD §11.5) |
+
+## Decisões
+
+- XP por modalidade só no relatório do estudante.
+- Exportar: CSV e PDF da turma com as mesmas colunas.
+- Sem filtro de período.
+- O Relatório de Turmas (todas as turmas) vem antes do relatório da turma.
