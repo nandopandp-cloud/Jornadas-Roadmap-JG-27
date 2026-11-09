@@ -26,7 +26,6 @@ export default function Hub({ slug }: { slug?: string }) {
   }, [journey])
 
   const select = (j: Journey) => {
-    if (j.status !== 'navegavel') return
     setFlow(null)
     setNonce((n) => n + 1)
     setDrawer(false)
@@ -40,6 +39,7 @@ export default function Hub({ slug }: { slug?: string }) {
 
   const src = absoluteUrl(`#/p/${journey.slug}?embed=1${flow ? `&screen=${flow}` : ''}`)
   const effectiveDevice: Device = isNarrow ? 'mobile' : device
+  const navegavel = journey.status === 'navegavel'
 
   return (
     <div className="pf">
@@ -69,7 +69,7 @@ export default function Hub({ slug }: { slug?: string }) {
           {journeys.map((j) => (
             <button
               key={j.slug}
-              className={`pf-item ${j.slug === journey.slug ? 'is-active' : ''}`}
+              className={`pf-item ${j.slug === journey.slug ? 'is-active' : ''} ${j.status !== 'navegavel' ? 'is-building' : ''}`}
               onClick={() => select(j)}
             >
               <span className="pf-item__icon">
@@ -77,6 +77,7 @@ export default function Hub({ slug }: { slug?: string }) {
               </span>
               <span className="pf-item__text">
                 <strong>{j.name}</strong>
+                {j.status !== 'navegavel' && <em className="pf-tag">Em construção</em>}
                 <small>{j.audience}</small>
               </span>
               {j.slug === journey.slug && <motion.span layoutId="pf-active" className="pf-item__bar" />}
@@ -109,14 +110,15 @@ export default function Hub({ slug }: { slug?: string }) {
             </button>
           )}
           <div className="pf-head__title">
-            <span className="pf-chip">
-              <i /> Navegável
+            <span className={`pf-chip ${navegavel ? '' : 'pf-chip--building'}`}>
+              <i /> {navegavel ? 'Navegável' : 'Em construção'}
             </span>
             <h1>{journey.name}</h1>
             <p>
               {journey.product} · {journey.audience}
             </p>
           </div>
+          {navegavel && (
           <div className="pf-head__actions">
             {!isNarrow && (
               <div className="pf-seg" role="tablist" aria-label="Dispositivo">
@@ -152,9 +154,12 @@ export default function Hub({ slug }: { slug?: string }) {
               {!isNarrow && 'Compartilhar'}
             </button>
           </div>
+          )}
         </header>
 
-        {journey.flows && (
+        {!navegavel && <Construcao journey={journey} />}
+
+        {navegavel && journey.flows && (
           <div className="pf-flows">
             <span className="pf-flows__label">Ir direto para</span>
             <div className="pf-flows__list">
@@ -168,12 +173,55 @@ export default function Hub({ slug }: { slug?: string }) {
           </div>
         )}
 
-        <Preview key={`${journey.slug}-${effectiveDevice}`} device={effectiveDevice} src={src} nonce={nonce} bare={isNarrow} dominio={journey.dominio} />
-        {!isNarrow && <p className="pf-hint">{journey.description}</p>}
+        {navegavel && <Preview key={`${journey.slug}-${effectiveDevice}`} device={effectiveDevice} src={src} nonce={nonce} bare={isNarrow} dominio={journey.dominio} />}
+        {!isNarrow && navegavel && <p className="pf-hint">{journey.description}</p>}
       </main>
 
       <ShareModal open={shareOpen} onClose={() => setShareOpen(false)} journey={journey} />
     </div>
+  )
+}
+
+/* ---------- jornada em construção: etapa atual e links de trabalho ---------- */
+function Construcao({ journey }: { journey: Journey }) {
+  const etapas = journey.etapas ?? []
+  const atual = etapas.find((e) => e.estado === 'atual')
+  return (
+    <section className="pf-build">
+      <motion.div className="pf-build__card" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
+        <img className="pf-build__icon" src={journey.icon} alt="" />
+        <div className="pf-build__body">
+          <span className="pf-build__eyebrow">Navegável em construção</span>
+          <h2>{atual ? `Agora: ${atual.nome.toLowerCase()}` : 'Em breve por aqui'}</h2>
+          <p>{journey.description}</p>
+          {etapas.length > 0 && (
+            <ol className="pf-steps">
+              {etapas.map((e, i) => (
+                <li key={e.nome} className={`is-${e.estado}`}>
+                  <span className="pf-steps__dot">{e.estado === 'feito' ? '✓' : i + 1}</span>
+                  <span>
+                    <b>{e.nome}</b>
+                    <small>{e.estado === 'feito' ? 'Concluído' : e.estado === 'atual' ? 'Em andamento' : 'Próximo'}</small>
+                  </span>
+                </li>
+              ))}
+            </ol>
+          )}
+          {journey.links && journey.links.length > 0 && (
+            <div className="pf-build__links">
+              {journey.links.map((l) => (
+                <a key={l.url} className="pf-btn" href={l.url} target="_blank" rel="noreferrer">
+                  {l.label}
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 4h6v6M10 14 20 4M20 14v6H4V4h6" />
+                  </svg>
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+      </motion.div>
+    </section>
   )
 }
 

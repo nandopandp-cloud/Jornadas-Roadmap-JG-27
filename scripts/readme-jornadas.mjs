@@ -27,11 +27,11 @@ const secao = [
   ...jornadas.flatMap((j) => [
     `### ${j.nome}`,
     '',
-    `**${j.produto}** · ${j.publico}${j.status === 'em-breve' ? ' · _em breve_' : ''}`,
+    `**${j.produto}** · ${j.publico}${j.status === 'em-breve' ? ' · _em construção_' : ''}`,
     '',
     j.descricao,
     '',
-    `[Protótipo navegável](${SITE}/#/p/${j.slug}) · [Ver na plataforma](${SITE}/#/jornada/${j.slug}) · [Branch \`${j.branch || 'prototipo-' + j.slug}\`](${REPO}/tree/${j.branch || 'prototipo-' + j.slug})`,
+    `${j.status === 'em-breve' ? '' : `[Protótipo navegável](${SITE}/#/p/${j.slug}) · `}[Ver na plataforma](${SITE}/#/jornada/${j.slug}) · [Branch \`${j.branch || 'prototipo-' + j.slug}\`](${REPO}/tree/${j.branch || 'prototipo-' + j.slug})`,
     '',
   ]),
   FIM,

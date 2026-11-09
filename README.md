@@ -29,7 +29,7 @@ Antes de uma iniciativa virar produto, o time precisa mostrar como ela vai funci
 
 <!-- jornadas:inicio (gerado automaticamente a partir de src/platform/journeys.ts — não edite à mão) -->
 
-A plataforma tem hoje **7 jornadas**. Cada uma vive na sua própria branch, com um README dedicado.
+A plataforma tem hoje **8 jornadas**. Cada uma vive na sua própria branch, com um README dedicado.
 
 ### Alfabetização
 
@@ -86,6 +86,14 @@ Estudante entra sem digitar e-mail e senha: lê o QR Code da carteirinha pela c�
 Gestão da credencial simplificada no cadastro do estudante: lista com status de credencial e permissão, emissão (individual e em lote), reemissão com motivo, revogação, bloqueio de acesso, impressão da carteirinha e histórico de tentativas.
 
 [Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/login-admin) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/login-admin) · [Branch `login-simplificado-admin`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/login-simplificado-admin)
+
+### Gamificação GenieX
+
+**GenieX · Estudante e Educadores** · Estudantes do Fundamental II e do Ensino Médio · Educadores · _em construção_
+
+Estudante acompanha a própria evolução na GenieX: XP válido, elos (Bronze, Prata, Ouro, Diamante e Cósmico), progresso para o próximo elo e extrato de XP com a validade de cada lote. Educadores veem o elo e o XP dos estudantes nos relatórios.
+
+[Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/gamificacao-geniex) · [Branch `gamificacao-geniex`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/gamificacao-geniex)
 
 <!-- jornadas:fim -->
 

@@ -26,6 +26,10 @@ export type Journey = {
   dispositivo?: 'desktop' | 'tablet' | 'mobile'
   /** endereço exibido na moldura do navegador (prévia desktop) */
   dominio?: string
+  /** jornada em construção: etapas do playbook (Figma → navegável) */
+  etapas?: { nome: string; estado: 'feito' | 'atual' | 'proximo' }[]
+  /** links de trabalho (Figma, referências) mostrados enquanto a jornada está em construção */
+  links?: { label: string; url: string }[]
   /** atalhos de fluxo: abrem o protótipo direto numa tela */
   flows?: { id: string; label: string; icon: string }[]
   component?: LazyExoticComponent<ComponentType<PrototypeProps>>
@@ -217,6 +221,32 @@ export const journeys: Journey[] = [
       { id: 'historico', label: 'Histórico de tentativas', icon: './3d/calendar.png' },
     ],
     component: lazy(() => import('../prototypes/login-admin')),
+  },
+  {
+    slug: 'gamificacao-geniex',
+    branch: 'gamificacao-geniex',
+    name: 'Gamificação GenieX',
+    product: 'GenieX · Estudante e Educadores',
+    audience: 'Estudantes do Fundamental II e do Ensino Médio · Educadores',
+    description:
+      'Estudante acompanha a própria evolução na GenieX: XP válido, elos (Bronze, Prata, Ouro, Diamante e Cósmico), progresso para o próximo elo e extrato de XP com a validade de cada lote. Educadores veem o elo e o XP dos estudantes nos relatórios.',
+    icon: './3d/trophy.png',
+    accent: '#5258e4',
+    status: 'em-breve',
+    dispositivo: 'desktop',
+    dominio: 'geniex.jovensgenios.com',
+    etapas: [
+      { nome: 'Mapeamento das bibliotecas', estado: 'feito' },
+      { nome: 'Tela piloto para validação', estado: 'atual' },
+      { nome: 'Telas nas 3 larguras', estado: 'proximo' },
+      { nome: 'Componentes da jornada', estado: 'proximo' },
+      { nome: 'Protótipo e handoff', estado: 'proximo' },
+      { nome: 'Navegável', estado: 'proximo' },
+    ],
+    links: [
+      { label: 'Figma da jornada', url: 'https://www.figma.com/design/BuFp19bdYy4ycLOk9vXCLH/Gamifica%C3%A7%C3%A3o-Geniex' },
+      { label: 'Referência (Campeonato GenieX)', url: 'https://www.figma.com/design/CFgSTHDpGqyNluCYfHxj7U/CAMPEONATO---GENIEX--CONCEITO-?node-id=28-140' },
+    ],
   },
 ]
 
