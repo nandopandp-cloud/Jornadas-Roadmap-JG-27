@@ -229,7 +229,7 @@ export const journeys: Journey[] = [
     product: 'GenieX · Plataforma do Estudante',
     audience: 'Estudantes do Fundamental II e do Ensino Médio',
     description:
-      'Estudante acompanha a própria evolução na GenieX, a partir do perfil: XP válido, elos (Bronze, Prata, Ouro, Diamante e Cósmico), progresso para o próximo elo e extrato de XP com a validade de cada lote.',
+      'Estudante acompanha a própria evolução na GenieX, a partir do perfil: XP válido, elos (Bronze a Cósmico) com progressão e regressão, 25 badges permanentes, extrato de XP com a validade de cada lote e avisos de novo elo, elo alterado e badge desbloqueada.',
     icon: './3d/trophy.png',
     accent: '#5258e4',
     status: 'em-breve',
@@ -237,9 +237,9 @@ export const journeys: Journey[] = [
     dominio: 'geniex.jovensgenios.com',
     etapas: [
       { nome: 'Mapeamento das bibliotecas', estado: 'feito' },
-      { nome: 'Tela piloto para validação', estado: 'atual' },
-      { nome: 'Telas nas 3 larguras', estado: 'proximo' },
-      { nome: 'Componentes da jornada', estado: 'proximo' },
+      { nome: 'Tela piloto para validação', estado: 'feito' },
+      { nome: 'Telas nas 3 larguras', estado: 'feito' },
+      { nome: 'Componentes da jornada', estado: 'atual' },
       { nome: 'Protótipo e handoff', estado: 'proximo' },
       { nome: 'Navegável', estado: 'proximo' },
     ],
