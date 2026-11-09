@@ -1,11 +1,24 @@
 # Jornada: Gamificação GenieX
 
-Gamificação da GenieX, parte do Roadmap 2027 da Jovens Gênios. O estudante acompanha a própria evolução: XP válido, elos (Bronze, Prata, Ouro, Diamante e Cósmico), progresso para o próximo elo e extrato de XP com a validade de cada lote. Os educadores veem o elo e o XP dos estudantes nos relatórios. Esta branch trata só desta jornada. A visão geral da plataforma e das demais jornadas está no README da branch `main`.
+Gamificação da GenieX, parte do Roadmap 2027 da Jovens Gênios. O estudante acompanha a própria evolução a partir do perfil: XP válido, elos (Bronze, Prata, Ouro, Diamante e Cósmico), progresso para o próximo elo e extrato de XP com a validade de cada lote. Esta branch trata só da **experiência do estudante na GenieX**. As telas de Educadores (relatórios com elo e XP) ficam para uma branch própria, `gamificacao-geniex-educadores`, em uma etapa posterior. A visão geral da plataforma e das demais jornadas está no README da branch `main`.
 
 - **Figma da jornada:** https://www.figma.com/design/BuFp19bdYy4ycLOk9vXCLH/Gamifica%C3%A7%C3%A3o-Geniex
 - **Referência (conceito):** página “Gamificação Geniex” do arquivo [Campeonato GenieX (conceito)](https://www.figma.com/design/CFgSTHDpGqyNluCYfHxj7U/CAMPEONATO---GENIEX--CONCEITO-?node-id=28-140). São imagens de conceito: servem de referência, nunca de tela.
 - **Na plataforma:** https://jornadas-roadmap-jg-27.vercel.app/#/jornada/gamificacao-geniex (aparece como “Em construção” até o navegável ficar pronto)
-- **Status:** mapeamento das bibliotecas concluído. Próxima etapa: tela piloto para validação.
+- **Status:** mapeamento das bibliotecas concluído e tela piloto pronta para validação (página “01 · Piloto · Validação” do Figma).
+
+## Decisões (09/11/2026)
+
+- **Marca:** Logo GenieX do Style Guide. No banner escuro ele usa o modo Dark da própria biblioteca, sem cópia nem cor manual.
+- **Escopo:** só o estudante na GenieX. Educadores entra depois, na branch `gamificacao-geniex-educadores`.
+- **Acesso:** “Minha evolução” não ganha item na sidebar. O estudante chega pelo menu do perfil, no rodapé da sidebar, onde o item já mostra o elo atual. A página mostra o caminho “Meu perfil › Minha evolução” e um botão de voltar.
+- **Artes:** derivadas dos exemplos da referência. Cada medalha e cena foi recortada da imagem de conceito, ampliada 4× com Real-ESRGAN e teve o fundo removido com BiRefNet; nos banners, os textos foram removidos por inpainting. Resultado:
+  - medalhas dos 5 elos, em cerca de 420×520 px com fundo transparente;
+  - selo de XP;
+  - cenas de cada elo;
+  - banner “Sua jornada”.
+
+  Todas ficam na página “02 · Assets” do Figma.
 
 ## A jornada (referência)
 
@@ -15,8 +28,6 @@ Gamificação da GenieX, parte do Roadmap 2027 da Jovens Gênios. O estudante ac
 | **Os elos da GenieX** | GenieX · estudante | Os 5 elos com a faixa de XP e uma frase de cada um, posição atual e como conquistar XP. |
 | **Meu elo atual** | GenieX · estudante | Banner do elo, faixa de XP do elo com “Você está aqui”, próximo elo, como ganhar XP e histórico de elos. |
 | **Extrato de XP** | GenieX · estudante | XP válido, total conquistado, XP prestes a expirar e já expirado; tabela por atividade com validade e status; lotes prestes a expirar e regra de validade (0–3 meses: 100%; aos 3 meses expira 50%; aos 6 meses expira o resto). |
-| **Relatórios de Estudantes** | Educadores | Lista com XP válido (barra) e elo atual de cada estudante, filtros por turma, escola e ano escolar. |
-| **Gamificação do estudante** | Educadores | Aba “Gamificação” no relatório do estudante: elo, progresso, XP válido, conquistado e expirado, evolução do XP no tempo, distribuição por modalidade e últimas atividades com XP. |
 
 Regras que aparecem na referência: quizzes e simulados dão 10 XP por questão correta; redações dão 1 XP por ponto da nota (0 a 1.000). Faixas dos elos: Bronze 0–9.999, Prata 10.000–29.999, Ouro 30.000–59.999, Diamante 60.000–99.999 e Cósmico a partir de 100.000 XP válidos.
 
@@ -52,10 +63,6 @@ Bibliotecas plugadas no Figma da jornada: **🎨 Style Guide - GenieX**, **🎓 
 - gráficos de evolução e distribuição do XP;
 - tabela e paginação: o Style Guide GenieX não tem tabela.
 
-**Para decidir antes da tela piloto:**
-- **Marca:** a referência usa o white label “Prepara SP”. O piloto pode sair com o Logo GenieX ou com um white label.
-- **Telas de Educadores:** seguem outro produto, com sidebar e paleta próprias. A biblioteca do Educadores ainda não está plugada no arquivo da jornada.
-- **Item “Minha evolução” da sidebar:** não existe nos Sidebar Items. Dá para usar o item “Página Inicial” trocando o texto e o ícone.
 
 ## Organização
 
