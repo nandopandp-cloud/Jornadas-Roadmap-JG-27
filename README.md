@@ -5,7 +5,10 @@ Entrada do estudante no Exploradores sem depender de e-mail e senha, parte da in
 - **PRD completo (Exploradores + Admins):** [`PRD.md`](PRD.md) · trechos desta jornada: §4.1–4.2, §6.3, §7, §12.1–12.3, §14, §15
 - **Figma:** https://www.figma.com/design/bYkRkW17RbzT4OLxAnwxfn/Login-Simplificado. Telas E1–E15 nas páginas 05 (Desktop 1440), 06 (Tablet 1024) e 07 (Celular 390), protótipo nos fluxos 1–6 da página 09 e handoff nas seções 1–5 e 11 da página 10.
 - **Design System:** Yunara (tema Seafoam · Padrão JG), ícones Untitled UI, arte dos exploradores das nações e ícones 3D.
-- **Status:** desenho concluído no Figma (telas, componentes, protótipo, handoff e auditoria). Protótipo navegável nesta plataforma ainda não iniciado.
+- **Link público:** https://jornadas-roadmap-jg-27.vercel.app/#/p/login-exploradores
+- **Na plataforma:** https://jornadas-roadmap-jg-27.vercel.app/#/jornada/login-exploradores
+- **Código:** `src/prototypes/login-exploradores/` (+ carteirinha compartilhada em `src/prototypes/login-comum/`) · **Artes:** `public/login/`
+- **Status:** Figma concluído (telas, componentes, protótipo, handoff e auditoria) e protótipo navegável publicado.
 
 ## A jornada
 
@@ -18,6 +21,22 @@ O estudante escolhe como entrar. Os dois métodos simplificados aparecem em dest
 | **E-mail e senha** | O login de sempre, sem exigir carteirinha. | E11–E12 |
 
 Depois da validação (E13), o estudante vê uma confirmação breve com o avatar e entra (E14). “Não é você? Trocar de estudante” evita herdar a sessão em tablets compartilhados. Se a conta estiver bloqueada no Admins, aparece “Seu acesso está pausado” (E15).
+
+## Atalhos de fluxo
+
+Use `#/p/login-exploradores?screen=<fluxo>` para abrir direto numa tela:
+
+| Fluxo | Tela |
+| --- | --- |
+| `inicio` | Escolha do método (padrão) |
+| `camera` · `lendo` | QR Code: ligar a câmera · lendo a carteirinha |
+| `semcamera` · `qrinvalido` | Câmera indisponível · QR Code recusado |
+| `icones` · `icones-andamento` · `icones-completo` · `icones-erro` | Código de ícones vazio, em andamento, completo e com erro |
+| `pausa` | Pausa por tentativas (contagem regressiva) |
+| `email` · `email-erro` | E-mail e senha · dados incorretos |
+| `validando` · `ola` · `pausado` | Validação · “Oi, Ana Clara!” · acesso pausado |
+
+No protótipo, a carteirinha de exemplo (“Protótipo: ver a carteirinha de exemplo”) mostra a sequência certa: foguete, planeta, estrela, cometa, lua e disco voador. Uma sequência errada desconta tentativas; com 5 erros a entrada pausa. Qualquer e-mail válido com senha de 4 caracteres ou mais entra. O estado fica em memória: recarregar reinicia o protótipo.
 
 ## Fluxos do protótipo (Figma, página 09)
 
