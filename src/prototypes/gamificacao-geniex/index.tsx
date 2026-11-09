@@ -108,6 +108,12 @@ export default function GamificacaoGeniex({ startScreen }: PrototypeProps) {
   const [aviso, setAviso] = useState<Aviso>(ini.aviso ?? null)
   const [menu, setMenu] = useState(!!ini.menu)
   const [gaveta, setGaveta] = useState(false)
+  // sidebar: automática pela largura (expandida ≥1200, recolhida no tablet, gaveta no celular); o botão do topo sobrepõe
+  const larga = useMidia('(min-width: 1200px)')
+  const celular = useMidia('(max-width: 767px)')
+  const [recolherManual, setRecolherManual] = useState<boolean | null>(null)
+  const recolhida = !celular && (recolherManual ?? !larga)
+  const alternarSidebar = () => (celular ? setGaveta(true) : setRecolherManual(!recolhida))
   const [vazio] = useState(!!ini.vazio)
   const [toast, setToast] = useState<string | null>(null)
   const est = ESTUDANTES[estId]
@@ -137,10 +143,10 @@ export default function GamificacaoGeniex({ startScreen }: PrototypeProps) {
   const voltar = () => ir(tela === 'inicio' ? 'inicio' : 'inicio', 'padrao')
 
   return (
-    <div className="gx">
+    <div className={`gx ${recolhida ? 'is-recolhida' : ''}`}>
       <Sidebar onFora={fora} onPerfil={() => setMenu((m) => !m)} perfilAtivo={menu} gaveta={gaveta} onFechar={() => setGaveta(false)} />
       <div className="gx-principal">
-        <TopBar onMenu={() => setGaveta(true)} onFora={fora} />
+        <TopBar onMenu={alternarSidebar} onAlternar={alternarSidebar} recolhida={recolhida} onFora={fora} />
         <main className="gx-rolagem">
           <div className="gx-conteudo">
             <Cabecalho tela={tela} onVoltar={voltar} />
@@ -196,6 +202,17 @@ const NAV: [string, LucideIcon][][] = [
   [['Trilhas', Route], ['Cursos', GraduationCap], ['Biblioteca', BookOpen], ['Cronograma', Calendar], ['Instituição', Building2], ['Genie Bot', Bot]],
   [['Simulados', FileCheck2], ['Redação', PenLine]],
 ]
+function useMidia(q: string) {
+  const [ok, setOk] = useState(() => window.matchMedia(q).matches)
+  useEffect(() => {
+    const m = window.matchMedia(q)
+    const on = () => setOk(m.matches)
+    m.addEventListener('change', on)
+    return () => m.removeEventListener('change', on)
+  }, [q])
+  return ok
+}
+
 function Sidebar({ onFora, onPerfil, perfilAtivo, gaveta, onFechar }: { onFora: (n: string) => void; onPerfil: () => void; perfilAtivo: boolean; gaveta: boolean; onFechar: () => void }) {
   return (
     <>
@@ -235,13 +252,14 @@ function Sidebar({ onFora, onPerfil, perfilAtivo, gaveta, onFechar }: { onFora: 
   )
 }
 
-function TopBar({ onMenu, onFora }: { onMenu: () => void; onFora: (n: string) => void }) {
+function TopBar({ onMenu, onAlternar, recolhida, onFora }: { onMenu: () => void; onAlternar: () => void; recolhida: boolean; onFora: (n: string) => void }) {
+  const rotulo = recolhida ? 'Expandir menu' : 'Recolher menu'
   return (
     <header className="gx-top">
       <button className="gx-icone-btn gx-top__menu" onClick={onMenu} aria-label="Abrir menu">
         <Menu size={20} />
       </button>
-      <button className="gx-icone-btn gx-top__painel" onClick={() => onFora('Recolher menu')} aria-label="Recolher menu">
+      <button className={`gx-icone-btn gx-top__painel ${recolhida ? 'is-on' : ''}`} onClick={onAlternar} aria-label={rotulo} title={rotulo} aria-pressed={recolhida}>
         <PanelLeft size={20} />
       </button>
       <button className="gx-busca" onClick={() => onFora('Pesquisar')}>

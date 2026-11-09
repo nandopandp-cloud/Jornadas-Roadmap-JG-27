@@ -18,6 +18,7 @@
   inset: 0;
   display: grid;
   grid-template-columns: var(--lat) minmax(0, 1fr);
+  transition: grid-template-columns 0.22s ease;
   background: #fff;
   color: var(--tinta);
   font-family: 'Geist', system-ui, sans-serif;
@@ -67,6 +68,7 @@
 .gx-side {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   border-right: 1px solid var(--linha);
   background: #fff;
   padding: 16px;
@@ -110,6 +112,9 @@
   font-size: 12px;
   color: var(--suave);
   padding: 4px 8px;
+}
+.gx-top__painel.is-on {
+  color: var(--primaria);
 }
 .gx-nav__item {
   display: flex;
@@ -1650,39 +1655,40 @@ button.gx-resumo__card:hover {
     grid-template-columns: minmax(0, 1fr) 400px;
   }
 }
+/* sidebar recolhida: padrão no tablet; no desktop, o estudante alterna pelo botão do topo */
+.gx.is-recolhida {
+  --lat: 64px;
+}
+.gx.is-recolhida .gx-side {
+  padding: 16px 12px;
+  align-items: center;
+}
+.gx.is-recolhida .gx-logo__completo,
+.gx.is-recolhida .gx-nav__titulo,
+.gx.is-recolhida .gx-nav__item span,
+.gx.is-recolhida .gx-perfil > span:nth-child(2),
+.gx.is-recolhida .gx-perfil__mais {
+  display: none;
+}
+.gx.is-recolhida .gx-logo__icone {
+  display: block;
+}
+.gx.is-recolhida .gx-nav__item {
+  justify-content: center;
+  padding: 0;
+  width: 40px;
+}
+.gx.is-recolhida .gx-nav__grupo + .gx-nav__grupo {
+  border-top: 1px solid var(--linha);
+  padding-top: 12px;
+}
+.gx.is-recolhida .gx-perfil {
+  padding: 4px;
+}
+.gx.is-recolhida .gx-menu {
+  left: 72px;
+}
 @media (max-width: 1199px) {
-  .gx {
-    --lat: 64px;
-  }
-  .gx-side {
-    padding: 12px;
-    align-items: center;
-  }
-  .gx-logo__completo,
-  .gx-nav__titulo,
-  .gx-nav__item span,
-  .gx-perfil > span:nth-child(2),
-  .gx-perfil__mais {
-    display: none;
-  }
-  .gx-logo__icone {
-    display: block;
-  }
-  .gx-nav__item {
-    justify-content: center;
-    padding: 0;
-    width: 40px;
-  }
-  .gx-nav__grupo + .gx-nav__grupo {
-    border-top: 1px solid var(--linha);
-    padding-top: 12px;
-  }
-  .gx-perfil {
-    padding: 4px;
-  }
-  .gx-menu {
-    left: 72px;
-  }
   .gx-conteudo {
     padding: 24px 24px 48px;
     gap: 20px;
