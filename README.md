@@ -4,9 +4,10 @@ Gamificação da GenieX, parte do Roadmap 2027 da Jovens Gênios. O estudante ac
 
 - **Figma da jornada:** https://www.figma.com/design/BuFp19bdYy4ycLOk9vXCLH/Gamifica%C3%A7%C3%A3o-Geniex
 - **Referência (conceito):** página “Gamificação Geniex” do arquivo [Campeonato GenieX (conceito)](https://www.figma.com/design/CFgSTHDpGqyNluCYfHxj7U/CAMPEONATO---GENIEX--CONCEITO-?node-id=28-140). São imagens de conceito: servem de referência, nunca de tela.
-- **Na plataforma:** https://jornadas-roadmap-jg-27.vercel.app/#/jornada/gamificacao-geniex (aparece como “Em construção” até o navegável ficar pronto)
+- **Protótipo navegável:** https://jornadas-roadmap-jg-27.vercel.app/#/p/gamificacao-geniex
+- **Na plataforma:** https://jornadas-roadmap-jg-27.vercel.app/#/jornada/gamificacao-geniex
 - **PRD:** [`PRD.md`](PRD.md) (Sistema de Gamificação da GenieX v2.0: XP, elos e badges)
-- **Status:** Figma concluído. Telas em Desktop 1440, Tablet 768 e Celular 375 (páginas 05 a 08), 25 componentes da jornada (página 04), protótipo com 8 fluxos em Desktop e Celular (página 09) e handoff com 8 seções e 30 notas (página 10). Próxima etapa: o navegável.
+- **Status:** Figma concluído. Telas em Desktop 1440, Tablet 768 e Celular 375 (páginas 05 a 08), 25 componentes da jornada (página 04), protótipo com 8 fluxos em Desktop e Celular (página 09) e handoff com 8 seções e 30 notas (página 10). Navegável no ar, responsivo nas 3 larguras, com a logo oficial da GenieX.
 
 ## Decisões (09/11/2026)
 
@@ -45,6 +46,29 @@ Gamificação da GenieX, parte do Roadmap 2027 da Jovens Gênios. O estudante ac
 | Ouro | Brilho Próprio (36.000) | Fera do Estudo (42.000) | Alto Nível (48.000) | Imparável (54.000) | Ouro Puro (59.000) |
 | Diamante | Lapidado (68.000) | Visão de Jogo (76.000) | Determinação Total (84.000) | Inspiração (92.000) | Excelência (99.000) |
 | Cósmico | Fora da Curva (140.000) | Sem Limites (180.000) | Inabalável (220.000) | Lendário (260.000) | Para a História (300.000) |
+
+## Navegável
+
+Abre direto numa tela com `?screen=<atalho>`, por exemplo `#/p/gamificacao-geniex?screen=extrato`.
+
+| Atalho | Tela |
+| --- | --- |
+| `inicio` | Minha evolução |
+| `menu` | Menu do perfil aberto |
+| `elos` | Os elos da GenieX |
+| `elo` | Meu elo atual (Bronze) |
+| `elo-cosmico` | Meu elo atual (Cósmico, 20 badges) |
+| `elo-regressao` | Meu elo atual após regressão (Prata, maior elo Ouro) |
+| `badges` | Minhas badges |
+| `badge` | Detalhe de badge bloqueada |
+| `extrato` / `extrato-vazio` | Extrato de XP (com lotes / estado vazio) |
+| `lotes` / `lote` | Lotes prestes a expirar / detalhe do lote |
+| `aviso-badge` / `aviso-elo` / `aviso-regressao` | Badge desbloqueada / novo elo / elo alterado |
+
+- **Funciona de verdade:** filtros do extrato (Todos, Quizzes, Simulados, Redações), menu do perfil, painéis laterais, avisos, voltar e caminho de navegação.
+- **Fora do escopo:** os itens da sidebar e da barra do topo mostram um aviso.
+- **Larguras:** sidebar expandida a partir de 1200 px, recolhida (64 px) no tablet, menu em gaveta abaixo de 768 px.
+- **No celular:** a tabela do extrato vira cartões e os painéis viram folhas inferiores.
 
 ## Protótipo (Figma, página 09)
 
@@ -106,4 +130,4 @@ Bibliotecas plugadas no Figma da jornada: **🎨 Style Guide - GenieX**, **🎓 
 ## Organização
 
 - **Branch `main`:** plataforma completa (o que vai para o ar). Registro da jornada em `src/platform/journeys.ts`.
-- **Esta branch (`gamificacao-geniex`):** a `main` + este README. O navegável vai ficar em `src/prototypes/gamificacao-geniex/`.
+- **Esta branch (`gamificacao-geniex`):** a `main` + este README. O navegável está em `src/prototypes/gamificacao-geniex/` (dados em `data.ts`, artes em `public/geniex/`).
