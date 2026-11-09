@@ -98,11 +98,6 @@ const Barra = ({ pct, cor, alto }: { pct: number; cor?: string; alto?: boolean }
     <motion.i initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.6, ease: 'easeOut' }} style={{ background: cor }} />
   </span>
 )
-const Distribuicao = ({ dist }: { dist: number[] }) => (
-  <span className="rx-dist">
-    {dist.map((n, i) => (n ? <i key={i} style={{ flex: n, background: ELOS[i].claro }} title={`${ELOS[i].nome}: ${n}`} /> : null))}
-  </span>
-)
 const Tile = ({ icon: I, tom = 'roxo', size = 48 }: { icon: LucideIcon; tom?: string; size?: number }) => (
   <span className={`rx-tile is-${tom}`} style={{ width: size, height: size }}>
     <I size={Math.round(size * 0.45)} />
@@ -320,10 +315,7 @@ function Turmas({ aba, celular, onAba, onTurma, onExportar }: { aba: 'visao' | '
       <Abas nome="relatorio" itens={[['visao', 'Visão geral', BarChart3], ['gamificacao', 'Gamificação', Trophy]]} ativa={aba} onTroca={onAba} />
       <section className="rx-cartao">
         <div className="rx-cartao__topo">
-          <div>
-            <h2>{aba === 'gamificacao' ? 'Gamificação por turma' : 'Relatórios de Turmas'}</h2>
-            {aba === 'gamificacao' && <p>XP válido, elos e badges dos estudantes de cada turma. Abra uma turma para ver os estudantes.</p>}
-          </div>
+          <div>{aba === 'visao' && <h2>Relatórios de Turmas</h2>}</div>
           <Busca valor={q} onTroca={setQ} ph="Pesquisar pelo nome..." />
           <button className="rx-btn is-primario" onClick={onExportar}>
             <Download size={16} /> Exportar <ChevronDown size={16} />
@@ -367,10 +359,8 @@ function Turmas({ aba, celular, onAba, onTurma, onExportar }: { aba: 'visao' | '
                 <Th ord>Turma</Th>
                 <Th ord>Ano escolar</Th>
                 <Th ord>Estudantes</Th>
-                <Th ord>Com XP válido</Th>
                 <Th ord>XP válido médio</Th>
                 <Th ord>Elo médio</Th>
-                <Th>Distribuição</Th>
                 <span />
               </div>
               {lista.map((t) => {
@@ -380,14 +370,10 @@ function Turmas({ aba, celular, onAba, onTurma, onExportar }: { aba: 'visao' | '
                     <b>{t.nome}</b>
                     <span>{t.ano}</span>
                     <span>{t.estudantes}</span>
-                    <span className="rx-cel-barra">
-                      <b>{t.comXp}%</b> <Barra pct={t.comXp} cor="var(--rx-verde)" />
-                    </span>
                     <b>{fmt(t.xpMedio)}</b>
                     <span className="rx-cel-elo">
                       <Medalha elo={e.id} size={18} /> {e.nome}
                     </span>
-                    <Distribuicao dist={t.dist} />
                     <button className="rx-link" onClick={(ev) => { ev.stopPropagation(); onTurma(t.id) }}>
                       Ver relatório <ArrowRight size={16} />
                     </button>
@@ -414,10 +400,6 @@ function CartaoTurma({ t, onAbrir }: { t: Turma; onAbrir: () => void }) {
       </small>
       <div className="rx-dados">
         <span>
-          <small>Com XP válido</small>
-          <b>{t.comXp}%</b>
-        </span>
-        <span>
           <small>XP válido médio</small>
           <b>{fmt(t.xpMedio)}</b>
         </span>
@@ -426,10 +408,6 @@ function CartaoTurma({ t, onAbrir }: { t: Turma; onAbrir: () => void }) {
           <b className="rx-cel-elo">
             <Medalha elo={e.id} size={16} /> {e.nome}
           </b>
-        </span>
-        <span>
-          <small>Distribuição</small>
-          <Distribuicao dist={t.dist} />
         </span>
       </div>
       <span className="rx-link">

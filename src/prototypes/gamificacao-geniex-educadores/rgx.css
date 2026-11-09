@@ -777,7 +777,10 @@ strong.is-m,
   grid-template-columns: minmax(220px, 2fr) 1fr 1fr 1fr 1fr 1fr;
 }
 .rx-t-turmas .rx-tr {
-  grid-template-columns: minmax(200px, 2fr) 90px 80px 120px 110px 110px 120px 130px;
+  grid-template-columns: minmax(240px, 2fr) 120px 110px 150px 150px 140px;
+}
+.rx-t-turmas {
+  min-width: 820px;
 }
 .rx-t-turma .rx-tr {
   grid-template-columns: minmax(210px, 1.6fr) 140px minmax(200px, 1.3fr) 80px 110px 140px;
