@@ -777,7 +777,7 @@ strong.is-m,
   grid-template-columns: minmax(220px, 2fr) 1fr 1fr 1fr 1fr 1fr;
 }
 .rx-t-turmas .rx-tr {
-  grid-template-columns: minmax(240px, 2fr) 120px 110px 150px 150px 140px;
+  grid-template-columns: 20px minmax(240px, 2fr) 120px 110px 150px 150px 140px;
 }
 .rx-t-turmas {
   min-width: 820px;
@@ -1615,4 +1615,48 @@ strong.is-m,
   .rx-dist {
     width: 100%;
   }
+}
+
+/* seleção de turmas */
+.rx-caixa {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border: 1px solid #a3a3a3;
+  border-radius: 4px;
+  background: #fff;
+  color: #fff;
+}
+.rx-caixa.is-on {
+  background: var(--rx-roxo);
+  border-color: var(--rx-roxo);
+}
+.rx-caixa i {
+  width: 8px;
+  height: 2px;
+  border-radius: 1px;
+  background: #fff;
+}
+.rx-tr.is-marcada,
+.rx-card.is-marcada {
+  background: var(--rx-lilas-2);
+}
+.rx-selecao {
+  font-size: 14px !important;
+  font-weight: 500;
+  color: var(--rx-roxo) !important;
+}
+.rx-card__linha {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.rx-card__linha > span {
+  display: grid;
+  gap: 2px;
+}
+.rx-card__linha b {
+  color: var(--rx-tinta);
 }
