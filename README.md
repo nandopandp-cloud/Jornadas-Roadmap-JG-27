@@ -6,7 +6,7 @@ Gamificação da GenieX, parte do Roadmap 2027 da Jovens Gênios. O estudante ac
 - **Referência (conceito):** página “Gamificação Geniex” do arquivo [Campeonato GenieX (conceito)](https://www.figma.com/design/CFgSTHDpGqyNluCYfHxj7U/CAMPEONATO---GENIEX--CONCEITO-?node-id=28-140). São imagens de conceito: servem de referência, nunca de tela.
 - **Na plataforma:** https://jornadas-roadmap-jg-27.vercel.app/#/jornada/gamificacao-geniex (aparece como “Em construção” até o navegável ficar pronto)
 - **PRD:** [`PRD.md`](PRD.md) (Sistema de Gamificação da GenieX v2.0: XP, elos e badges)
-- **Status:** piloto aprovado e telas prontas em Desktop 1440, Tablet 768 e Celular 375 (páginas 05 a 08 do Figma). Próximas etapas: componentes, protótipo e handoff.
+- **Status:** Figma concluído. Telas em Desktop 1440, Tablet 768 e Celular 375 (páginas 05 a 08), 25 componentes da jornada (página 04), protótipo com 8 fluxos em Desktop e Celular (página 09) e handoff com 8 seções e 30 notas (página 10). Próxima etapa: o navegável.
 
 ## Decisões (09/11/2026)
 
@@ -36,7 +36,7 @@ Gamificação da GenieX, parte do Roadmap 2027 da Jovens Gênios. O estudante ac
 | **O1–O3** | Sobrepostos | Menu do perfil (acesso), lotes que vão expirar e detalhe do lote. |
 | **O4–O7** | Sobrepostos | Detalhe da badge e as notificações do PRD 11.4: badge desbloqueada, novo elo e elo alterado por expiração. |
 
-## Badges (nomes propostos para validação)
+## Badges (nomes aprovados em 09/11)
 
 | Elo | 1 | 2 | 3 | 4 | 5 |
 | --- | --- | --- | --- | --- | --- |
@@ -45,6 +45,19 @@ Gamificação da GenieX, parte do Roadmap 2027 da Jovens Gênios. O estudante ac
 | Ouro | Brilho Próprio (36.000) | Fera do Estudo (42.000) | Alto Nível (48.000) | Imparável (54.000) | Ouro Puro (59.000) |
 | Diamante | Lapidado (68.000) | Visão de Jogo (76.000) | Determinação Total (84.000) | Inspiração (92.000) | Excelência (99.000) |
 | Cósmico | Fora da Curva (140.000) | Sem Limites (180.000) | Inabalável (220.000) | Lendário (260.000) | Para a História (300.000) |
+
+## Protótipo (Figma, página 09)
+
+1. Acesso pelo perfil
+2. Conhecer os elos
+3. Meu elo atual (Bronze, Cósmico e após regressão)
+4. Extrato de XP (lotes que vão expirar e detalhe do lote)
+5. Minhas badges (detalhe da badge bloqueada)
+6. Badge desbloqueada
+7. Novo elo
+8. Elo alterado por expiração
+
+Cada fluxo existe em Desktop e Celular, com notas sob cada tela.
 
 ## A jornada (referência)
 
