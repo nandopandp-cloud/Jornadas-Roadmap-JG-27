@@ -29,7 +29,7 @@ Antes de uma iniciativa virar produto, o time precisa mostrar como ela vai funci
 
 <!-- jornadas:inicio (gerado automaticamente a partir de src/platform/journeys.ts — não edite à mão) -->
 
-A plataforma tem hoje **8 jornadas**. Cada uma vive na sua própria branch, com um README dedicado.
+A plataforma tem hoje **9 jornadas**. Cada uma vive na sua própria branch, com um README dedicado.
 
 ### Alfabetização
 
@@ -94,6 +94,14 @@ Gestão da credencial simplificada no cadastro do estudante: lista com status de
 Estudante acompanha a própria evolução na GenieX, a partir do perfil: XP válido, elos (Bronze a Cósmico) com progressão e regressão, 25 badges permanentes, extrato de XP com a validade de cada lote e avisos de novo elo, elo alterado e badge desbloqueada.
 
 [Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/gamificacao-geniex) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/gamificacao-geniex) · [Branch `gamificacao-geniex`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/gamificacao-geniex)
+
+### Gamificação GenieX · Educadores
+
+**Plataforma Educadores** · Professores e gestores
+
+Relatórios da gamificação da GenieX para professores e gestores: turmas com XP válido, elo médio e distribuição por elo; relatório da turma com regressões e badges; e o relatório de cada estudante com elos, 25 badges, evolução do XP, modalidades e extrato de lotes, com exportação em CSV e PDF.
+
+[Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/gamificacao-geniex-educadores) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/gamificacao-geniex-educadores) · [Branch `gamificacao-geniex-educadores`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/gamificacao-geniex-educadores)
 
 <!-- jornadas:fim -->
 
