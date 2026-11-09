@@ -5,7 +5,10 @@ Gestão das credenciais simplificadas dos estudantes no Admins, parte da iniciat
 - **PRD completo (Exploradores + Admins):** [`PRD.md`](PRD.md) · trechos desta jornada: §4.3–4.5, §6.1, §8, §9, §10, §11, §13
 - **Figma:** https://www.figma.com/design/bYkRkW17RbzT4OLxAnwxfn/Login-Simplificado. Telas A1–A8 nas páginas 05 (Desktop 1440), 06 (Tablet 1024) e 07 (Celular 390), diálogos e avisos (O1–O8, T1–T5) na página 08, protótipo nos fluxos 7–12 da página 09 e handoff nas seções 6–11 da página 10.
 - **Design System:** Global Design System (tema Admins), com a Sidebar - Admins real e ícones Lucide.
-- **Status:** desenho concluído no Figma (telas, componentes, protótipo, handoff e auditoria). Protótipo navegável nesta plataforma ainda não iniciado.
+- **Link público:** https://jornadas-roadmap-jg-27.vercel.app/#/p/login-admin
+- **Na plataforma:** https://jornadas-roadmap-jg-27.vercel.app/#/jornada/login-admin
+- **Código:** `src/prototypes/login-admin/` (+ carteirinha compartilhada em `src/prototypes/login-comum/`)
+- **Status:** Figma concluído (telas, componentes, protótipo, handoff e auditoria) e protótipo navegável publicado.
 
 ## A jornada
 
@@ -23,6 +26,21 @@ A gestão fica dentro do cadastro existente do estudante, sem criar conta ou cad
 | **A8 · Histórico de tentativas** | Data, evento, método, dispositivo e resultado, sem expor sequência, QR Code ou senha. |
 
 Diálogos (página 08): emitir, reemitir com motivo, revogar e bloquear com o quadro do que muda, permitir de novo, imprimir carteirinha, emissão em lote (confirmação e resultado com pendência) e avisos de confirmação e erro.
+
+## Atalhos de fluxo
+
+Use `#/p/login-admin?screen=<fluxo>` para abrir direto numa tela:
+
+| Fluxo | Tela |
+| --- | --- |
+| `lista` · `lote` | Lista de estudantes (padrão) · seleção em lote |
+| `ativa` · `sem` | Credencial ativa (Ana Clara) · sem credencial (Laura) |
+| `emitir` · `reemitir` · `imprimir` | Diálogos de emitir, reemitir com motivo e imprimir |
+| `revogada` · `bloqueado` | Credencial revogada (Mariana) · acesso bloqueado (Théo) |
+| `leitor` | Mesma tela vista por um perfil Leitor |
+| `historico` | Histórico de tentativas de acesso |
+
+Tudo é navegável: as ações mudam o status na lista e no detalhe, entram no histórico e mostram avisos de confirmação. Na emissão em lote, a Sofia fica pendente na primeira tentativa para mostrar a falha parcial (RN17). O menu do usuário na sidebar alterna entre Gestor e Leitor. O estado fica em memória: recarregar reinicia o protótipo.
 
 ## Fluxos do protótipo (Figma, página 09)
 
