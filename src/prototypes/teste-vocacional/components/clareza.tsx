@@ -1,58 +1,39 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowRight, Check, Info } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ArrowRight, Check, CircleDashed, CircleHelp, Compass, Lightbulb, Rocket, type LucideIcon } from 'lucide-react'
+import { useEffect, useState, type CSSProperties } from 'react'
 import { CLAREZA, CLAREZA_PERGUNTA } from '../instrumento'
 import { HOJE } from '../dados'
 import { useTv } from '../store'
 import { Btn, Modal } from './ui'
 
+/** ícones da escala de clareza, no estilo da escala das perguntas (Frames 2 e 5) */
+const NIVEIS: { I: LucideIcon; cor: string }[] = [
+  { I: CircleHelp, cor: '#ef4b5f' },
+  { I: CircleDashed, cor: '#f7881f' },
+  { I: Lightbulb, cor: '#8a90a6' },
+  { I: Compass, cor: '#2f8af5' },
+  { I: Rocket, cor: '#504cf2' },
+]
+/** rótulos curtos da escala (o texto completo vai no aria-label) */
+const CURTO = ['Ainda não tenho clareza', 'Tenho poucas ideias', 'Tenho algumas possibilidades', 'Tenho boas possibilidades', 'Tenho bastante clareza']
+
 /** escala de clareza (PRD §3.4): mesma pergunta e mesma escala antes e depois */
 export function EscalaClareza({ valor, onChange, antes }: { valor: number | null; onChange: (v: number) => void; antes?: number | null }) {
   return (
-    <div className="tv-escclar" role="radiogroup" aria-label={CLAREZA_PERGUNTA}>
-      {CLAREZA.map((c) => {
+    <div className="tv-escala tv-escala--clareza" role="radiogroup" aria-label={CLAREZA_PERGUNTA}>
+      {CLAREZA.map((c, i) => {
         const on = valor === c.v
+        const { I, cor } = NIVEIS[i]
         return (
-          <motion.button key={c.v} role="radio" aria-checked={on} className={`tv-escclar__op ${on ? 'is-on' : ''}`} onClick={() => onChange(c.v)} whileTap={{ scale: 0.97 }}>
-            {antes === c.v && <span className="tv-escclar__antes">Antes</span>}
-            <motion.img src={c.emoji} alt="" animate={on ? { scale: [1, 1.2, 1] } : { scale: 1 }} transition={{ duration: 0.4 }} />
-            <span className="tv-escclar__txt">{c.texto}</span>
-            <span className="tv-escclar__n">{on ? <Check size={12} strokeWidth={3} /> : c.v}</span>
+          <motion.button key={c.v} role="radio" aria-checked={on} aria-label={c.texto} className={`tv-escala__op ${on ? 'is-on' : ''}`} style={{ '--c': cor } as CSSProperties} onClick={() => onChange(c.v)} whileTap={{ scale: 0.95 }} whileHover={{ y: -2 }}>
+            {antes === c.v && <span className="tv-escala__antes">Antes</span>}
+            <I size={32} strokeWidth={1.7} className="tv-escala__rosto" />
+            <span className="tv-escala__txt">{CURTO[i]}</span>
+            <span className="tv-escala__n">{on ? <Check size={11} strokeWidth={3.5} /> : c.v}</span>
           </motion.button>
         )
       })}
     </div>
-  )
-}
-
-/** antes do questionário (PRD §5.3): opcional, não muda as recomendações */
-export function ClarezaInicial({ aberto, onFechar, onContinuar }: { aberto: boolean; onFechar: () => void; onContinuar: (v: number | null) => void }) {
-  const [v, setV] = useState<number | null>(null)
-  useEffect(() => setV(null), [aberto])
-  return (
-    <Modal
-      aberto={aberto}
-      onFechar={onFechar}
-      titulo="Antes de começar"
-      largura={620}
-      rodape={
-        <>
-          <button className="tv-link" onClick={() => onContinuar(null)}>
-            Prefiro pular
-          </button>
-          <Btn disabled={v === null} iconeDir={<ArrowRight size={16} />} onClick={() => onContinuar(v)}>
-            Começar o teste
-          </Btn>
-        </>
-      }
-    >
-      <p className="tv-clar__q">{CLAREZA_PERGUNTA}</p>
-      <p className="tv-texto tv-texto--suave">Não existe nível certo. Vamos fazer a mesma pergunta no final para você perceber se a experiência ajudou.</p>
-      <EscalaClareza valor={v} onChange={setV} />
-      <p className="tv-nota">
-        <Info size={15} /> Esta resposta não muda as profissões sugeridas para você.
-      </p>
-    </Modal>
   )
 }
 

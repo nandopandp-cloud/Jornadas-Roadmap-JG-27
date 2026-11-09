@@ -164,7 +164,7 @@ export const journeys: Journey[] = [
     product: 'GenieX · Plataforma do Estudante',
     audience: 'Ensino Médio',
     description:
-      'Estudante responde 52 perguntas sobre interesses, valores, preferências e habilidades, recebe um perfil RIASEC com profissões explicadas, explora e compara carreiras, salva favoritas e monta um plano de próximos passos.',
+      'Estudante responde 52 perguntas sobre interesses, valores, preferências e habilidades, recebe um perfil RIASEC com profissões explicadas, explora e compara carreiras e segue próximos passos para investigar o futuro.',
     icon: './voc/compass.webp',
     accent: '#504cf2',
     status: 'navegavel',
@@ -192,8 +192,6 @@ export const journeys: Journey[] = [
       { id: 'carreira', label: 'Conheça a profissão', icon: './voc/bar-chart.webp' },
       { id: 'explorar', label: 'Explorar profissões', icon: './voc/globe-showing-americas.webp' },
       { id: 'comparar', label: 'Comparar', icon: './voc/balance-scale.webp' },
-      { id: 'minhas', label: 'Favoritos', icon: './3d/heart.png' },
-      { id: 'plano', label: 'Meu Plano', icon: './voc/spiral-notepad.webp' },
       { id: 'historico', label: 'Histórico de testes', icon: './3d/calendar.png' },
       { id: 'inicio', label: 'Início', icon: './3d/house.png' },
     ],

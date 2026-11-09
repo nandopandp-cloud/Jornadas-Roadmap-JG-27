@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight, Check, Columns3, Plus, X } from 'lucide-react'
 import { Fragment, useEffect, type CSSProperties, type ReactNode } from 'react'
 import { AREA, CARREIRA, CARREIRAS, type Carreira } from '../carreiras'
-import { Btn, Coracao, Etiqueta, Select } from '../components/ui'
+import { Btn, Etiqueta, Select } from '../components/ui'
 import { FotoProf } from '../components/perfil'
 import { DIM, ITEM, type Dim } from '../instrumento'
 import { nivel, preferencias, valoresDestacados } from '../motor'
@@ -20,13 +20,14 @@ const NOME_VALOR = Object.fromEntries(['V01', 'V02', 'V03', 'V04', 'V05', 'V06',
 
 /** Comparador de carreiras (PRD §5.9): informações padronizadas, sem eleger uma “melhor” */
 export default function Comparar() {
-  const { s, ir, setComparar, toggleComparar, favoritar, toast, ultima, track } = useTv()
+  const { s, ir, setComparar, toggleComparar, ultima, track } = useTv()
   const ids = s.comparar
   const cs = ids.map((id) => CARREIRA[id])
   const p = ultima?.resultado?.perfil
   const r = ultima?.respostas
   const prefs = r ? preferencias(r) : []
   const meusValores = r ? valoresDestacados(r).map((v) => v.id) : []
+  const recsIds = ultima?.resultado?.recomendacoes.map((x) => x.id) ?? []
 
   useEffect(() => {
     if (ids.length >= 2) track('career_comparison_started', { quantidade: ids.length })
@@ -128,14 +129,14 @@ export default function Comparar() {
           <Columns3 size={28} />
           <div>
             <strong>{cs.length ? 'Escolha mais uma profissão para comparar' : 'Escolha de 2 a 3 profissões'}</strong>
-            <span>Escolha aqui ou use “Comparar” na página de cada profissão. {s.favoritos.length > 0 && 'Atalho: seus favoritos.'}</span>
-            {s.favoritos.length > 0 && (
+            <span>Escolha aqui ou use “Comparar” na página de cada profissão. {recsIds.length > 0 && 'Atalho: suas profissões recomendadas.'}</span>
+            {recsIds.length > 0 && (
               <div className="tv-chips">
-                {s.favoritos
-                  .filter((f) => !ids.includes(f.id))
-                  .map((f) => (
-                    <button key={f.id} className="tv-chip tv-chip--g" onClick={() => toggleComparar(f.id)}>
-                      <Plus size={13} /> {CARREIRA[f.id].nome}
+                {recsIds
+                  .filter((id) => !ids.includes(id))
+                  .map((id) => (
+                    <button key={id} className="tv-chip tv-chip--roxo" onClick={() => toggleComparar(id)}>
+                      <Plus size={13} /> {CARREIRA[id].nome}
                     </button>
                   ))}
               </div>
@@ -152,13 +153,6 @@ export default function Comparar() {
               <motion.div key={c.id} layout className="tv-cmp__col-cab" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }}>
                 <FotoProf c={c} className="tv-cmp__foto" />
                 <div className="tv-cmp__topo">
-                  <Coracao
-                    on={s.favoritos.some((f) => f.id === c.id)}
-                    onClick={() => {
-                      const on = favoritar(c.id)
-                      toast(on ? `${c.nome} adicionado(a) aos favoritos.` : `${c.nome} removido(a) dos favoritos.`, on ? 'ok' : 'info')
-                    }}
-                  />
                   <button className="tv-iconbtn" onClick={() => toggleComparar(c.id)} aria-label={`Tirar ${c.nome} da comparação`}>
                     <X size={16} />
                   </button>
@@ -202,8 +196,8 @@ export default function Comparar() {
       {cs.length >= 2 && (
         <div className="tv-cmp__rodape">
           <p>Ficou com dúvidas? Leve estas perguntas para uma conversa com alguém da área ou com a orientação da escola.</p>
-          <Btn variante="contorno" onClick={() => ir({ id: 'plano' })}>
-            Ir para meu plano
+          <Btn variante="contorno" onClick={() => ir({ id: 'relatorio', aba: 'passos' })}>
+            Ver próximos passos
           </Btn>
         </div>
       )}

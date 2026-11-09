@@ -1,5 +1,5 @@
 import { AnimatePresence, animate, motion, useMotionValue, useTransform } from 'framer-motion'
-import { Check, ChevronDown, CircleAlert, Heart, Info, X } from 'lucide-react'
+import { Check, ChevronDown, CircleAlert, Info, X } from 'lucide-react'
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { useTv } from '../store'
@@ -83,30 +83,6 @@ export function Rico({ texto }: { texto: string }) {
 
 /** etiqueta “TESTE VOCACIONAL” das telas */
 export const Etiqueta = ({ children = 'Teste vocacional' }: { children?: ReactNode }) => <span className="tv-etiqueta">{children}</span>
-
-/* ---------------- coração de favorito ---------------- */
-export function Coracao({ on, onClick, tam = 20, rotulo, comTexto }: { on: boolean; onClick?: () => void; tam?: number; rotulo?: string; comTexto?: boolean }) {
-  const r = rotulo ?? (on ? 'Remover dos favoritos' : 'Adicionar aos favoritos')
-  return (
-    <motion.button
-      className={`tv-coracao ${on ? 'is-on' : ''} ${comTexto ? 'tv-coracao--texto' : ''}`}
-      onClick={(e) => {
-        e.stopPropagation()
-        onClick?.()
-      }}
-      whileTap={{ scale: 0.85 }}
-      aria-pressed={on}
-      aria-label={comTexto ? undefined : r}
-      title={r}
-    >
-      <motion.span key={String(on)} initial={on ? { scale: 0.3 } : false} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 500, damping: 12 }}>
-        <Heart size={tam} strokeWidth={on ? 0 : 1.9} fill={on ? 'currentColor' : 'none'} />
-      </motion.span>
-      {comTexto && <span>{on ? 'Nos favoritos' : 'Adicionar aos favoritos'}</span>}
-      <AnimatePresence initial={false}>{on && <motion.i className="tv-coracao__pulso" initial={{ scale: 0.4, opacity: 0.8 }} animate={{ scale: 2, opacity: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />}</AnimatePresence>
-    </motion.button>
-  )
-}
 
 /* ---------------- lista suspensa (portal, posição fixa) ---------------- */
 function usePosicao(aberto: boolean, ancora: React.RefObject<HTMLElement | null>, fechar: () => void) {

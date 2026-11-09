@@ -4,15 +4,14 @@ import {
   ArrowRight,
   BarChart3,
   BookOpen,
-  Bookmark,
   BriefcaseBusiness,
   CalendarCheck2,
   CircleCheck,
+  Download,
   ClipboardList,
   Clock,
   Coins,
   Compass,
-  Download,
   Gauge,
   GraduationCap,
   Heart,
@@ -37,9 +36,9 @@ import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
 import { CARREIRA, type Carreira } from '../carreiras'
 import { ClarezaFinal } from '../components/clareza'
 import { CardProf, DimBola, FotoProf, Radar, SeloCategoria } from '../components/perfil'
-import { Barra, Btn, Coracao, Etiqueta, Modal, Rico, Select } from '../components/ui'
+import { Barra, Btn, Etiqueta, Modal, Rico, Select } from '../components/ui'
 import { CLAREZA, DIM, DIMS, ESCALA, HABILIDADES, ITEM, itensDo, type Dim, type Respostas } from '../instrumento'
-import { acoesSugeridas, habilidades, nivel, perguntasReflexao, preferencias, valoresDestacados, type Perfil, type Recomendacao } from '../motor'
+import { habilidades, nivel, perguntasReflexao, preferencias, valoresDestacados, type Perfil, type Recomendacao } from '../motor'
 import { dataLonga, useTv, type AbaRel, type View } from '../store'
 
 const ABAS: { id: AbaRel; nome: string; I: LucideIcon; titulo: ReactNode; sub: string; banner: string }[] = [
@@ -481,7 +480,7 @@ function Areas({ c }: { c: Ctx }) {
 /* ---------------- Profissões recomendadas (Frame 9) ---------------- */
 type MiniAba = 'visao' | 'dia' | 'onde' | 'formacao'
 function Profissoes({ c, selInicial }: { c: Ctx; selInicial?: string }) {
-  const { s, favoritar, toast, ir } = useTv()
+  const { ir } = useTv()
   const [ordem, setOrdem] = useState<'teste' | 'az'>('teste')
   const [sel, setSel] = useState(selInicial ?? c.recs[0]?.id)
   const [mini, setMini] = useState<MiniAba>('visao')
@@ -489,7 +488,6 @@ function Profissoes({ c, selInicial }: { c: Ctx; selInicial?: string }) {
   const ordenadas = ordem === 'az' ? [...c.recs].sort((a, b) => CARREIRA[a.id].nome.localeCompare(CARREIRA[b.id].nome)) : c.recs
   const rec = c.recs.find((x) => x.id === sel) ?? c.recs[0]
   const car = CARREIRA[rec.id]
-  const salvo = s.favoritos.some((f) => f.id === car.id)
   return (
     <div className="tv-profs">
       <div className="tv-profs__lista">
@@ -539,13 +537,6 @@ function Profissoes({ c, selInicial }: { c: Ctx; selInicial?: string }) {
             <button className="tv-link" onClick={() => document.querySelector('.tv-profs__lista')?.scrollIntoView({ behavior: 'smooth' })}>
               <ArrowLeft size={16} /> Voltar para a lista
             </button>
-            <Coracao
-              on={salvo}
-              onClick={() => {
-                const on = favoritar(car.id)
-                toast(on ? `${car.nome} adicionado(a) aos favoritos.` : `${car.nome} removido(a) dos favoritos.`, on ? 'ok' : 'info')
-              }}
-            />
           </div>
           <div className="tv-profs__foto">
             <FotoProf c={car} />
@@ -825,7 +816,6 @@ function Preferencias({ c }: { c: Ctx }) {
 /* ---------------- Habilidades (Frame 13) ---------------- */
 const HAB_IC: Record<string, LucideIcon> = { H01: BarChart3, H02: Lightbulb, H03: Users, H04: ClipboardList, H05: Heart, H06: Compass, H07: Rocket, H08: Settings }
 function Habilidades({ c }: { c: Ctx }) {
-  const { ir } = useTv()
   const [ordem, setOrdem] = useState<'maior' | 'menor'>('maior')
   const hs = HABILIDADES.map((h) => ({ ...h, v: (c.r[h.id] as number) ?? 0 })).sort((a, b) => (ordem === 'maior' ? b.v - a.v : a.v - b.v))
   const hab = habilidades(c.r)
@@ -889,8 +879,8 @@ function Habilidades({ c }: { c: Ctx }) {
                 ))}
               </div>
             )}
-            <button className="tv-oport__btn" onClick={() => ir({ id: 'plano' })}>
-              Ver sugestões de desenvolvimento <ArrowRight size={16} />
+            <button className="tv-oport__btn" onClick={() => c.trocar('passos')}>
+              Ver próximos passos <ArrowRight size={16} />
             </button>
           </div>
         </div>
@@ -918,20 +908,14 @@ function Habilidades({ c }: { c: Ctx }) {
 
 /* ---------------- Próximos passos (Frame 14) ---------------- */
 function Passos({ c, ehAtual, onClareza }: { c: Ctx; ehAtual: boolean; onClareza: () => void }) {
-  const { s, ir, addAcao, toast, ultima } = useTv()
+  const { s, ir, toast, ultima } = useTv()
   const primeira = c.recs[0]?.id
-  const sugestoes = primeira ? acoesSugeridas(CARREIRA[primeira]).slice(0, 3) : []
-  const salvar = () => {
-    const novas = sugestoes.filter((a) => !s.acoes.some((x) => x.texto === a.texto))
-    novas.forEach((a) => addAcao({ texto: a.texto, tipo: a.tipo, carreira: primeira }))
-    toast(novas.length ? `${novas.length} ações salvas no Meu Plano.` : 'Essas ações já estão no seu plano.', novas.length ? 'ok' : 'info', { rotulo: 'Ver plano', fn: () => ir({ id: 'plano' }) })
-  }
   const checklist = [
     { t: 'Conhecer as profissões recomendadas', ok: s.eventos.some((e) => e.nome === 'career_recommendation_opened') },
     { t: 'Explorar opções de formação', ok: s.eventos.some((e) => e.nome === 'career_formation_viewed') },
     { t: 'Consumir conteúdos da área', ok: false },
     { t: 'Participar de eventos e conversas', ok: s.acoes.some((a) => a.feita && a.tipo === 'conversa') },
-    { t: 'Adicionar ao Meu Plano', ok: s.acoes.length > 0 },
+    { t: 'Comparar profissões', ok: s.eventos.some((e) => e.nome === 'career_comparison_started') },
     { t: 'Revisar seus resultados no futuro', ok: s.tentativas.filter((x) => x.status === 'concluida').length > 1 },
   ]
   const fora = (n: string) => toast(`${n} fora do escopo deste protótipo.`, 'info')
@@ -943,7 +927,6 @@ function Passos({ c, ehAtual, onClareza }: { c: Ctx; ehAtual: boolean; onClareza
   ]
   const blocos = [
     { cor: 'verde', img: './voc/ref/pp-conteudos.webp', t: 'Conteúdos recomendados', d: 'Vídeos, artigos e materiais para você aprender mais sobre as áreas que mais combinam com você.', itens: [['./voc/ref/pp-c1.webp', 'O dia a dia de um Cientista de Dados'], ['./voc/ref/pp-c2.webp', 'Como é a carreira de Designer de Produto'], ['./voc/ref/pp-c3.webp', 'Tendências da Inteligência Artificial']], btn: 'Ver todos os conteúdos', fora: 'Conteúdos' },
-    { cor: 'azul', img: './voc/ref/pp-univ.webp', t: 'Universidades em destaque', d: 'Conheça instituições que oferecem cursos nas áreas que mais se alinham ao seu perfil.', itens: [['./voc/ref/pp-u1.webp', 'USP · São Paulo - SP'], ['./voc/ref/pp-u2.webp', 'UFRJ · Rio de Janeiro - RJ'], ['./voc/ref/pp-u3.webp', 'PUC-Rio · Rio de Janeiro - RJ']], btn: 'Explorar mais universidades', fora: 'Universidades' },
     { cor: 'laranja', img: './voc/ref/pp-eventos.webp', t: 'Eventos e comunidades', d: 'Participe de eventos, lives e comunidades para trocar experiências e se conectar com profissionais da área.', itens: [['./voc/ref/pp-e1.webp', 'Bate-papo com Cientistas de Dados'], ['./voc/ref/pp-e2.webp', 'Carreiras em Tecnologia'], ['./voc/ref/pp-e3.webp', 'Design e Inovação na Prática']], btn: 'Ver todos os eventos', fora: 'Eventos' },
   ]
   return (
@@ -952,11 +935,6 @@ function Passos({ c, ehAtual, onClareza }: { c: Ctx; ehAtual: boolean; onClareza
         titulo="Seu plano de desenvolvimento"
         info
         sub="Aqui estão algumas sugestões personalizadas para você continuar explorando suas possibilidades."
-        acao={
-          <Btn variante="claro" pequeno icone={<Bookmark size={16} />} onClick={salvar}>
-            Salvar no Meu Plano
-          </Btn>
-        }
       >
         <ol className="tv-plano4">
           {passos.map(({ I, cor, t, d, btn, fn }, i) => (

@@ -62,6 +62,8 @@ const ROSTOS: { I: LucideIcon; cor: string }[] = [
 const ARTE_PAR: Record<string, [string, string]> = { P01: ['./voc/ref/q-par-pessoas.webp', './voc/ref/q-par-sozinho.webp'] }
 
 /** Questionário (Frames 2, 1, 4 e 5 · PRD §5.4) */
+export { ROSTOS }
+
 export default function Questionario({ onSair }: { onSair: () => void }) {
   const { s, atual, responder, setPos, ir, toast } = useTv()
   const [dir, setDir] = useState<1 | -1>(1)
@@ -89,7 +91,7 @@ export default function Questionario({ onSair }: { onSair: () => void }) {
   const anterior = useCallback(() => {
     window.clearTimeout(avancando.current)
     setDir(-1)
-    if (pos === 0) return ir({ id: 'entrada' }, -1)
+    if (pos === 0) return ir({ id: 'clareza' }, -1)
     setPos(pos - 1)
   }, [pos, setPos, ir])
 

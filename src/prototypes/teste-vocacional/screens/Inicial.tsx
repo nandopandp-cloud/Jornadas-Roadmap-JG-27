@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { ArrowRight, CalendarDays, Heart } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { CARREIRA } from '../carreiras'
 import { CardProf } from '../components/perfil'
 import { Barra, Btn, Etiqueta } from '../components/ui'
@@ -8,7 +8,7 @@ import { useTv } from '../store'
 
 /** Início da GenieX com o ponto de entrada do Teste Vocacional (PRD §5.2) */
 export default function Inicial() {
-  const { s, ir, ultima, atual } = useTv()
+  const { ir, ultima, atual } = useTv()
   const curiosas = ['oceanografia', 'design-ux', 'gestao-publica', 'pesquisa-cientifica'].map((id) => CARREIRA[id])
   const n = atual ? contar(atual.respostas) : 0
   return (
@@ -54,28 +54,6 @@ export default function Inicial() {
         </div>
       </section>
 
-      <section className="tv-ini__atalhos">
-        <button className="tv-card tv-ini__atalho" onClick={() => ir({ id: 'plano' })}>
-          <span className="tv-benef__ic tv-benef__ic--roxo">
-            <CalendarDays size={24} />
-          </span>
-          <span>
-            <strong>Meu Plano</strong>
-            <small>{s.acoes.filter((a) => !a.feita).length ? `${s.acoes.filter((a) => !a.feita).length} ações para fazer` : 'Monte ações para investigar profissões'}</small>
-          </span>
-          <ArrowRight size={18} />
-        </button>
-        <button className="tv-card tv-ini__atalho" onClick={() => ir({ id: 'minhas' })}>
-          <span className="tv-benef__ic tv-benef__ic--rosa">
-            <Heart size={24} />
-          </span>
-          <span>
-            <strong>Favoritos</strong>
-            <small>{s.favoritos.length ? `${s.favoritos.length} profissões salvas` : 'Salve profissões para ver depois'}</small>
-          </span>
-          <ArrowRight size={18} />
-        </button>
-      </section>
     </div>
   )
 }

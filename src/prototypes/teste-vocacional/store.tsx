@@ -1,8 +1,7 @@
 import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from 'react'
 import { DIA, HOJE, respostasParciais, respostasPassadas, respostasPersona } from './dados'
 import { ITENS, VERSAO_INSTRUMENTO, type Resposta, type Respostas } from './instrumento'
-import { acoesSugeridas, gerarResultado, type Resultado } from './motor'
-import { CARREIRA } from './carreiras'
+import { gerarResultado, type Resultado } from './motor'
 
 /* =====================================================================
    Estado do protótipo Teste Vocacional (dados só no navegador)
@@ -34,16 +33,15 @@ export type AbaProf = 'visao' | 'dia' | 'onde' | 'formacao' | 'habilidades' | 'm
 
 export type View =
   | { id: 'inicio' }
-  | { id: 'entrada'; clareza?: boolean }
+  | { id: 'entrada' }
+  | { id: 'clareza' }
   | { id: 'questionario' }
   | { id: 'revisao' }
   | { id: 'processando' }
   | { id: 'relatorio'; aba?: AbaRel; tentativa?: string; clarezaPos?: boolean; sel?: string }
-  | { id: 'carreira'; carreira: string; de?: 'relatorio' | 'explorar' | 'minhas' | 'comparar' | 'plano'; aba?: AbaProf }
+  | { id: 'carreira'; carreira: string; de?: 'relatorio' | 'explorar' | 'comparar'; aba?: AbaProf }
   | { id: 'explorar'; dim?: string; q?: string }
   | { id: 'comparar' }
-  | { id: 'minhas' }
-  | { id: 'plano' }
   | { id: 'historico' }
 
 export type Toast = { id: number; texto: string; tipo: 'ok' | 'info' | 'erro'; acao?: { rotulo: string; fn: () => void } }
@@ -84,8 +82,6 @@ export type Inicio =
   | 'carreira'
   | 'explorar'
   | 'comparar'
-  | 'minhas'
-  | 'plano'
   | 'historico'
 
 /* ---------------- estados iniciais (atalhos de fluxo) ---------------- */
@@ -122,36 +118,18 @@ function concluida(): Tentativa {
   return { ...nova(r), pos: ITENS.length, status: 'concluida', fim: HOJE - 4 * 60_000, resultado: gerarResultado(r, HOJE - 4 * 60_000)! }
 }
 
-const favPreset = (): Favorito[] => [
-  { id: 'ciencia-dados', em: HOJE - 3 * 60_000, etapa: 'investigando' },
-  { id: 'design-ux', em: HOJE - 2 * 60_000, etapa: 'conhecer' },
-  { id: 'arquitetura', em: HOJE - 60_000, etapa: 'conhecer' },
-  { id: 'jornalismo', em: HOJE - 30_000, etapa: 'conheci' },
-]
-function acoesPreset(): Acao[] {
-  const ux = acoesSugeridas(CARREIRA['ciencia-dados'])
-  const psi = acoesSugeridas(CARREIRA['design-ux'])
-  return [
-    { id: 'a1', texto: ux[0].texto, tipo: ux[0].tipo, carreira: 'ciencia-dados', feita: true, criadaEm: HOJE - 3 * 60_000, feitaEm: HOJE - 60_000 },
-    { id: 'a2', texto: ux[1].texto, tipo: ux[1].tipo, carreira: 'ciencia-dados', feita: false, criadaEm: HOJE - 3 * 60_000 },
-    { id: 'a3', texto: psi[2].texto, tipo: psi[2].tipo, carreira: 'design-ux', feita: false, criadaEm: HOJE - 2 * 60_000 },
-    { id: 'a4', texto: 'Perguntar à orientadora da escola sobre feiras de profissões', tipo: 'pessoal', feita: false, criadaEm: HOJE - 60_000 },
-  ]
-}
-
 const ABA: Partial<Record<Inicio, AbaRel>> = { relatorio: 'visao', areas: 'areas', recomendacoes: 'profissoes', 'res-valores': 'valores', 'res-preferencias': 'preferencias', 'res-habilidades': 'habilidades', passos: 'passos', 'clareza-pos': 'passos' }
 /** pergunta inicial de cada atalho do questionário (índice em ITENS) */
 const POS_Q: Partial<Record<Inicio, number>> = { questionario: 0, 'q-valores': 30, 'q-preferencias': 38, 'q-habilidades': 44 }
 
 function inicial(start: Inicio): State {
   const base: State = { view: { id: 'inicio' }, dir: 1, sidebarFechada: false, tentativas: [], favoritos: [], acoes: [], comparar: [], descartadas: [], eventos: [], salvando: 'ok' }
-  const comResultado = !!ABA[start] || ['carreira', 'explorar', 'comparar', 'minhas', 'plano', 'historico'].includes(start)
-  const preset = ['comparar', 'minhas', 'plano', 'historico'].includes(start)
+  const comResultado = !!ABA[start] || ['carreira', 'explorar', 'comparar', 'historico'].includes(start)
   const todas = respostasPersona()
   const ate = (n: number) => Object.fromEntries(ITENS.slice(0, n).map((i) => [i.id, todas[i.id]]).filter(([, v]) => v !== undefined))
   const semDuas = Object.fromEntries(Object.entries(todas).filter(([k]) => k !== 'V07' && k !== 'P04'))
   const tent: Tentativa[] =
-    start === 'clareza' ? []
+    start === 'clareza' ? [nova({}, { clarezaPre: undefined, pos: 0, inicio: HOJE })]
     : POS_Q[start] !== undefined ? [nova(ate(POS_Q[start]!), { pos: POS_Q[start]! })]
     : start === 'retomar' ? [nova(respostasParciais(23), { inicio: HOJE - DIA - 40 * 60_000 })]
     : start === 'revisao' ? [nova(semDuas, { pos: ITENS.length - 1 })]
@@ -161,7 +139,7 @@ function inicial(start: Inicio): State {
   const view: View =
     ABA[start] ? { id: 'relatorio', aba: ABA[start], clarezaPos: start === 'clareza-pos' }
     : POS_Q[start] !== undefined ? { id: 'questionario' }
-    : start === 'clareza' ? { id: 'entrada', clareza: true }
+    : start === 'clareza' ? { id: 'clareza' }
     : start === 'retomar' ? { id: 'entrada' }
     : start === 'carreira' ? { id: 'carreira', carreira: 'ciencia-dados', de: 'relatorio' }
     : ({ id: start } as View)
@@ -169,8 +147,8 @@ function inicial(start: Inicio): State {
     ...base,
     view,
     tentativas: tent,
-    favoritos: preset ? favPreset() : [],
-    acoes: preset ? acoesPreset() : [],
+    favoritos: [],
+    acoes: [],
     comparar: start === 'comparar' ? ['ciencia-dados', 'design-ux', 'arquitetura'] : [],
   }
 }

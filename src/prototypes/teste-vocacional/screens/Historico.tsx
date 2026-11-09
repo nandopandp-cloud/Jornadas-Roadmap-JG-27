@@ -10,7 +10,7 @@ import { dataLonga, quando, useTv } from '../store'
 
 /** Minha jornada profissional (PRD §5.13): tentativas, versões e evolução */
 export default function Historico() {
-  const { s, ir, atual } = useTv()
+  const { s, ir, iniciar, atual } = useTv()
   const [novo, setNovo] = useState(false)
   const feitas = s.tentativas.filter((t) => t.status === 'concluida').sort((a, b) => b.fim! - a.fim!)
 
@@ -131,7 +131,8 @@ export default function Historico() {
             <Btn
               onClick={() => {
                 setNovo(false)
-                ir({ id: 'entrada', clareza: true })
+                iniciar()
+                ir({ id: 'clareza' })
               }}
             >
               Começar nova tentativa

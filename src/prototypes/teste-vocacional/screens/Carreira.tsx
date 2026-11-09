@@ -6,7 +6,6 @@ import {
   BookOpenCheck,
   Briefcase,
   CalendarCheck,
-  Check,
   CircleDollarSign,
   ClipboardList,
   Columns3,
@@ -16,7 +15,6 @@ import {
   GraduationCap,
   Landmark,
   Lightbulb,
-  ListPlus,
   MapPinned,
   Mountain,
   Play,
@@ -33,17 +31,15 @@ import {
 import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
 import { AREA, CARREIRA, FONTE_REMUNERACAO, FONTES, REVISAO, perfilDe } from '../carreiras'
 import { DimBola, FotoProf, Radar, SeloCategoria } from '../components/perfil'
-import { Btn, Coracao, Modal, Rico } from '../components/ui'
+import { Btn, Rico } from '../components/ui'
 import { DIM, type Dim } from '../instrumento'
-import { acoesSugeridas, explicar, nivel } from '../motor'
+import { explicar, nivel } from '../motor'
 import { useTv, type AbaProf, type View } from '../store'
 
 const VOLTAR: Record<string, { texto: string; v: View }> = {
   relatorio: { texto: 'Voltar para as profissões recomendadas', v: { id: 'relatorio', aba: 'profissoes' } },
   explorar: { texto: 'Voltar para Explorar Profissões', v: { id: 'explorar' } },
-  minhas: { texto: 'Voltar para Favoritos', v: { id: 'minhas' } },
   comparar: { texto: 'Voltar para a comparação', v: { id: 'comparar' } },
-  plano: { texto: 'Voltar para o Meu Plano', v: { id: 'plano' } },
 }
 const ABAS: { id: AbaProf; nome: string; I: LucideIcon }[] = [
   { id: 'visao', nome: 'Visão geral', I: Compass },
@@ -59,12 +55,10 @@ const ATIV_IC: LucideIcon[] = [BarChart3, ClipboardList, Lightbulb, Users, Targe
 
 /** Conheça a profissão (Frame 10 · PRD §5.8) */
 export default function CarreiraTela({ v }: { v: Extract<View, { id: 'carreira' }> }) {
-  const { s, ir, ultima, favoritar, toggleComparar, toast, descartar, track } = useTv()
+  const { s, ir, ultima, toggleComparar, toast, descartar, track } = useTv()
   const c = CARREIRA[v.carreira]
   const [aba, setAba] = useState<AbaProf>(v.aba ?? 'visao')
-  const [plano, setPlano] = useState(false)
   const volta = VOLTAR[v.de ?? 'explorar']
-  const salvo = s.favoritos.some((f) => f.id === c.id)
   const comparando = s.comparar.includes(c.id)
   const res = ultima?.resultado
   const rec = res?.recomendacoes.find((x) => x.id === c.id)
@@ -77,10 +71,6 @@ export default function CarreiraTela({ v }: { v: Extract<View, { id: 'carreira' 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [aba])
 
-  const salvar = () => {
-    const on = favoritar(c.id)
-    toast(on ? `${c.nome} adicionado(a) aos favoritos.` : `${c.nome} removido(a) dos favoritos.`, on ? 'ok' : 'info', on ? { rotulo: 'Ver favoritos', fn: () => ir({ id: 'minhas' }) } : undefined)
-  }
   const trocar = (a: AbaProf) => {
     setAba(a)
     document.querySelector('.tv-prof__abas')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -93,7 +83,6 @@ export default function CarreiraTela({ v }: { v: Extract<View, { id: 'carreira' 
         <button className="tv-voltar" onClick={() => ir(volta.v, -1)}>
           <ArrowLeft size={20} /> {volta.texto}
         </button>
-        <Coracao on={salvo} comTexto onClick={salvar} tam={22} />
       </div>
 
       <header className="tv-prof__hero">
@@ -443,7 +432,7 @@ export default function CarreiraTela({ v }: { v: Extract<View, { id: 'carreira' 
             </span>
             <div>
               <strong>Próximos passos</strong>
-              <p>Explore formações, compare com outras profissões e monte seu plano para conhecer melhor essa carreira.</p>
+              <p>Explore formações e compare com outras profissões para conhecer melhor essa carreira.</p>
               <Btn bloco iconeDir={<ArrowRight size={17} />} onClick={() => trocar('formacao')}>
                 Ver caminhos de formação
               </Btn>
@@ -459,9 +448,6 @@ export default function CarreiraTela({ v }: { v: Extract<View, { id: 'carreira' 
                 >
                   {comparando ? 'Na comparação' : 'Comparar'}
                 </Btn>
-                <Btn pequeno variante="claro" icone={<ListPlus size={15} />} onClick={() => setPlano(true)}>
-                  Adicionar ao plano
-                </Btn>
               </div>
             </div>
           </section>
@@ -471,7 +457,6 @@ export default function CarreiraTela({ v }: { v: Extract<View, { id: 'carreira' 
         </aside>
       </div>
 
-      <PlanoModal aberto={plano} onFechar={() => setPlano(false)} carreira={c.id} />
     </div>
   )
 }
@@ -496,57 +481,5 @@ function Caixa({ I, titulo, children, tom = 'roxo' }: { I: LucideIcon; titulo: s
       </header>
       <div className="tv-caixa-p__corpo">{children}</div>
     </motion.section>
-  )
-}
-
-/** adicionar ações de exploração ligadas à profissão */
-export function PlanoModal({ aberto, onFechar, carreira }: { aberto: boolean; onFechar: () => void; carreira: string }) {
-  const { s, addAcao, toast, ir } = useTv()
-  const c = CARREIRA[carreira]
-  const sug = acoesSugeridas(c)
-  const [sel, setSel] = useState<string[]>([])
-  useEffect(() => setSel([]), [aberto])
-  const jaTem = (t: string) => s.acoes.some((a) => a.texto === t)
-  return (
-    <Modal
-      aberto={aberto}
-      onFechar={onFechar}
-      titulo={`Investigar: ${c.nome}`}
-      largura={560}
-      rodape={
-        <>
-          <Btn variante="contorno" onClick={onFechar}>
-            Cancelar
-          </Btn>
-          <Btn
-            disabled={!sel.length}
-            onClick={() => {
-              sug.filter((a) => sel.includes(a.texto)).forEach((a) => addAcao({ texto: a.texto, tipo: a.tipo, carreira }))
-              onFechar()
-              toast(`${sel.length === 1 ? '1 ação adicionada' : `${sel.length} ações adicionadas`} ao Meu Plano.`, 'ok', { rotulo: 'Ver plano', fn: () => ir({ id: 'plano' }) })
-            }}
-          >
-            Adicionar {sel.length > 0 ? `(${sel.length})` : ''}
-          </Btn>
-        </>
-      }
-    >
-      <p className="tv-texto tv-texto--suave">Escolha ações para o seu plano de exploração. Você pode editar ou remover depois.</p>
-      <ul className="tv-escolha">
-        {sug.map((a) => {
-          const tem = jaTem(a.texto)
-          const on = sel.includes(a.texto)
-          return (
-            <li key={a.texto}>
-              <button disabled={tem} className={on || tem ? 'is-on' : ''} onClick={() => setSel((x) => (on ? x.filter((y) => y !== a.texto) : [...x, a.texto]))} aria-pressed={on}>
-                <span className="tv-caixa">{(on || tem) && <Check size={13} strokeWidth={3} />}</span>
-                <span>{a.texto}</span>
-                {tem && <em>Já no plano</em>}
-              </button>
-            </li>
-          )
-        })}
-      </ul>
-    </Modal>
   )
 }

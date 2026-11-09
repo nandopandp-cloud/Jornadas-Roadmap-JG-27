@@ -4,8 +4,6 @@ import type { CSSProperties } from 'react'
 import { AREA, perfilDe, type Carreira } from '../carreiras'
 import { DIM, DIMS, type Dim } from '../instrumento'
 import { CATEGORIA, type Recomendacao } from '../motor'
-import { useTv } from '../store'
-import { Coracao } from './ui'
 
 /* ---------------- bolinha com a letra RIASEC ---------------- */
 export function DimBola({ d, tam = 30, titulo = true }: { d: Dim; tam?: number; titulo?: boolean }) {
@@ -103,8 +101,6 @@ export function SeloCategoria({ rec }: { rec?: Pick<Recomendacao, 'categoria'> }
 
 /* ---------------- card de profissão (Frame 9) ---------------- */
 export function CardProf({ c, rec, onAbrir, selecionado, indice = 0, compacto }: { c: Carreira; rec?: Recomendacao; onAbrir: () => void; selecionado?: boolean; indice?: number; compacto?: boolean }) {
-  const { s, favoritar, toast, ir } = useTv()
-  const salvo = s.favoritos.some((f) => f.id === c.id)
   return (
     <motion.article
       className={`tv-cprof ${selecionado ? 'is-sel' : ''} ${compacto ? 'tv-cprof--compacto' : ''}`}
@@ -120,16 +116,6 @@ export function CardProf({ c, rec, onAbrir, selecionado, indice = 0, compacto }:
     >
       <div className="tv-cprof__foto">
         <FotoProf c={c} />
-        <span className="tv-cprof__fav">
-          <Coracao
-            on={salvo}
-            tam={17}
-            onClick={() => {
-              const on = favoritar(c.id)
-              toast(on ? `${c.nome} adicionado(a) aos favoritos.` : `${c.nome} removido(a) dos favoritos.`, on ? 'ok' : 'info', on ? { rotulo: 'Ver favoritos', fn: () => ir({ id: 'minhas' }) } : undefined)
-            }}
-          />
-        </span>
         <SeloCategoria rec={rec} />
         {!rec && c.poucoConhecida && <span className="tv-afin tv-afin--nova">Pouco conhecida</span>}
       </div>

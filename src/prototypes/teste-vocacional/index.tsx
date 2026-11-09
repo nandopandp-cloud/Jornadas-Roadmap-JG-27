@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { Activity, Bell, BookOpen, CalendarDays, ChevronDown, Columns3, Compass, Headset, Heart, House, Landmark, Menu as MenuIc, Search, WifiOff, X, type LucideIcon } from 'lucide-react'
+import { Activity, Bell, Book, Building2, CalendarDays, ChevronDown, Columns3, Ellipsis, FileCheck2, GraduationCap, Menu as MenuIc, MessageSquareMore, PenLine, Search, WifiOff, X, type LucideIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import type { PrototypeProps } from '../../platform/journeys'
 import { CARREIRA } from './carreiras'
@@ -8,6 +8,7 @@ import { TvProvider, useTv, type Inicio, type View } from './store'
 import { Modal, Btn, Toasts } from './components/ui'
 import Inicial from './screens/Inicial'
 import Entrada from './screens/Entrada'
+import Clareza from './screens/Clareza'
 import Questionario from './screens/Questionario'
 import Revisao from './screens/Revisao'
 import Processando from './screens/Processando'
@@ -15,12 +16,10 @@ import Relatorio from './screens/Relatorio'
 import CarreiraTela from './screens/Carreira'
 import Explorar from './screens/Explorar'
 import Comparar from './screens/Comparar'
-import Minhas from './screens/Minhas'
-import Plano from './screens/Plano'
 import Historico from './screens/Historico'
 import './voc.css'
 
-const ATALHOS: Inicio[] = ['inicio', 'entrada', 'clareza', 'questionario', 'q-valores', 'q-preferencias', 'q-habilidades', 'retomar', 'revisao', 'processando', 'relatorio', 'areas', 'recomendacoes', 'res-valores', 'res-preferencias', 'res-habilidades', 'passos', 'clareza-pos', 'carreira', 'explorar', 'comparar', 'minhas', 'plano', 'historico']
+const ATALHOS: Inicio[] = ['inicio', 'entrada', 'clareza', 'questionario', 'q-valores', 'q-preferencias', 'q-habilidades', 'retomar', 'revisao', 'processando', 'relatorio', 'areas', 'recomendacoes', 'res-valores', 'res-preferencias', 'res-habilidades', 'passos', 'clareza-pos', 'carreira', 'explorar', 'comparar', 'historico']
 
 export default function TesteVocacional({ startScreen }: PrototypeProps) {
   const start = (ATALHOS.includes(startScreen as Inicio) ? startScreen : 'entrada') as Inicio
@@ -112,7 +111,8 @@ function Shell() {
               transition={{ type: 'spring', stiffness: 320, damping: 34 }}
             >
               {v.id === 'inicio' && <Inicial />}
-              {v.id === 'entrada' && <Entrada clareza={v.clareza} />}
+              {v.id === 'entrada' && <Entrada />}
+              {v.id === 'clareza' && <Clareza onSair={() => ir({ id: 'entrada' }, -1)} />}
               {v.id === 'questionario' && <Questionario onSair={() => setSair({ id: 'entrada' })} />}
               {v.id === 'revisao' && <Revisao />}
               {v.id === 'processando' && <Processando />}
@@ -120,8 +120,6 @@ function Shell() {
               {v.id === 'carreira' && <CarreiraTela v={v} />}
               {v.id === 'explorar' && <Explorar dimInicial={v.dim} qInicial={v.q} />}
               {v.id === 'comparar' && <Comparar />}
-              {v.id === 'minhas' && <Minhas />}
-              {v.id === 'plano' && <Plano />}
               {v.id === 'historico' && <Historico />}
             </motion.div>
           </AnimatePresence>
@@ -234,7 +232,7 @@ function PainelEventos() {
   )
 }
 
-/* ---------------- menu lateral (Frames 1 a 14) ---------------- */
+/* ---------------- menu lateral (igual à GenieX em produção + Teste Vocacional) ---------------- */
 export function IconeAlvo({ size = 24, strokeWidth = 2, className }: { size?: number; strokeWidth?: number; className?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
@@ -244,49 +242,63 @@ export function IconeAlvo({ size = 24, strokeWidth = 2, className }: { size?: nu
     </svg>
   )
 }
+/** casinha com sorriso, como na Página Inicial da GenieX */
+function IconeInicio({ size = 24, className }: { size?: number; strokeWidth?: number; className?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className} aria-hidden>
+      <path d="M10.6 2.6a2.2 2.2 0 0 1 2.8 0l7 5.7c.5.4.8 1 .8 1.7V19a3 3 0 0 1-3 3H5.8a3 3 0 0 1-3-3v-9c0-.7.3-1.3.8-1.7z" fill="currentColor" />
+      <path d="M8.8 14.2a4.2 4.2 0 0 0 6.4 0" fill="none" stroke="var(--side-sorriso, #fff)" strokeWidth="1.9" strokeLinecap="round" />
+    </svg>
+  )
+}
 
-type Item = { id: string; nome: string; icone: LucideIcon | typeof IconeAlvo; destino?: View }
+type Item = { id: string; nome: string; icone: LucideIcon | typeof IconeAlvo | typeof IconeInicio; destino?: View; novo?: boolean }
 
 function Sidebar({ aberta, onNavegar, foraDoEscopo }: { aberta: boolean; onNavegar: (v: View) => void; foraDoEscopo: (nome: string) => void }) {
   const { s, ultima, atual } = useTv()
-  const v = s.view
-  const ativo =
-    v.id === 'inicio' ? 'inicio'
-    : v.id === 'explorar' || v.id === 'comparar' || (v.id === 'carreira' && v.de === 'explorar') ? 'explorar'
-    : v.id === 'plano' || (v.id === 'carreira' && v.de === 'plano') ? 'plano'
-    : v.id === 'minhas' || (v.id === 'carreira' && v.de === 'minhas') ? 'favoritos'
-    : 'vocacional'
-  const itens: Item[] = [
-    { id: 'inicio', nome: 'Início', icone: House, destino: { id: 'inicio' } },
-    { id: 'explorar', nome: 'Explorar Profissões', icone: Compass, destino: { id: 'explorar' } },
-    { id: 'universidades', nome: 'Universidades', icone: Landmark },
-    { id: 'conteudos', nome: 'Conteúdos', icone: BookOpen },
-    { id: 'vocacional', nome: 'Teste Vocacional', icone: IconeAlvo, destino: ultima && !atual ? { id: 'relatorio' } : { id: 'entrada' } },
-    { id: 'plano', nome: 'Meu Plano', icone: CalendarDays, destino: { id: 'plano' } },
-    { id: 'favoritos', nome: 'Favoritos', icone: Heart, destino: { id: 'minhas' } },
+  const ativo = s.view.id === 'inicio' ? 'inicio' : 'vocacional'
+  const aprenda: Item[] = [
+    { id: 'estudar', nome: 'Estudar', icone: GraduationCap },
+    { id: 'biblioteca', nome: 'Biblioteca', icone: Book },
+    { id: 'cronograma', nome: 'Cronograma', icone: CalendarDays },
+    { id: 'instituicao', nome: 'Instituição', icone: Building2 },
+    { id: 'bot', nome: 'Genie Bot', icone: MessageSquareMore },
   ]
+  const funcionalidades: Item[] = [
+    { id: 'simulados', nome: 'Simulados', icone: FileCheck2 },
+    { id: 'redacao', nome: 'Redação', icone: PenLine },
+    { id: 'vocacional', nome: 'Teste Vocacional', icone: IconeAlvo, destino: ultima && !atual ? { id: 'relatorio' } : { id: 'entrada' }, novo: true },
+  ]
+  const item = (i: Item) => (
+    <button key={i.id} className={`tv-side__item ${ativo === i.id ? 'is-on' : ''}`} onClick={() => (i.destino ? onNavegar(i.destino) : foraDoEscopo(i.nome))} aria-current={ativo === i.id ? 'page' : undefined} title={i.nome}>
+      {ativo === i.id && <motion.span layoutId="tv-side-pill" className="tv-side__pill" transition={{ type: 'spring', stiffness: 500, damping: 40 }} />}
+      <i.icone size={22} strokeWidth={1.7} className="tv-side__ic" />
+      <span className="tv-side__nome">{i.nome}</span>
+      {i.novo && ativo !== i.id && <em className="tv-side__novo">Novo</em>}
+    </button>
+  )
   return (
     <aside className={`tv-side ${aberta ? 'is-aberta' : ''}`}>
-      <button className="tv-side__marca" onClick={() => onNavegar({ id: 'inicio' })} aria-label="GenieX — Início">
-        <img src="./voc/ref/logo.webp" alt="geniex" />
+      <button className="tv-side__marca" onClick={() => onNavegar({ id: 'inicio' })} aria-label="GenieX — Página Inicial">
+        <img src="./voc/ref/geniex-light.svg" alt="GenieX" />
       </button>
       <nav className="tv-side__nav">
-        {itens.map((i) => (
-          <button key={i.id} className={`tv-side__item ${ativo === i.id ? 'is-on' : ''}`} onClick={() => (i.destino ? onNavegar(i.destino) : foraDoEscopo(i.nome))} aria-current={ativo === i.id ? 'page' : undefined}>
-            {ativo === i.id && <motion.span layoutId="tv-side-pill" className="tv-side__pill" transition={{ type: 'spring', stiffness: 500, damping: 40 }} />}
-            <i.icone size={23} strokeWidth={1.7} className="tv-side__ic" />
-            <span className="tv-side__nome">{i.nome}</span>
-            {i.id === 'favoritos' && s.favoritos.length > 0 && <em className="tv-side__n">{s.favoritos.length}</em>}
-          </button>
-        ))}
+        {item({ id: 'inicio', nome: 'Página Inicial', icone: IconeInicio, destino: { id: 'inicio' } })}
+        <p className="tv-side__sec">Aprenda</p>
+        {aprenda.map(item)}
+        <p className="tv-side__sec">Funcionalidades</p>
+        {funcionalidades.map(item)}
       </nav>
-      <button className="tv-side__ajuda" onClick={() => foraDoEscopo('Precisa de ajuda?')}>
-        <Headset size={26} strokeWidth={1.6} />
-        <span>
-          <strong>Precisa de ajuda?</strong>
-          <small>Fale com a nossa equipe</small>
+      <div className="tv-side__usuario">
+        <img src="./voc/ref/avatar.webp" alt="" />
+        <span className="tv-side__quem">
+          <strong>João Silva</strong>
+          <small>@jovensgenios.com</small>
         </span>
-      </button>
+        <button className="tv-iconbtn" onClick={() => foraDoEscopo('Perfil')} aria-label="Opções da conta">
+          <Ellipsis size={18} />
+        </button>
+      </div>
     </aside>
   )
 }

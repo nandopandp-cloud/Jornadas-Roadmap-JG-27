@@ -1,24 +1,20 @@
 import { motion } from 'framer-motion'
 import { ArrowRight, BarChart3, BrainCircuit, Clock3, Compass, History, RotateCcw, ShieldCheck } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { ClarezaInicial } from '../components/clareza'
 import { Barra, Btn, Etiqueta, Modal } from '../components/ui'
 import { ITENS, N_ITENS, contar } from '../instrumento'
 import { quando, useTv } from '../store'
 
 /** Abertura do Teste Vocacional (Frame 3 · PRD §5.2 e §5.3) */
-export default function Entrada({ clareza }: { clareza?: boolean }) {
-  const { ir, iniciar, setClarezaPre, track, atual, ultima } = useTv()
-  const [modal, setModal] = useState(!!clareza)
+export default function Entrada() {
+  const { ir, iniciar, track, atual, ultima } = useTv()
   const [recomecar, setRecomecar] = useState(false)
   useEffect(() => track('career_test_entry_viewed', { origem: 'menu', interface: 'v1' }), [track])
   const respondidas = atual ? contar(atual.respostas) : 0
 
-  const comecar = (v: number | null) => {
-    setModal(false)
+  const comecar = () => {
     iniciar()
-    setClarezaPre(v)
-    ir({ id: 'questionario' })
+    ir({ id: 'clareza' })
   }
   const continuar = () => {
     track('career_questionnaire_resumed', { etapa: ITENS[atual!.pos]?.bloco ?? 'A' })
@@ -82,7 +78,7 @@ export default function Entrada({ clareza }: { clareza?: boolean }) {
             <Btn grande iconeDir={<ArrowRight size={19} />} onClick={() => ir({ id: 'relatorio' })}>
               Ver meu resultado
             </Btn>
-            <Btn grande variante="claro" icone={<RotateCcw size={17} />} onClick={() => setModal(true)}>
+            <Btn grande variante="claro" icone={<RotateCcw size={17} />} onClick={comecar}>
               Refazer o teste
             </Btn>
             <button className="tv-link" onClick={() => ir({ id: 'historico' })}>
@@ -91,7 +87,7 @@ export default function Entrada({ clareza }: { clareza?: boolean }) {
           </div>
         ) : (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.36 }}>
-            <Btn grande className="tv-abertura__cta" iconeDir={<ArrowRight size={20} />} onClick={() => setModal(true)}>
+            <Btn grande className="tv-abertura__cta" iconeDir={<ArrowRight size={20} />} onClick={comecar}>
               Começar teste agora
             </Btn>
           </motion.div>
@@ -108,7 +104,6 @@ export default function Entrada({ clareza }: { clareza?: boolean }) {
         <button className="tv-abertura__profs" onClick={() => ir({ id: 'explorar' })} aria-label="Profissões que combinam com o seu perfil: explorar profissões" />
       </motion.div>
 
-      <ClarezaInicial aberto={modal} onFechar={() => setModal(false)} onContinuar={comecar} />
       <Modal
         aberto={recomecar}
         onFechar={() => setRecomecar(false)}
@@ -121,7 +116,7 @@ export default function Entrada({ clareza }: { clareza?: boolean }) {
             <Btn
               onClick={() => {
                 setRecomecar(false)
-                setModal(true)
+                comecar()
               }}
             >
               Recomeçar
