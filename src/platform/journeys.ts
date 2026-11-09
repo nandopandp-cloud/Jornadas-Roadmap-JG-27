@@ -264,6 +264,31 @@ export const journeys: Journey[] = [
     ],
     component: lazy(() => import('../prototypes/gamificacao-geniex')),
   },
+  {
+    slug: 'gamificacao-geniex-educadores',
+    branch: 'gamificacao-geniex-educadores',
+    name: 'Gamificação GenieX · Educadores',
+    product: 'Plataforma Educadores',
+    audience: 'Professores e gestores',
+    description:
+      'Relatórios da gamificação da GenieX para professores e gestores: turmas com XP válido, elo médio e distribuição por elo; relatório da turma com regressões e badges; e o relatório de cada estudante com elos, 25 badges, evolução do XP, modalidades e extrato de lotes, com exportação em CSV e PDF.',
+    icon: './3d/clipboard.png',
+    accent: '#441f67',
+    status: 'navegavel',
+    dispositivo: 'desktop',
+    dominio: 'educadores.jovensgenios.com',
+    flows: [
+      { id: 'turmas', label: 'Relatórios de Turmas', icon: './3d/books.png' },
+      { id: 'turma', label: 'Relatório da turma', icon: './3d/trophy.png' },
+      { id: 'estudantes', label: 'Relatórios de Estudantes', icon: './3d/boy-1.png' },
+      { id: 'resumo', label: 'Estudante: resumo', icon: './3d/glowing-star.png' },
+      { id: 'elos', label: 'Estudante: elos', icon: './3d/crown.png' },
+      { id: 'badges', label: 'Estudante: badges', icon: './3d/gem.png' },
+      { id: 'extrato', label: 'Estudante: extrato de XP', icon: './3d/notes.png' },
+      { id: 'exportar-turma', label: 'Exportar turma', icon: './3d/clipboard.png' },
+    ],
+    component: lazy(() => import('../prototypes/gamificacao-geniex-educadores')),
+  },
 ]
 
 export const findJourney = (slug?: string) => journeys.find((j) => j.slug === slug)

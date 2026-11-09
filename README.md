@@ -7,16 +7,32 @@ Relatórios da gamificação da GenieX na **Plataforma Educadores**, parte do Ro
   - Padrão de relatório Educadores (Teste Vocacional): relatório por turma com métricas, filtros por status e tabela; perfil do estudante com abas. As imagens estão na pasta local `public/relatorios-gamificacao-geniex/` (fora do Git).
   - Conceito da gamificação para Educadores: página “Gamificação Geniex” do arquivo [Campeonato GenieX (conceito)](https://www.figma.com/design/CFgSTHDpGqyNluCYfHxj7U/CAMPEONATO---GENIEX--CONCEITO-?node-id=28-140) (Relatórios de Estudantes com XP válido e elo; aba Gamificação do estudante).
 - **PRD:** Sistema de Gamificação da GenieX v2.0 (copiado em `PRD.md` na branch `gamificacao-geniex`). Para os relatórios valem as métricas de sucesso (§13): distribuição por elo, XP médio por estudante ativo, percentual de estudantes com XP, XP por modalidade, badges por estudante e regressões de elo.
-- **Na plataforma:** a jornada entra em https://jornadas-roadmap-jg-27.vercel.app quando o navegável estiver pronto.
+- **Protótipo navegável:** https://jornadas-roadmap-jg-27.vercel.app/#/p/gamificacao-geniex-educadores
+- **Na plataforma:** https://jornadas-roadmap-jg-27.vercel.app/#/jornada/gamificacao-geniex-educadores
 
 ## Processo
 
 1. Mapeamento das bibliotecas do arquivo ✅
 2. Tela piloto para validação ✅ (aprovada em 09/11/2026)
-3. Telas desktop ✅ · tablet e celular ⏳
-4. Componentes da jornada
-5. Protótipo e handoff
-6. Navegável e entrada na plataforma
+3. Telas nas 3 larguras ✅ (Desktop 1440, Tablet 1024, Celular 390) + sobrepostos com véu
+4. Componentes da jornada ✅ (Sidebar Relatórios, Medalha de elo, Emblema de badge, Exportar)
+5. Protótipo (3 fluxos × Desktop/Celular) e handoff ✅
+6. Navegável e entrada na plataforma ✅
+
+## Navegável
+
+Código em `src/prototypes/gamificacao-geniex-educadores/` (`index.tsx`, `data.ts`, `rgx.css`). Elos, badges e medalhas vêm da experiência do estudante (`src/prototypes/gamificacao-geniex/data.ts`).
+
+| Atalho (`?screen=`) | Tela |
+| --- | --- |
+| `turmas` | Relatórios de Turmas · aba Gamificação (Visão geral mostra a tabela atual) |
+| `turma` | Relatório da turma EFAFMAT8A |
+| `estudantes` | Relatórios de Estudantes · aba Gamificação |
+| `resumo` · `elos` · `badges` · `extrato` | Relatório de gamificação da Ana Caroline |
+| `exportar-turma` · `exportar-estudante` | Menu Exportar aberto, com véu |
+
+- **Funciona de verdade:** troca de turma, busca, abas por elo (e cliques na legenda), linhas clicáveis, sub-navegação do estudante, filtro de modalidade no extrato, exportar (menu/folha com véu, Esc e clique fora fecham), sidebar recolhível e em gaveta no celular.
+- **Fora do escopo:** os demais itens do menu e as outras abas do perfil mostram um aviso.
 
 ## Bibliotecas do arquivo
 
