@@ -3093,11 +3093,11 @@ strong.is-m,
 
 /* ---------- escolas ---------- */
 .rv-t-escolas {
-  min-width: 1000px;
+  min-width: 900px;
 }
 .rv-t-escolas .rv-tr {
-  grid-template-columns: minmax(200px, 2fr) 62px 92px minmax(130px, 1fr) 100px 96px 138px 124px;
-  gap: 10px;
+  grid-template-columns: minmax(240px, 2.2fr) 70px 100px minmax(160px, 1.2fr) 120px 110px 160px;
+  gap: 12px;
   font-size: 15px;
 }
 .rv-t-escolas .rv-tr.is-cab {

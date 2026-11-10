@@ -14,7 +14,7 @@ Parte da iniciativa **Orientação Vocacional e Exploração de Carreiras** do R
 
 | Tela | Referência | O que mostra | PRD |
 | --- | --- | --- | --- |
-| **Escolas** | — (padrão dos demais relatórios do Educadores) | Entrada do relatório: indicadores da rede (estudantes do EM, concluídos, em andamento, não iniciados), busca e exportação, e a tabela de escolas com turmas, estudantes, testes concluídos (número, % e barra), em andamento, não iniciados, última atualização e “Ver turmas”. | ajuste da validação |
+| **Escolas** | — (padrão dos demais relatórios do Educadores) | Entrada do relatório: indicadores da rede (estudantes do EM, concluídos, em andamento, não iniciados), busca e exportação, e a tabela de escolas com turmas, estudantes, testes concluídos (número, % e barra), em andamento, não iniciados e última atualização. Clicar na linha abre as turmas da escola (a coluna de ação fica só na tabela de estudantes). | ajuste da validação |
 | **Listagem de estudantes** | Frame 15 | Seletor de turma, busca por nome, 4 indicadores operacionais (estudantes, concluídos, em andamento, não iniciados), filtro por status, tabela com status, código RIASEC, principal área de interesse, última atualização e acesso ao relatório. Ordena por nome, status ou data; seleção para exportar; paginação. | §5 |
 | **Visão geral** | Frame 16 | Resumo do perfil (código RIASEC e principal área), radar e pontuação das 6 áreas (0 a 100), principais destaques (interesses, valores, preferências e habilidades) e profissões em destaque. | §6.1, §6.2 |
 | **Áreas de interesse (RIASEC)** | Frame 17 | As 6 áreas com pontuação, descrição e exemplos de atividades; as 3 maiores ficam destacadas, sem esconder as demais. | §6.3 |
