@@ -31,6 +31,7 @@ import {
   Palette,
   RefreshCw,
   Rocket,
+  School,
   Search,
   Shield,
   SlidersHorizontal,
@@ -50,7 +51,7 @@ import type { PrototypeProps } from '../../platform/journeys'
 import { CARREIRA, FONTES, REVISAO, type Carreira } from '../teste-vocacional/carreiras'
 import { ESCALA, HABILIDADES, itensDo, N_ITENS, type Dim } from '../teste-vocacional/instrumento'
 import { CATEGORIA, habilidades as habDe, nivel, preferencias as prefDe, type Recomendacao } from '../teste-vocacional/motor'
-import { SEM_DEV, STATUS, TURMAS, doTurma, estudantePorId, type Estudante, type Status } from './dados'
+import { ESCOLAS, ESTUDANTES, SEM_DEV, STATUS, daEscola, doTurma, estudantePorId, totais, turmaPorId, turmasDa, type Estudante, type Status } from './dados'
 import './rtv.css'
 
 /* ---------------- dimensões na linguagem do relatório (Metodologia §1 e PRD §6.2) ---------------- */
@@ -128,9 +129,10 @@ function useMedia(q: string) {
 /* ---------------- telas e atalhos de fluxo ---------------- */
 type Aba = 'visao' | 'areas' | 'profissoes' | 'valores' | 'preferencias' | 'habilidades' | 'sintese'
 type Filtro = 'todos' | Status
-type Tela = { id: 'lista'; turma: string; filtro: Filtro } | { id: 'rel'; aluno: string; aba: Aba }
+type Tela = { id: 'escolas' } | { id: 'lista'; turma: string; filtro: Filtro } | { id: 'rel'; aluno: string; aba: Aba }
 const ANA = '3a-0'
 const INICIO: Record<string, { tela: Tela; exportar?: boolean; profissao?: string; busca?: string }> = {
+  escolas: { tela: { id: 'escolas' } },
   lista: { tela: { id: 'lista', turma: '3a', filtro: 'todos' } },
   concluidos: { tela: { id: 'lista', turma: '3a', filtro: 'concluido' } },
   andamento: { tela: { id: 'lista', turma: '3a', filtro: 'andamento' } },
@@ -159,9 +161,9 @@ const ABAS: [Aba, string, LucideIcon][] = [
 ]
 
 export default function RelatoriosTesteVocacional({ startScreen }: PrototypeProps) {
-  const ini = INICIO[startScreen ?? ''] ?? INICIO.lista
+  const ini = INICIO[startScreen ?? ''] ?? INICIO.escolas
   const [tela, setTela] = useState<Tela>(ini.tela)
-  const [exportar, setExportar] = useState<null | 'lista' | 'rel'>(ini.exportar ? 'rel' : null)
+  const [exportar, setExportar] = useState<null | 'escolas' | 'lista' | 'rel'>(ini.exportar ? 'rel' : null)
   const [ancora, setAncora] = useState<{ top: number; right: number } | null>(null)
   const [profissao, setProfissao] = useState<string | null>(() => {
     if (ini.profissao !== 'primeira') return null
@@ -170,7 +172,6 @@ export default function RelatoriosTesteVocacional({ startScreen }: PrototypeProp
   const [gaveta, setGaveta] = useState(false)
   const [recolhida, setRecolhida] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
-  const [ultimaTurma, setUltimaTurma] = useState(ini.tela.id === 'lista' ? ini.tela.turma : '3a')
   const celular = useMedia('(max-width: 899px)')
 
   useEffect(() => {
@@ -183,14 +184,13 @@ export default function RelatoriosTesteVocacional({ startScreen }: PrototypeProp
   }, [toast])
 
   const ir = (t: Tela) => {
-    if (t.id === 'lista') setUltimaTurma(t.turma)
     setTela(t)
     setExportar(null)
     setProfissao(null)
     setGaveta(false)
     document.querySelector('.rv-rolagem')?.scrollTo({ top: 0 })
   }
-  const abrirExportar = (c: 'lista' | 'rel') => (ev?: MouseEvent) => {
+  const abrirExportar = (c: 'escolas' | 'lista' | 'rel') => (ev?: MouseEvent) => {
     if (ev) {
       const r = (ev.currentTarget as HTMLElement).getBoundingClientRect()
       setAncora({ top: r.bottom + 6, right: Math.max(16, window.innerWidth - r.right) })
@@ -204,23 +204,33 @@ export default function RelatoriosTesteVocacional({ startScreen }: PrototypeProp
   }
 
   const aluno = tela.id === 'rel' ? estudantePorId(tela.aluno) : null
-  const migalhas = ['Início', 'Relatórios institucionais', 'Turmas', 'Teste Vocacional', ...(aluno ? [aluno.nome] : [])]
+  const turmaAtual = tela.id === 'lista' ? turmaPorId(tela.turma) : aluno ? turmaPorId(aluno.turma) : null
+  const escola = turmaAtual ? ESCOLAS.find((e) => e.id === turmaAtual.escola)! : null
+  // caminho: Início / Relatórios / Atividades / Teste Vocacional / escola / estudante
+  const migalhas: [string, (() => void) | null][] = [
+    ['Início', null],
+    ['Relatórios', null],
+    ['Atividades', null],
+    ['Teste Vocacional', tela.id === 'escolas' ? null : () => ir({ id: 'escolas' })],
+    ...(escola ? [[escola.nome, aluno ? () => ir({ id: 'lista', turma: aluno.turma, filtro: 'todos' }) : null] as [string, (() => void) | null]] : []),
+    ...(aluno ? [[aluno.nome, null] as [string, null]] : []),
+  ]
 
   return (
     <div className={`rv ${recolhida ? 'is-recolhida' : ''}`}>
       <AnimatePresence>{gaveta && <motion.div className="rv-veu" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setGaveta(false)} />}</AnimatePresence>
-      <Sidebar aberta={gaveta} recolhida={recolhida && !celular} onTurmas={() => ir({ id: 'lista', turma: ultimaTurma, filtro: 'todos' })} onFora={fora} onRecolher={() => (celular ? setGaveta(false) : setRecolhida((r) => !r))} />
+      <Sidebar aberta={gaveta} recolhida={recolhida && !celular} onTeste={() => ir({ id: 'escolas' })} onFora={fora} onRecolher={() => (celular ? setGaveta(false) : setRecolhida((r) => !r))} />
       <div className="rv-principal">
         <header className="rv-topo">
           <button className="rv-icone-btn rv-topo__menu" onClick={() => setGaveta(true)} aria-label="Abrir menu">
             <Menu size={22} />
           </button>
           <nav className="rv-migalhas" aria-label="Você está em">
-            {migalhas.map((m, i) => (
+            {migalhas.map(([m, acao], i) => (
               <span key={i} className={i === migalhas.length - 1 ? 'is-atual' : ''}>
                 {i > 0 && <i>/</i>}
-                {i === 3 && aluno ? (
-                  <button className="rv-migalhas__link" onClick={() => ir({ id: 'lista', turma: aluno.turma, filtro: 'todos' })}>
+                {acao ? (
+                  <button className="rv-migalhas__link" onClick={acao}>
                     {m}
                   </button>
                 ) : (
@@ -232,9 +242,11 @@ export default function RelatoriosTesteVocacional({ startScreen }: PrototypeProp
         </header>
         <main className="rv-rolagem">
           <AnimatePresence mode="wait" initial={false}>
-            <motion.div key={tela.id === 'lista' ? `lista-${tela.turma}` : `rel-${tela.aluno}`} className="rv-conteudo" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, transition: { duration: 0.1 } }} transition={{ duration: 0.22 }}>
+            <motion.div key={tela.id === 'escolas' ? 'escolas' : tela.id === 'lista' ? `lista-${tela.turma}` : `rel-${tela.aluno}`} className="rv-conteudo" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, transition: { duration: 0.1 } }} transition={{ duration: 0.22 }}>
+              {tela.id === 'escolas' && <Escolas celular={celular} onEscola={(id) => ir({ id: 'lista', turma: turmasDa(id)[0].id, filtro: 'todos' })} onExportar={abrirExportar('escolas')} exportando={exportar === 'escolas'} />}
               {tela.id === 'lista' && (
                 <Lista
+                  onEscolas={() => ir({ id: 'escolas' })}
                   turma={tela.turma}
                   filtro={tela.filtro}
                   buscaInicial={ini.busca}
@@ -283,7 +295,7 @@ export default function RelatoriosTesteVocacional({ startScreen }: PrototypeProp
 /* =====================================================================
    Casca da plataforma Educadores
    ===================================================================== */
-function Sidebar({ aberta, recolhida, onTurmas, onFora, onRecolher }: { aberta: boolean; recolhida: boolean; onTurmas: () => void; onFora: (n: string) => void; onRecolher: () => void }) {
+function Sidebar({ aberta, recolhida, onTeste, onFora, onRecolher }: { aberta: boolean; recolhida: boolean; onTeste: () => void; onFora: (n: string) => void; onRecolher: () => void }) {
   return (
     <aside className={`rv-side ${aberta ? 'is-aberta' : ''}`}>
       <div className="rv-side__marca">
@@ -305,18 +317,20 @@ function Sidebar({ aberta, recolhida, onTurmas, onFora, onRecolher }: { aberta: 
           <BarChart3 size={18} /> <span>Relatórios</span> <ChevronDown size={16} className="rv-side__seta" />
         </div>
         <div className="rv-side__sub">
+          <button className="rv-side__subitem" onClick={() => onFora('Relatórios institucionais')}>
+            Institucionais <ChevronRight size={14} />
+          </button>
           <p>
-            Institucionais <ChevronDown size={14} />
+            Atividades <ChevronDown size={14} />
           </p>
           <div className="rv-side__nivel">
-            <button className="is-on" onClick={onTurmas}>
-              Turmas
+            <button onClick={() => onFora('Relatório de Tarefas')}>Tarefas</button>
+            <button onClick={() => onFora('Relatório de Simulados')}>Simulados</button>
+            <button onClick={() => onFora('Relatório de Redações')}>Redações</button>
+            <button className="is-on" onClick={onTeste}>
+              Teste Vocacional
             </button>
-            <button onClick={() => onFora('Relatório de Estudantes')}>Estudantes</button>
           </div>
-          <button className="rv-side__subitem" onClick={() => onFora('Relatórios de Atividades')}>
-            Atividades <ChevronRight size={14} />
-          </button>
         </div>
         <button className="rv-side__item" onClick={() => onFora('Gamificação')} title="Gamificação">
           <Star size={18} /> <span>Gamificação</span> <ChevronRight size={16} className="rv-side__seta" />
@@ -405,20 +419,165 @@ function Caixa({ marcada, parcial, onClick, rotulo }: { marcada: boolean; parcia
 }
 
 /* =====================================================================
+   Tela 0 · Escolas (entrada do relatório, como nos demais relatórios do Educadores)
+   ===================================================================== */
+type OrdemEsc = { campo: 'nome' | 'estudantes' | 'concluido'; dir: 1 | -1 }
+function Escolas({ celular, onEscola, onExportar, exportando }: { celular: boolean; onEscola: (id: string) => void; onExportar: (ev?: MouseEvent) => void; exportando: boolean }) {
+  const [q, setQ] = useState('')
+  const [ordem, setOrdem] = useState<OrdemEsc>({ campo: 'nome', dir: 1 })
+  const rede = totais(ESTUDANTES)
+  const pct = (n: number, d: number) => (d ? Math.round((n / d) * 100) : 0)
+  const linhas = useMemo(() => {
+    const termo = q.trim().toLowerCase()
+    return ESCOLAS.map((e) => ({ e, turmas: turmasDa(e.id).length, ...totais(daEscola(e.id)) }))
+      .filter((x) => `${x.e.nome} ${x.e.municipio}`.toLowerCase().includes(termo))
+      .sort((a, b) => {
+        const v = ordem.campo === 'nome' ? a.e.nome.localeCompare(b.e.nome) : ordem.campo === 'estudantes' ? a.total - b.total : pct(a.concluido, a.total) - pct(b.concluido, b.total)
+        return v * ordem.dir
+      })
+  }, [q, ordem])
+  const ordenar = (campo: OrdemEsc['campo']) => setOrdem((o) => (o.campo === campo ? { campo, dir: (o.dir * -1) as 1 | -1 } : { campo, dir: campo === 'nome' ? 1 : -1 }))
+  const Th = ({ campo, children }: { campo: OrdemEsc['campo']; children: ReactNode }) => (
+    <button className="rv-th is-ord" onClick={() => ordenar(campo)} aria-label={`Ordenar por ${String(children)}`}>
+      {children} {ordem.campo === campo ? ordem.dir === 1 ? <ChevronUp size={15} /> : <ChevronDown size={15} /> : <ChevronsUpDown size={14} />}
+    </button>
+  )
+  return (
+    <>
+      <header className="rv-cab">
+        <Tile icon={BriefcaseBusiness} size={64} />
+        <div>
+          <h1 className="rv-h1">Relatórios do Teste Vocacional</h1>
+          <p>Escolha uma escola para acompanhar a realização do teste nas turmas e consultar os resultados dos estudantes.</p>
+        </div>
+      </header>
+      <Alerta />
+      <section className="rv-cartao rv-lista-cartao">
+        <div className="rv-filtros">
+          <h2 className="rv-h2">
+            Escolas <span className="rv-mudo">({linhas.length})</span>
+          </h2>
+          <span className="rv-espaco" />
+          <label className="rv-busca">
+            <Search size={16} />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Pesquisar escola por nome..." aria-label="Pesquisar escola por nome" />
+          </label>
+          <button className={`rv-btn is-contorno-roxo ${exportando ? 'is-ativo' : ''}`} onClick={onExportar}>
+            <Download size={16} /> Exportar <ChevronDown size={16} />
+          </button>
+        </div>
+        <div className="rv-metricas">
+          <Metrica icon={Users} tom="roxo" num={rede.total} rot="Estudantes do Ensino Médio" extra={`${ESCOLAS.length} escolas · ${ESCOLAS.reduce((s, e) => s + turmasDa(e.id).length, 0)} turmas`} />
+          <Metrica icon={CheckCircle2} tom="verde" num={rede.concluido} rot="Testes concluídos" extra={`${pct(rede.concluido, rede.total)}% da rede`} barra={pct(rede.concluido, rede.total)} />
+          <Metrica icon={RefreshCw} tom="roxo" num={rede.andamento} rot="Em andamento" extra={`${pct(rede.andamento, rede.total)}% da rede`} barra={pct(rede.andamento, rede.total)} />
+          <Metrica icon={Hourglass} tom="amarelo" num={rede.naoIniciado} rot="Não iniciados" extra={`${pct(rede.naoIniciado, rede.total)}% da rede`} barra={pct(rede.naoIniciado, rede.total)} />
+        </div>
+        {celular ? (
+          <div className="rv-cards">
+            {linhas.map((x) => (
+              <article key={x.e.id} className="rv-card is-clicavel" onClick={() => onEscola(x.e.id)}>
+                <span className="rv-escola">
+                  <span className="rv-escola__ic">
+                    <School size={18} />
+                  </span>
+                  <span>
+                    <b>{x.e.nome}</b>
+                    <small>
+                      {x.e.municipio} · {x.turmas} {x.turmas === 1 ? 'turma' : 'turmas'} · {x.total} estudantes
+                    </small>
+                  </span>
+                </span>
+                <span className="rv-cel-conc">
+                  <b>{x.concluido} concluídos</b> <small>{pct(x.concluido, x.total)}%</small>
+                  <Barra pct={pct(x.concluido, x.total)} cor="var(--rv-verde)" />
+                </span>
+                <small>
+                  {x.andamento} em andamento · {x.naoIniciado} não iniciados · atualizado em {dataCurta(x.ultima)}
+                </small>
+                <span className="rv-acao">
+                  Ver turmas <ArrowRight size={16} />
+                </span>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div className="rv-tabela-rola">
+            <div className="rv-tabela rv-t-escolas" role="table" aria-label="Escolas">
+              <div className="rv-tr is-cab" role="row">
+                <Th campo="nome">Escola</Th>
+                <span className="rv-th">Turmas</span>
+                <Th campo="estudantes">Estudantes</Th>
+                <Th campo="concluido">Testes concluídos</Th>
+                <span className="rv-th">Em andamento</span>
+                <span className="rv-th">Não iniciados</span>
+                <span className="rv-th">Última atualização</span>
+                <span className="rv-th is-centro">Ação</span>
+              </div>
+              {linhas.map((x) => (
+                <div key={x.e.id} role="row" className="rv-tr is-clicavel" onClick={() => onEscola(x.e.id)}>
+                  <span className="rv-escola">
+                    <span className="rv-escola__ic">
+                      <School size={18} />
+                    </span>
+                    <span>
+                      <b>{x.e.nome}</b>
+                      <small>{x.e.municipio}</small>
+                    </span>
+                  </span>
+                  <span>{x.turmas}</span>
+                  <span>{x.total}</span>
+                  <span className="rv-cel-conc">
+                    <span>
+                      <b>{x.concluido}</b> <small>· {pct(x.concluido, x.total)}%</small>
+                    </span>
+                    <Barra pct={pct(x.concluido, x.total)} cor="var(--rv-verde)" />
+                  </span>
+                  <span>{x.andamento}</span>
+                  <span>{x.naoIniciado}</span>
+                  <span className="rv-mudo">{dataCurta(x.ultima)}</span>
+                  <span className="is-centro">
+                    <button
+                      className="rv-acao"
+                      onClick={(ev) => {
+                        ev.stopPropagation()
+                        onEscola(x.e.id)
+                      }}
+                    >
+                      Ver turmas <ArrowRight size={16} />
+                    </button>
+                  </span>
+                </div>
+              ))}
+              {!linhas.length && <p className="rv-vazio">Nenhuma escola encontrada para “{q}”.</p>}
+            </div>
+          </div>
+        )}
+        <div className="rv-paginacao">
+          <small>
+            Mostrando {linhas.length} de {ESCOLAS.length} escolas. Os números são de acompanhamento da atividade, não de desempenho.
+          </small>
+        </div>
+      </section>
+    </>
+  )
+}
+
+/* =====================================================================
    Tela 1 · Listagem de estudantes (PRD §5)
    ===================================================================== */
 type Ordem = { campo: 'nome' | 'status' | 'data'; dir: 1 | -1 }
 const ORDEM_STATUS: Record<Status, number> = { concluido: 0, andamento: 1, 'nao-iniciado': 2 }
 const POR_PAGINA = 10
 
-function Lista({ turma, filtro, buscaInicial, celular, onFiltro, onTurma, onAluno, onExportar, exportando, onToast }: { turma: string; filtro: Filtro; buscaInicial?: string; celular: boolean; onFiltro: (f: Filtro) => void; onTurma: (t: string) => void; onAluno: (id: string) => void; onExportar: (ev?: MouseEvent) => void; exportando: boolean; onToast: (t: string) => void }) {
+function Lista({ onEscolas, turma, filtro, buscaInicial, celular, onFiltro, onTurma, onAluno, onExportar, exportando, onToast }: { onEscolas: () => void; turma: string; filtro: Filtro; buscaInicial?: string; celular: boolean; onFiltro: (f: Filtro) => void; onTurma: (t: string) => void; onAluno: (id: string) => void; onExportar: (ev?: MouseEvent) => void; exportando: boolean; onToast: (t: string) => void }) {
   const [q, setQ] = useState(buscaInicial ?? '')
   const [ordem, setOrdem] = useState<Ordem>({ campo: 'nome', dir: 1 })
   const [pagina, setPagina] = useState(0)
   const [abreTurma, setAbreTurma] = useState(false)
   const [marcados, setMarcados] = useState<string[]>([])
   const [menu, setMenu] = useState<{ id: string; top: number; right: number } | null>(null)
-  const t = TURMAS.find((x) => x.id === turma)!
+  const t = turmaPorId(turma)
+  const esc = ESCOLAS.find((e) => e.id === t.escola)!
   const todos = doTurma(turma)
   const conta = (s: Status) => todos.filter((e) => e.status === s).length
   const pct = (n: number) => Math.round((n / todos.length) * 100)
@@ -450,9 +609,15 @@ function Lista({ turma, filtro, buscaInicial, celular, onFiltro, onTurma, onAlun
 
   return (
     <>
+      <button className="rv-voltar" onClick={onEscolas}>
+        <ArrowLeft size={16} /> Voltar para as escolas
+      </button>
       <header className="rv-cab">
         <Tile icon={BriefcaseBusiness} size={64} />
         <div>
+          <span className="rv-sobre">
+            <School size={15} /> {esc.nome} · {esc.municipio}
+          </span>
           <h1 className="rv-h1">Relatórios do Teste Vocacional</h1>
           <p>Consulte os resultados e conheça melhor os interesses profissionais dos seus estudantes.</p>
         </div>
@@ -468,7 +633,7 @@ function Lista({ turma, filtro, buscaInicial, celular, onFiltro, onTurma, onAlun
             <AnimatePresence>
               {abreTurma && (
                 <motion.div className="rv-pop" initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-                  {TURMAS.map((x) => (
+                  {turmasDa(t.escola).map((x) => (
                     <button
                       key={x.id}
                       className={x.id === turma ? 'is-on' : ''}
@@ -697,7 +862,8 @@ const AreaIcone = ({ d }: { d: Dim }) => {
    Tela 2 · Relatório individual (PRD §6)
    ===================================================================== */
 function Relatorio({ al, aba, celular, onAba, onVoltar, onProfissao, onExportar, exportando }: { al: Estudante; aba: Aba; celular: boolean; onAba: (a: Aba) => void; onVoltar: () => void; onProfissao: (id: string) => void; onExportar: (ev?: MouseEvent) => void; exportando: boolean }) {
-  const t = TURMAS.find((x) => x.id === al.turma)!
+  const t = turmaPorId(al.turma)
+  const esc = ESCOLAS.find((e) => e.id === t.escola)!
   const res = al.resultado!
   return (
     <>
@@ -709,6 +875,8 @@ function Relatorio({ al, aba, celular, onAba, onVoltar, onProfissao, onExportar,
         <div>
           <h1 className="rv-h1">Perfil Vocacional de {al.nome}</h1>
           <p className="rv-perfil-cab__meta">
+            <span>{esc.nome}</span>
+            <i>•</i>
             <span>Turma: {t.nome}</span>
             <i>•</i>
             <span>{t.ano}</span>
@@ -1428,14 +1596,19 @@ function PainelProfissao({ c, rec, nome, celular, onFechar }: { c: Carreira; rec
 }
 
 /* ---------- Exportar ---------- */
-function MenuExportar({ contexto, celular, ancora, onFechar, onEscolher }: { contexto: 'lista' | 'rel'; celular: boolean; ancora: { top: number; right: number } | null; onFechar: () => void; onEscolher: (f: string) => void }) {
+function MenuExportar({ contexto, celular, ancora, onFechar, onEscolher }: { contexto: 'escolas' | 'lista' | 'rel'; celular: boolean; ancora: { top: number; right: number } | null; onFechar: () => void; onEscolher: (f: string) => void }) {
   useEffect(() => {
     const on = (e: KeyboardEvent) => e.key === 'Escape' && onFechar()
     window.addEventListener('keydown', on)
     return () => window.removeEventListener('keydown', on)
   }, [onFechar])
   const itens: [LucideIcon, string, string, string][] =
-    contexto === 'rel'
+    contexto === 'escolas'
+      ? [
+          [FileText, 'Planilha das escolas (.CSV)', 'Uma linha por escola: turmas, estudantes do EM, testes concluídos, em andamento e não iniciados.', 'a planilha CSV das escolas'],
+          [FileText, 'Planilha das turmas (.CSV)', 'Uma linha por turma de cada escola, com os mesmos indicadores.', 'a planilha CSV das turmas'],
+        ]
+      : contexto === 'rel'
       ? [
           [Download, 'Relatório completo (.PDF)', 'Resumo, áreas de interesse, profissões, valores, preferências, habilidades e síntese.', 'o relatório completo em PDF'],
           [FileText, 'Síntese para conversa (.PDF)', 'Uma página com o perfil em destaque e as sugestões de apoio.', 'a síntese em PDF'],

@@ -14,12 +14,35 @@ export const STATUS: Record<Status, { nome: string; plural: string; tom: string 
   'nao-iniciado': { nome: 'Não iniciado', plural: 'Não iniciados', tom: 'amarelo' },
 }
 
-export type Turma = { id: string; nome: string; ano: string }
-export const TURMAS: Turma[] = [
-  { id: '3a', nome: 'EMMAT3A', ano: '3ª série do EM' },
-  { id: '3b', nome: 'EMMAT3B', ano: '3ª série do EM' },
-  { id: '2a', nome: 'EMMAT2A', ano: '2ª série do EM' },
+export type Escola = { id: string; nome: string; municipio: string }
+export const ESCOLAS: Escola[] = [
+  { id: 'e1', nome: 'E.E. Professora Maria José de Andrade', municipio: 'Campinas' },
+  { id: 'e2', nome: 'E.E. Dom Pedro II', municipio: 'Campinas' },
+  { id: 'e3', nome: 'E.E. Anísio Teixeira', municipio: 'Sumaré' },
+  { id: 'e4', nome: 'E.E. Cecília Meireles', municipio: 'Hortolândia' },
+  { id: 'e5', nome: 'Colégio Estadual Paulo Freire', municipio: 'Valinhos' },
+  { id: 'e6', nome: 'E.E. Darcy Ribeiro', municipio: 'Paulínia' },
 ]
+
+export type Turma = { id: string; escola: string; nome: string; ano: string }
+/** turmas do Ensino Médio de cada escola (a e1 reproduz as telas de referência) */
+export const TURMAS: Turma[] = [
+  { id: '3a', escola: 'e1', nome: 'EMMAT3A', ano: '3ª série do EM' },
+  { id: '3b', escola: 'e1', nome: 'EMMAT3B', ano: '3ª série do EM' },
+  { id: '2a', escola: 'e1', nome: 'EMMAT2A', ano: '2ª série do EM' },
+  { id: 'e2-3a', escola: 'e2', nome: 'EMDP3A', ano: '3ª série do EM' },
+  { id: 'e2-2a', escola: 'e2', nome: 'EMDP2A', ano: '2ª série do EM' },
+  { id: 'e3-3a', escola: 'e3', nome: 'EMAT3A', ano: '3ª série do EM' },
+  { id: 'e3-3b', escola: 'e3', nome: 'EMAT3B', ano: '3ª série do EM' },
+  { id: 'e4-3a', escola: 'e4', nome: 'EMCM3A', ano: '3ª série do EM' },
+  { id: 'e4-2a', escola: 'e4', nome: 'EMCM2A', ano: '2ª série do EM' },
+  { id: 'e4-1a', escola: 'e4', nome: 'EMCM1A', ano: '1ª série do EM' },
+  { id: 'e5-3a', escola: 'e5', nome: 'EMPF3A', ano: '3ª série do EM' },
+  { id: 'e6-3a', escola: 'e6', nome: 'EMDR3A', ano: '3ª série do EM' },
+  { id: 'e6-2a', escola: 'e6', nome: 'EMDR2A', ano: '2ª série do EM' },
+]
+export const turmasDa = (escola: string) => TURMAS.filter((t) => t.escola === escola)
+export const turmaPorId = (id: string) => TURMAS.find((t) => t.id === id)!
 
 export type Estudante = {
   id: string
@@ -112,6 +135,16 @@ const NOMES_2A = [
   'Renan Calixto', 'Sabrina Dantas', 'Tales Moura', 'Vitor Hugo Lemos',
 ]
 
+const PRIMEIROS = ['Adriana', 'Alexandre', 'Aline', 'André', 'Bianca', 'Bruna', 'Carlos', 'Cauã', 'Daniela', 'Eduardo', 'Elaine', 'Emanuel', 'Fabiana', 'Gael', 'Gisele', 'Hugo', 'Iara', 'Ícaro', 'Jéssica', 'Juan', 'Kelly', 'Luan', 'Luiza', 'Maitê', 'Mateus', 'Noah', 'Paola', 'Raquel', 'Rodrigo', 'Sophia', 'Tainá', 'Thalita', 'Ulisses', 'Vicente', 'Yago', 'Zoe', 'Bárbara', 'Cristian', 'Débora', 'Erick']
+const SOBRENOMES = ['Alves', 'Barros', 'Cabral', 'Damasceno', 'Esteves', 'Falcão', 'Gouveia', 'Holanda', 'Inácio', 'Jardim', 'Lacerda', 'Magalhães', 'Neves', 'Ornelas', 'Pacheco', 'Quaresma', 'Ramos', 'Serrano', 'Tenório', 'Uchôa', 'Valadares', 'Werneck', 'Ximenes', 'Zanetti', 'Amorim', 'Bezerra', 'Couto', 'Dornelles', 'Feitosa', 'Guedes']
+/** nomes fictícios para as turmas das demais escolas (sem repetir dentro da turma) */
+function nomesGerados(n: number, seed: number) {
+  const r = rng(seed)
+  const nomes = new Set<string>()
+  while (nomes.size < n) nomes.add(`${PRIMEIROS[Math.floor(r() * PRIMEIROS.length)]} ${SOBRENOMES[Math.floor(r() * SOBRENOMES.length)]}`)
+  return [...nomes].sort((a, b) => a.localeCompare(b))
+}
+
 /** códigos variados (sem concentrar a turma num único perfil) */
 const CODIGOS = ['RES', 'AEC', 'IEC', 'SAE', 'ECS', 'CRI', 'IRC', 'ASI', 'SEC', 'RIC', 'EAS', 'CIE', 'IAS', 'SIA', 'AIR', 'REI', 'ESA', 'CSE', 'IRA', 'ASE', 'SCE', 'ERC', 'RCI']
 
@@ -178,6 +211,21 @@ export const ESTUDANTES: Estudante[] = [
   }),
   ...montar('3b', NOMES_3B, plano(32, 21, 6, 23), 41),
   ...montar('2a', NOMES_2A, plano(20, 8, 7, 31), 71),
+  // demais escolas: [turma, estudantes, concluídos, em andamento]
+  ...(
+    [
+      ['e2-3a', 36, 24, 7],
+      ['e2-2a', 34, 15, 10],
+      ['e3-3a', 40, 31, 5],
+      ['e3-3b', 38, 26, 8],
+      ['e4-3a', 30, 12, 9],
+      ['e4-2a', 32, 9, 11],
+      ['e4-1a', 28, 4, 8],
+      ['e5-3a', 44, 38, 4],
+      ['e6-3a', 35, 3, 6],
+      ['e6-2a', 33, 0, 4],
+    ] as [string, number, number, number][]
+  ).flatMap(([t, n, c, a], k) => montar(t, nomesGerados(n, 300 + k * 53), plano(n, c, a, 500 + k), 1000 + k * 211)),
 ].map((e) => (e.id === '3a-0' ? { ...e, foto: './rtv/ana-beatriz.webp' } : e))
 
 // um estudante da 3A concluiu sem escolher habilidades a desenvolver (pergunta opcional): RN02
@@ -189,5 +237,12 @@ export const ESTUDANTES: Estudante[] = [
 
 export const estudantePorId = (id: string) => ESTUDANTES.find((e) => e.id === id)!
 export const doTurma = (t: string) => ESTUDANTES.filter((e) => e.turma === t)
+export const daEscola = (escola: string) => ESTUDANTES.filter((e) => turmaPorId(e.turma).escola === escola)
+/** totais operacionais de uma lista de estudantes (não são indicadores de perfil) */
+export function totais(lista: Estudante[]) {
+  const n = (s: Status) => lista.filter((e) => e.status === s).length
+  const ultima = Math.max(0, ...lista.map((e) => e.atualizado ?? 0))
+  return { total: lista.length, concluido: n('concluido'), andamento: n('andamento'), naoIniciado: n('nao-iniciado'), ultima: ultima || undefined }
+}
 /** estudante da 3A sem a pergunta opcional de habilidades (atalho do protótipo) */
 export const SEM_DEV = ESTUDANTES.find((e) => e.turma === '3a' && e.status === 'concluido' && !e.respostas['H-DEV'])!.id
