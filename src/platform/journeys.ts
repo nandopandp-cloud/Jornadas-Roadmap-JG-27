@@ -444,11 +444,11 @@ export const journeys: Journey[] = [
     dominio: 'geniex.jovensgenios.com',
     etapas: [
       { nome: 'Mapeamento das bibliotecas', estado: 'feito' },
-      { nome: 'Tela piloto para validação', estado: 'atual' },
-      { nome: 'Telas nas 3 larguras', estado: 'proximo' },
-      { nome: 'Componentes da jornada', estado: 'proximo' },
-      { nome: 'Protótipo e handoff', estado: 'proximo' },
-      { nome: 'Navegável', estado: 'proximo' },
+      { nome: 'Tela piloto para validação', estado: 'feito' },
+      { nome: 'Telas nas 3 larguras', estado: 'feito' },
+      { nome: 'Componentes da jornada', estado: 'feito' },
+      { nome: 'Protótipo e handoff', estado: 'feito' },
+      { nome: 'Navegável', estado: 'atual' },
     ],
     links: [
       { label: 'Figma da jornada', url: 'https://www.figma.com/design/rXH2XCv3MCabtDHDawkJad' },
