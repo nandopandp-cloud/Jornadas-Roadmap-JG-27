@@ -10,6 +10,8 @@ Jornada do **Campeonato** na plataforma do estudante GenieX. Os educadores criam
 | --- | --- |
 | Telas de conceito (14 frames, 3 fluxos de protótipo) | https://www.figma.com/design/CFgSTHDpGqyNluCYfHxj7U (página “Campeonato”) |
 | Figma de destino (telas) | https://www.figma.com/design/rXH2XCv3MCabtDHDawkJad |
+| Navegável (plataforma) | https://jornadas-roadmap-jg-27.vercel.app/#/p/campeonato-geniex |
+| Página da jornada | https://jornadas-roadmap-jg-27.vercel.app/#/jornada/campeonato-geniex |
 | PRD | [PRD.md](PRD.md) (v1.0) |
 | Batalhas VS (regras que o campeonato reaproveita) | branch `batalhas-vs-geniex` |
 
@@ -53,7 +55,7 @@ A estudante logada é a **Mariana Alves** (1º ano A, Escola GenieX), em **5º l
 4. ✅ **Sobrepostos** (página **08**), sempre com véu (40% nos modais, 24% nos avisos): 7 por largura.
 5. ✅ **Componentes** (página **04**): 11 sets da jornada, usados como instâncias em todas as telas.
 6. ✅ **Protótipo** (página **09**, 4 fluxos em Desktop e Celular, 44 ligações) e **handoff** (página **10**, 11 seções com 38 notas no padrão do time).
-7. ⏳ **Navegável** e registro como navegável na plataforma.
+7. ✅ **Navegável** em React, a partir das telas do Figma, registrado como navegável na plataforma.
 
 ## Telas no Figma
 
@@ -94,6 +96,35 @@ Também na página 04: **Shell · Sidebar Campeonato** e **Logo GenieX (oficial)
 2. **Abas do campeonato.**
 3. **Desafio recebido:** responder → vitória → ranking.
 4. **Copa encerrada.**
+
+## Navegável
+
+O código fica em `src/prototypes/campeonato-geniex/`:
+
+| Arquivo | O que tem |
+| --- | --- |
+| `data.ts` | Copa, estudantes e disciplinas. Tem um gerador de questões do Ensino Médio por tópico (12 tópicos), cada questão com 5 alternativas e explicação. |
+| `logica.ts` | Regras do PRD: sorteio por cotas, situação da batalha (sua vez, aguardando, resultado, W.O. e sem vencedor), números da estudante e ranking pelos 4 critérios. Traz também as 18 batalhas de exemplo. |
+| `pecas.tsx` | Peças equivalentes aos componentes da página 04 do Figma. |
+| `telas-copa.tsx` | Lista, visão geral (em andamento e encerrada), aba Batalhas, Minhas batalhas, ranking e regras. |
+| `telas-batalha.tsx` | Oponente, disciplinas e tópicos, resumo, questão, resultado e revisão. |
+| `index.tsx` · `cp.css` | Estado, atalhos, shell, sobrepostos com véu e avisos. Usa o shell e as peças das Batalhas (`bat.css`). |
+
+As artes, os avatares Open Peeps e a logo ficam em `public/camp/`.
+
+**Comportamento:**
+- O ranking é calculado de verdade: cada batalha concluída atualiza vitórias, acertos, tempo médio e posição.
+- A batalha tem cronômetro de 10 minutos, teclas 1–5 ou A–E e Enter. Quando o tempo acaba, a participação é encerrada; ao sair, a participação também é encerrada.
+- Desafio recebido não tem etapa de aceite.
+- No resultado "Aguardando", uma área de simulação permite fingir a resposta do oponente ou o fim do prazo de 24 h (W.O.).
+- O tópico Física · Ondulatória falha na validação de conteúdo ao iniciar a batalha (sobreposto O5).
+
+**Atalhos** (lista de fluxos na plataforma):
+- **Copa:** campeonatos, sem campeonatos, visão geral, Copa encerrada, aba Batalhas, minhas batalhas, ranking e regras.
+- **Nova batalha:** oponente, disciplinas e tópicos, resumo e questão.
+- **Resultados:** aguardando, vitória, empate, derrota, W.O. e sem vencedor.
+- **Revisão** das questões.
+- **Sobrepostos:** sair da batalha, tempo esgotado, conteúdo indisponível e oponente indisponível.
 
 ## Pontos em aberto (handoff)
 
