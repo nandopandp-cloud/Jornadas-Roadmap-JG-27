@@ -353,7 +353,9 @@ export const journeys: Journey[] = [
     dominio: 'educadores.jovensgenios.com',
     etapas: [
       { nome: 'Navegável da jornada', estado: 'feito' },
-      { nome: 'Telas no Figma (após aprovação)', estado: 'proximo' },
+      { nome: 'Telas nas 3 larguras e sobrepostos', estado: 'feito' },
+      { nome: 'Componentes da jornada', estado: 'feito' },
+      { nome: 'Protótipo e handoff', estado: 'feito' },
     ],
     links: [
       { label: 'Figma da jornada', url: 'https://www.figma.com/design/7zr3xsn26enztIgzasLSkd/Relat%C3%B3rios---Teste-Vocacional' },
