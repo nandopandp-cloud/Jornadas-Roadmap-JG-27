@@ -26,10 +26,28 @@ Relatórios do **Campeonato GenieX** na plataforma Educadores. O educador acompa
 
 ## Processo
 
-1. ✅ **Mapeamento** (página **00**).
-2. ⏳ **Tela piloto** (página **01**): Relatório da Copa · Visão geral, em Desktop 1440, aguardando validação.
-3. ⬜ **Todas as telas** em Desktop, Tablet e Celular.
-4. ⬜ **Sobrepostos** (exportar e estados), sempre com véu.
-5. ⬜ **Componentes.**
-6. ⬜ **Protótipo e handoff.**
-7. ⬜ **Navegável** e registro na plataforma.
+1. ✅ **Mapeamento** e ✅ **tela piloto** validada. As duas páginas de trabalho (00 e 01) foram excluídas do Figma ao final.
+2. ✅ **Todas as telas** (páginas **05 Desktop**, **06 Tablet**, **07 Celular**): 6 seções em cada largura.
+   - lista de campeonatos e estado vazio;
+   - Visão geral, com e sem dados;
+   - Engajamento;
+   - Aprendizagem › Estudantes;
+   - Aprendizagem › Questões e conteúdos;
+   - Glossário.
+3. ✅ **Sobrepostos** (página **08**), sempre com véu (24% em menu e toast, 40% em modal e sheet):
+   - Exportar: menu no desktop, sheet no celular, toast “Gerando o PDF…”;
+   - Compartilhar: modal e toast “Link copiado”;
+   - Ranking completo: modal no desktop, sheet no celular.
+4. ✅ **Componentes** (página **04**): Indicador do relatório, Opção de exportação, Linha do ranking de aprendizagem, Indicador do glossário e Toast do relatório.
+5. ✅ **Protótipo** (página **09**, 38 interações) e **handoff** (página **10**), com as regras do PRD.
+6. ✅ **Navegável** em `src/prototypes/relatorios-campeonato`, registrado na plataforma com 12 atalhos: https://jornadas-roadmap-jg-27.vercel.app/#/jornada/relatorios-campeonato
+
+## Navegável
+
+| Arquivo | Papel |
+| --- | --- |
+| `data.ts` | Dados da Copa, iguais aos do Figma e da jornada do estudante (estudantes, tópicos, questões, rubricas) |
+| `index.tsx` | Casca do Educadores, lista, relatório com 4 abas e sobrepostos |
+| `rcp.css` | Peças do relatório; casca e tokens reaproveitados do `rgx.css` (Gamificação · Educadores) |
+
+O que funciona de verdade: filtros e busca da lista, busca e paginação das tabelas, filtro por quadrante no gráfico, filtro por turma, recorte por disciplina na Aprendizagem, filtros e ordenação das questões, exportar, compartilhar e ranking completo.
