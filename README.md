@@ -11,6 +11,8 @@ Jornada das **Batalhas** na plataforma do estudante GenieX: o estudante testa o 
 | Navegável de referência (Figma Make) | https://side-suds-09039219.figma.site/ |
 | Arquivo do Make | https://www.figma.com/make/djkjFpjlbied3gu2zkMGWi/Batalhas |
 | Figma de destino (telas) | https://www.figma.com/design/LmPvMwKodQmfkIjFFGfYem |
+| Navegável (plataforma) | https://jornadas-roadmap-jg-27.vercel.app/#/p/batalhas-vs-geniex |
+| Página da jornada | https://jornadas-roadmap-jg-27.vercel.app/#/jornada/batalhas-vs-geniex |
 
 ## Processo
 
@@ -25,7 +27,7 @@ Jornada das **Batalhas** na plataforma do estudante GenieX: o estudante testa o 
    As telas usam instâncias desses componentes.
 6. ✅ **Protótipo** (página **09**): 3 fluxos em Desktop e Celular (Batalha Solo completa, Desafiar um colega e Desafio recebido), com 66 ligações.
 7. ✅ **Handoff** (página **10**): 8 seções e 43 notas (regras, interações, dados, responsivo e engenharia).
-8. ⏳ **Navegável e registro na plataforma.**
+8. ✅ **Navegável e registro na plataforma:** feito em React a partir das telas do Figma, com o Make só como inspiração. Está no ar na plataforma de jornadas.
 
 **Avatares:** os rostos dos estudantes vêm da biblioteca Open Peeps (componente Busto), com camiseta Tee GenieX e fundo pastel. O “Você” do placar também.
 
@@ -97,3 +99,42 @@ A Sidebar da biblioteca não tem o item Batalhas. O componente local **Shell · 
   - vitória por W.O. se o oponente não responder;
   - revanche.
 - **Minhas batalhas:** abas Todas, Em andamento, Aguardando oponente e Finalizadas.
+
+## Navegável
+
+O código fica em `src/prototypes/batalhas-vs-geniex/`:
+
+| Arquivo | O que tem |
+| --- | --- |
+| `data.ts` | Disciplinas, tópicos, 100 questões (55 Solo e 45 VS) e 15 estudantes, tirados do Make |
+| `logica.ts` | Regras: sorteio das 10 questões, resultado Solo (7/5), placar VS, prazo de 24 h, W.O. e as 8 batalhas de exemplo |
+| `pecas.tsx` | Peças equivalentes aos componentes da página 04 (Selo, Etiqueta, Alternativa, Progresso, Balão do Nexo…) |
+| `telas-solo.tsx` · `telas-vs.tsx` | As telas de Início, Batalha Solo e Batalha VS |
+| `index.tsx` · `bat.css` | Estado, sobrepostos com véu, avisos, sidebar e responsivo |
+
+As artes HD, os avatares Open Peeps e a logo oficial ficam em `public/bat/`.
+
+**O que funciona de verdade:**
+- cronômetro de 45 s por questão (Solo) e de 10 min por rodada (VS);
+- teclas 1–4 ou A–D para responder e Enter para avançar;
+- limite de 3 disciplinas, com aviso;
+- histórico que cresce a cada batalha;
+- desafio enviado vai para “Aguardando oponente”;
+- reportar questão e sair da batalha, sempre com véu.
+
+**Responsivo:**
+
+| Largura | Sidebar |
+| --- | --- |
+| Desktop (1200 px ou mais) | Expandida |
+| Tablet (768 a 1199 px) | Recolhida |
+| Celular (menos de 768 px) | Gaveta |
+
+**Atalhos** (lista de fluxos na plataforma):
+
+| Grupo | Atalhos |
+| --- | --- |
+| Início | início · com histórico |
+| Batalha Solo | introdução · tópicos · questão · vitória · empate · derrota · gabarito |
+| Batalha VS | introdução · oponente · tópicos · confirmar · desafio recebido · em andamento · reportar questão · aguardando · resultado · minhas batalhas |
+

@@ -11,6 +11,8 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronsUpDown,
+  ArrowDown,
+  ArrowUp,
   CircleHelp,
   Clock,
   Download,
@@ -64,13 +66,15 @@ import {
 import './rgx.css'
 
 type Sub = 'resumo' | 'elos' | 'badges' | 'extrato'
-type Tela = { id: 'turmas'; aba: 'visao' | 'gamificacao' } | { id: 'turma'; turma: string } | { id: 'estudantes' } | { id: 'estudante'; aluno: string; sub: Sub; de: 'turma' | 'estudantes' }
+type Tela = { id: 'turmas'; aba: 'visao' | 'gamificacao' } | { id: 'turma'; turma: string } | { id: 'estudantes'; elo?: FiltroElo } | { id: 'estudante'; aluno: string; sub: Sub; de: 'turma' | 'estudantes' }
+type FiltroElo = 'Todos' | EloId | 'sem'
 type Exportar = null | 'turma' | 'estudante' | 'turmas'
 
 const INICIO: Record<string, { tela: Tela; exportar?: Exportar }> = {
   turmas: { tela: { id: 'turmas', aba: 'gamificacao' } },
   turma: { tela: { id: 'turma', turma: '8a' } },
   estudantes: { tela: { id: 'estudantes' } },
+  'estudantes-elo': { tela: { id: 'estudantes', elo: 'ouro' } },
   resumo: { tela: { id: 'estudante', aluno: 'ana-caroline', sub: 'resumo', de: 'turma' } },
   elos: { tela: { id: 'estudante', aluno: 'ana-caroline', sub: 'elos', de: 'turma' } },
   badges: { tela: { id: 'estudante', aluno: 'ana-caroline', sub: 'badges', de: 'turma' } },
@@ -173,7 +177,7 @@ export default function GamificacaoEducadores({ startScreen }: PrototypeProps) {
             <motion.div key={JSON.stringify(tela)} className="rx-conteudo" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, transition: { duration: 0.1 } }} transition={{ duration: 0.22 }}>
               {tela.id === 'turmas' && <Turmas aba={tela.aba} celular={celular} onAba={(aba) => setTela({ id: 'turmas', aba })} onTurma={(id) => ir({ id: 'turma', turma: id })} onExportar={abrirExportar('turmas')} />}
               {tela.id === 'turma' && <RelTurma turma={TURMAS.find((t) => t.id === tela.turma)!} celular={celular} onTurma={(id) => ir({ id: 'turma', turma: id })} onAluno={(id) => ir({ id: 'estudante', aluno: id, sub: 'resumo', de: 'turma' })} onExportar={abrirExportar('turma')} exportando={exportar === 'turma'} />}
-              {tela.id === 'estudantes' && <Estudantes celular={celular} onAluno={(id) => ir({ id: 'estudante', aluno: id, sub: 'resumo', de: 'estudantes' })} onFora={fora} onExportar={abrirExportar('turmas')} />}
+              {tela.id === 'estudantes' && <Estudantes celular={celular} eloInicial={tela.elo} onAluno={(id) => ir({ id: 'estudante', aluno: id, sub: 'resumo', de: 'estudantes' })} onFora={fora} onExportar={abrirExportar('turmas')} />}
               {tela.id === 'estudante' && (
                 <Estudante
                   aluno={alunoPorId(tela.aluno)}
@@ -304,6 +308,22 @@ const Th = ({ children, ord }: { children: ReactNode; ord?: boolean }) => (
     {children} {ord && <ChevronsUpDown size={14} />}
   </span>
 )
+type Ordem = null | { col: 'xp' | 'elo'; dir: 'desc' | 'asc' }
+/** Cabeçalho que ordena de verdade: 1º clique decrescente, 2º crescente, 3º volta ao padrão. */
+const ThOrd = ({ children, col, ordem, onOrdem }: { children: ReactNode; col: 'xp' | 'elo'; ordem: Ordem; onOrdem: (o: Ordem) => void }) => {
+  const ativa = ordem?.col === col
+  const Ic = !ativa ? ChevronsUpDown : ordem!.dir === 'desc' ? ArrowDown : ArrowUp
+  return (
+    <button
+      type="button"
+      className={`rx-th is-botao ${ativa ? 'is-ativa' : ''}`}
+      aria-sort={!ativa ? 'none' : ordem!.dir === 'desc' ? 'descending' : 'ascending'}
+      onClick={() => onOrdem(!ativa ? { col, dir: 'desc' } : ordem!.dir === 'desc' ? { col, dir: 'asc' } : null)}
+    >
+      {children} <Ic size={14} />
+    </button>
+  )
+}
 
 /* ---------------- T1 · Relatórios de Turmas ---------------- */
 function Turmas({ celular, onTurma, onExportar }: { aba?: 'visao' | 'gamificacao'; celular: boolean; onAba?: (a: 'visao' | 'gamificacao') => void; onTurma: (id: string) => void; onExportar: (ev?: MouseEvent) => void }) {
@@ -604,10 +624,26 @@ function CartaoAluno({ al, onAbrir }: { al: Aluno; onAbrir: () => void }) {
 }
 
 /* ---------------- T3 · Relatórios de Estudantes ---------------- */
-function Estudantes({ celular, onAluno, onFora, onExportar }: { celular: boolean; onAluno: (id: string) => void; onFora: (n: string) => void; onExportar: (ev?: MouseEvent) => void }) {
+function Estudantes({ celular, eloInicial, onAluno, onFora, onExportar }: { celular: boolean; eloInicial?: FiltroElo; onAluno: (id: string) => void; onFora: (n: string) => void; onExportar: (ev?: MouseEvent) => void }) {
   const [q, setQ] = useState('')
   const [turma, setTurma] = useState('Todas')
-  const lista = ALUNOS.filter((x) => (turma === 'Todas' || x.turma === turma) && x.nome.toLowerCase().includes(q.trim().toLowerCase()))
+  const [ano, setAno] = useState('Todos')
+  const [elo, setElo] = useState<FiltroElo>(eloInicial ?? 'Todos')
+  // filtro por elo já chega ordenado por XP válido (maior primeiro), como no Figma
+  const [ordem, setOrdem] = useState<Ordem>(eloInicial && eloInicial !== 'Todos' ? { col: 'xp', dir: 'desc' } : null)
+  const bateElo = (xp: number) => elo === 'Todos' || (elo === 'sem' ? xp === 0 : xp > 0 && eloDe(xp).id === elo)
+  const filtrada = ALUNOS.filter((x) => (turma === 'Todas' || x.turma === turma) && (ano === 'Todos' || x.ano === ano) && bateElo(x.xp) && x.nome.toLowerCase().includes(q.trim().toLowerCase()))
+  // o elo deriva do XP válido, então ordenar por elo e por XP dá a mesma sequência
+  const lista = ordem ? [...filtrada].sort((a, b) => (ordem.dir === 'desc' ? b.xp - a.xp : a.xp - b.xp)) : filtrada
+  const temFiltro = turma !== 'Todas' || ano !== 'Todos' || elo !== 'Todos' || q.trim() !== ''
+  const limpar = () => {
+    setTurma('Todas')
+    setAno('Todos')
+    setElo('Todos')
+    setQ('')
+  }
+  const nomeElo = elo === 'sem' ? 'sem XP válido' : elo === 'Todos' ? '' : `no elo ${eloPorId(elo).nome}`
+  const plural = (n: number) => `${n} ${n === 1 ? 'estudante' : 'estudantes'}`
   return (
     <>
       <header className="rx-cab is-acao">
@@ -645,16 +681,37 @@ function Estudantes({ celular, onAluno, onFora, onExportar }: { celular: boolean
           </label>
           <label>
             <span className="rx-rot">Ano escolar</span>
-            <select className="rx-select">
+            <select className="rx-select" value={ano} onChange={(e) => setAno(e.target.value)}>
               <option>Todos</option>
               <option>8º ano</option>
               <option>9º ano</option>
             </select>
           </label>
+          <label>
+            <span className="rx-rot">Elo</span>
+            <select className="rx-select" value={elo} onChange={(e) => setElo(e.target.value as FiltroElo)}>
+              <option value="Todos">Todos</option>
+              {ELOS.map((e) => (
+                <option key={e.id} value={e.id}>
+                  {e.nome}
+                </option>
+              ))}
+              <option value="sem">Sem XP válido</option>
+            </select>
+          </label>
           <span className="rx-espaco" />
           <Busca valor={q} onTroca={setQ} ph="Pesquisar pelo nome..." />
         </div>
-        {celular ? (
+        {lista.length === 0 ? (
+          <div className="rx-vazio is-bloco">
+            <Search size={22} />
+            <b>Nenhum estudante {nomeElo || 'com esses filtros'}</b>
+            <span>Ajuste os filtros ou a busca para ver outros estudantes.</span>
+            <button className="rx-btn is-contorno" onClick={limpar}>
+              Limpar filtros
+            </button>
+          </div>
+        ) : celular ? (
           <div className="rx-lista">
             {lista.map((x) => {
               const e = eloDe(x.xp)
@@ -683,8 +740,12 @@ function Estudantes({ celular, onAluno, onFora, onExportar }: { celular: boolean
                 <Th ord>Ano escolar</Th>
                 <Th ord>Escola</Th>
                 <Th ord>Turma</Th>
-                <Th ord>XP válido</Th>
-                <Th ord>Elo atual</Th>
+                <ThOrd col="xp" ordem={ordem} onOrdem={setOrdem}>
+                  XP válido
+                </ThOrd>
+                <ThOrd col="elo" ordem={ordem} onOrdem={setOrdem}>
+                  Elo atual
+                </ThOrd>
                 <span />
               </div>
               {lista.map((x) => {
@@ -708,9 +769,16 @@ function Estudantes({ celular, onAluno, onFora, onExportar }: { celular: boolean
             </div>
           </div>
         )}
-        <p className="rx-rodape">
-          {lista.length} de 92 estudantes (amostra do protótipo)
-        </p>
+        {lista.length > 0 && (
+          <p className="rx-rodape">
+            {temFiltro ? `${plural(lista.length)}${nomeElo ? ' ' + nomeElo : ''} (amostra do protótipo)` : `${lista.length} de 92 estudantes (amostra do protótipo)`}
+            {temFiltro && (
+              <button className="rx-link" onClick={limpar}>
+                Limpar filtros
+              </button>
+            )}
+          </p>
+        )}
       </section>
     </>
   )
