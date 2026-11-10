@@ -8,7 +8,26 @@ Parte da iniciativa **Orientação Vocacional e Exploração de Carreiras** do R
 - **Figma · jornada (com as bibliotecas):** https://www.figma.com/design/7zr3xsn26enztIgzasLSkd/Relat%C3%B3rios---Teste-Vocacional
 - **Protótipo navegável:** https://jornadas-roadmap-jg-27.vercel.app/#/p/relatorios-teste-vocacional
 - **Na plataforma:** https://jornadas-roadmap-jg-27.vercel.app/#/jornada/relatorios-teste-vocacional
-- **Status:** navegável pronto para validação. Se aprovado, as telas serão construídas no Figma da jornada, no mesmo processo das outras jornadas (capa, compostos, Desktop, Tablet, Celular, sobrepostos, fluxos e handoff).
+- **Status:** navegável validado em 09/11/2026 e jornada construída no Figma (capa, assets, compostos, Desktop, Tablet, Celular, sobrepostos, fluxos e handoff).
+
+## No Figma
+
+Arquivo [Relatórios - Teste Vocacional](https://www.figma.com/design/7zr3xsn26enztIgzasLSkd/Relat%C3%B3rios---Teste-Vocacional):
+
+| Página | O que tem |
+| --- | --- |
+| 02 · Assets | Fotos (estudante de exemplo e profissões), ilustrações 3D e logo, com o caminho em `public/` |
+| 04 · Compostos | Seção “Compostos da jornada”: Shell · Sidebar Relatórios (tema Educadores, Atividades › Teste Vocacional ativo), Status do teste, Letra RIASEC, Ícone de área, Ação da linha, Caixa de seleção e Avatar sem foto |
+| 05 · Desktop (1440) · 06 · Tablet (1024) · 07 · Celular (390) | 13 telas em cada largura, em seções 1 Escolas, 2 Estudantes da turma e 3 Relatório do estudante |
+| 08 · Sobrepostos | O1 Detalhe da profissão, O2 Exportar relatório, O3 Exportar · Escolas, O4 Exportar · Turma, O5 Seletor de turma, O6 Menu ⋮ do estudante (desktop), O7 Menu em gaveta (celular) |
+| 09 · Fluxos | 6 fluxos navegáveis, Desktop e Celular: Da escola ao relatório · Filtrar e buscar estudantes · Trocar de turma · Ler o relatório · Exportar · Pergunta opcional não respondida |
+| 10 · Handoff | Infos, Design System, pontos em aberto do PRD e 14 seções com marcações numeradas (telas, sobrepostos, responsivo e componentes) |
+
+Códigos das telas: **R1** Escolas · **R2** Estudantes da turma (R2.1 concluídos, R2.2 em andamento, R2.3 busca) · **R3** Visão geral · **R3.1** Áreas de interesse · **R3.2** Profissões recomendadas · **R3.3** Valores · **R3.4** Preferências · **R3.5** Habilidades · **R3.6** Síntese do perfil · **R3.7** Habilidades sem a pergunta opcional.
+
+Componentes das bibliotecas usados nas telas: Shell do Educadores (menu), Barra superior (Níveis 2 e Celular), Alerta de delay de dados, Campo, Select (Cronograma de Uso) e Botão. As telas fixam o modo de tema “Educadores” para os componentes resolverem as cores certas.
+
+Pontos em aberto registrados no handoff: perfis com acesso à tela de escolas (RN08) e o usuário do rodapé do menu, histórico ao refazer o teste (RN07) e o layout dos PDFs e da planilha.
 
 ## A jornada
 

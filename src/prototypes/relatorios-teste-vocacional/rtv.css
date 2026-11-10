@@ -2053,11 +2053,11 @@ strong.is-m,
   align-self: flex-start;
 }
 .rv .rv-abas {
-  gap: 4px;
+  gap: 0;
 }
 .rv .rv-abas button {
-  padding: 13px 15px;
-  font-size: 15px;
+  padding: 13px 10px;
+  font-size: 14.5px;
   color: var(--rv-texto);
 }
 .rv .rv-abas button.is-on {
