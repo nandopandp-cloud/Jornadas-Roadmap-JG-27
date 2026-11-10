@@ -29,10 +29,11 @@ Código em `src/prototypes/gamificacao-geniex-educadores/` (`index.tsx`, `data.t
 | `turmas` | Relatórios de Turmas: turmas com XP válido médio e elo médio, seleção para exportar (sem abas) |
 | `turma` | Relatório da turma EFAFMAT8A |
 | `estudantes` | Relatórios de Estudantes · aba Gamificação |
+| `estudantes-elo` | Relatórios de Estudantes filtrados pelo elo Ouro, ordenados por XP válido |
 | `resumo` · `elos` · `badges` · `extrato` | Relatório de gamificação da Ana Caroline |
 | `exportar-turma` · `exportar-estudante` | Menu Exportar aberto, com véu |
 
-- **Funciona de verdade:** seleção de turmas para exportar, troca de turma, busca, abas por elo (e cliques na legenda), linhas clicáveis, sub-navegação do estudante, filtro de modalidade no extrato, exportar (menu/folha com véu, Esc e clique fora fecham), sidebar recolhível e em gaveta no celular.
+- **Funciona de verdade:** seleção de turmas para exportar, troca de turma, busca, filtros de ano escolar e elo em Relatórios de Estudantes (com estado vazio e Limpar filtros), ordenação por XP válido e elo no cabeçalho, abas por elo (e cliques na legenda), linhas clicáveis, sub-navegação do estudante, filtro de modalidade no extrato, exportar (menu/folha com véu, Esc e clique fora fecham), sidebar recolhível e em gaveta no celular.
 - **Fora do escopo:** os demais itens do menu e as outras abas do perfil mostram um aviso.
 
 ## Bibliotecas do arquivo
@@ -63,7 +64,7 @@ Código em `src/prototypes/gamificacao-geniex-educadores/` (`index.tsx`, `data.t
 | RF01 · XP válido | T1 (média da turma), T2 (XP válido e próximo elo), T3 (coluna XP válido), T4.1 (cartão) |
 | RF02 · Elo atual | T1 (elo médio), T2 (coluna e distribuição por elo), T3 (coluna), T4.1 (cartão com maior elo) |
 | RF03 · Histórico de evolução | T4.1 (Evolução do XP válido), T4.2 (histórico de elos com regressões), T4.4 (extrato de lotes) |
-| RF04 · Filtros e ordenação | T2: abas por elo e ordenação por XP válido. T3: ordenação por XP válido e elo. **Pendente:** filtro por elo na T3 |
+| RF04 · Filtros e ordenação | T2: abas por elo e ordenação por XP válido. T3: select “Elo” (Todos, Bronze a Cósmico, Sem XP válido) e ordenação por XP válido e elo; estado filtrado na T3b |
 | RF05 · Detalhamento individual | Ver relatório (T2) e linha da tabela (T3) abrem a T4 |
 
 O handoff no Figma (página 10) abre com a seção **0 · PRD**, que reúne:

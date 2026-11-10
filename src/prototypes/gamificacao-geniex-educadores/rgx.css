@@ -511,9 +511,16 @@ strong.is-m,
 .rx-filtros.is-rotulos {
   align-items: end;
 }
-.rx-filtros.is-rotulos label {
+.rx-filtros.is-rotulos label:not(.rx-busca) {
   display: grid;
   gap: 6px;
+}
+.rx-filtros.is-rotulos label:not(.rx-busca) .rx-select {
+  width: 180px;
+  min-width: 0;
+}
+.rx-filtros.is-rotulos .rx-busca {
+  width: 280px;
 }
 .rx-rot {
   font-weight: 600;
@@ -946,6 +953,39 @@ strong.is-m,
   padding: 24px;
   text-align: center;
   color: var(--rx-suave);
+}
+.rx-vazio.is-bloco {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  padding: 40px 24px;
+  border: 1px dashed var(--rx-linha);
+  border-radius: 12px;
+}
+.rx-vazio.is-bloco b {
+  color: var(--rx-tinta);
+  font-weight: 600;
+}
+.rx-vazio.is-bloco .rx-btn {
+  margin-top: 8px;
+}
+.rx-rodape .rx-link {
+  margin-left: 12px;
+  font-size: 12px;
+}
+.rx-th.is-botao {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+.rx-th.is-botao:hover svg,
+.rx-th.is-ativa svg {
+  color: var(--rx-roxo);
 }
 
 /* ---------- cartões (celular) ---------- */
@@ -1578,6 +1618,11 @@ strong.is-m,
     width: 100%;
   }
   .rx-filtros .rx-btn {
+    width: 100%;
+  }
+  .rx-filtros.is-rotulos .rx-busca,
+  .rx-filtros.is-rotulos label:not(.rx-busca),
+  .rx-filtros.is-rotulos label:not(.rx-busca) .rx-select {
     width: 100%;
   }
   .rx-metrica {
