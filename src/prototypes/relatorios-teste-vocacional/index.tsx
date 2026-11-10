@@ -494,9 +494,6 @@ function Escolas({ celular, onEscola, onExportar, exportando }: { celular: boole
                 <small>
                   {x.andamento} em andamento · {x.naoIniciado} não iniciados · atualizado em {dataCurta(x.ultima)}
                 </small>
-                <span className="rv-acao">
-                  Ver turmas <ArrowRight size={16} />
-                </span>
               </article>
             ))}
           </div>
@@ -511,10 +508,9 @@ function Escolas({ celular, onEscola, onExportar, exportando }: { celular: boole
                 <span className="rv-th">Em andamento</span>
                 <span className="rv-th">Não iniciados</span>
                 <span className="rv-th">Última atualização</span>
-                <span className="rv-th is-centro">Ação</span>
               </div>
               {linhas.map((x) => (
-                <div key={x.e.id} role="row" className="rv-tr is-clicavel" onClick={() => onEscola(x.e.id)}>
+                <div key={x.e.id} role="row" className="rv-tr is-clicavel" onClick={() => onEscola(x.e.id)} title={`Abrir as turmas da ${x.e.nome}`}>
                   <span className="rv-escola">
                     <span className="rv-escola__ic">
                       <School size={18} />
@@ -535,17 +531,6 @@ function Escolas({ celular, onEscola, onExportar, exportando }: { celular: boole
                   <span>{x.andamento}</span>
                   <span>{x.naoIniciado}</span>
                   <span className="rv-mudo">{dataCurta(x.ultima)}</span>
-                  <span className="is-centro">
-                    <button
-                      className="rv-acao"
-                      onClick={(ev) => {
-                        ev.stopPropagation()
-                        onEscola(x.e.id)
-                      }}
-                    >
-                      Ver turmas <ArrowRight size={16} />
-                    </button>
-                  </span>
                 </div>
               ))}
               {!linhas.length && <p className="rv-vazio">Nenhuma escola encontrada para “{q}”.</p>}
