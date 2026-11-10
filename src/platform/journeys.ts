@@ -443,8 +443,8 @@ export const journeys: Journey[] = [
     dispositivo: 'desktop',
     dominio: 'geniex.jovensgenios.com',
     etapas: [
-      { nome: 'Mapeamento das bibliotecas', estado: 'atual' },
-      { nome: 'Tela piloto para validação', estado: 'proximo' },
+      { nome: 'Mapeamento das bibliotecas', estado: 'feito' },
+      { nome: 'Tela piloto para validação', estado: 'atual' },
       { nome: 'Telas nas 3 larguras', estado: 'proximo' },
       { nome: 'Componentes da jornada', estado: 'proximo' },
       { nome: 'Protótipo e handoff', estado: 'proximo' },
