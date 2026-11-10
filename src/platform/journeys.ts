@@ -429,5 +429,31 @@ export const journeys: Journey[] = [
     ],
     component: lazy(() => import('../prototypes/batalhas-vs-geniex')),
   },
+  {
+    slug: 'campeonato-geniex',
+    branch: 'campeonato-geniex',
+    name: 'Campeonato GenieX',
+    product: 'GenieX · Plataforma do Estudante',
+    audience: 'Estudantes do Ensino Médio',
+    description:
+      'Estudante participa de campeonatos criados pelos educadores: desafia colegas do mesmo ano e da mesma escola (inclusive de outras turmas) em Batalhas VS de 10 questões e 10 minutos, acompanha as batalhas pendentes, sobe no ranking por vitórias (com desempate por acertos, tempo médio e ordem alfabética) e revisa as questões.',
+    icon: './3d/crown.png',
+    accent: '#5258e4',
+    status: 'em-breve',
+    dispositivo: 'desktop',
+    dominio: 'geniex.jovensgenios.com',
+    etapas: [
+      { nome: 'Mapeamento das bibliotecas', estado: 'atual' },
+      { nome: 'Tela piloto para validação', estado: 'proximo' },
+      { nome: 'Telas nas 3 larguras', estado: 'proximo' },
+      { nome: 'Componentes da jornada', estado: 'proximo' },
+      { nome: 'Protótipo e handoff', estado: 'proximo' },
+      { nome: 'Navegável', estado: 'proximo' },
+    ],
+    links: [
+      { label: 'Figma da jornada', url: 'https://www.figma.com/design/rXH2XCv3MCabtDHDawkJad' },
+      { label: 'Referência (conceito do Campeonato)', url: 'https://www.figma.com/design/CFgSTHDpGqyNluCYfHxj7U/CAMPEONATO---GENIEX--CONCEITO-?node-id=0-1' },
+    ],
+  },
 ]
 export const findJourney = (slug?: string) => journeys.find((j) => j.slug === slug)
