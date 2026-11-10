@@ -47,10 +47,55 @@ A estudante logada é a **Mariana Alves** (1º ano A, Escola GenieX), em **5º l
 
 ## Processo
 
-1. ✅ **Mapeamento** (página **00**): telas de conceito, PRD e bibliotecas. As artes foram recortadas do conceito, ampliadas 4× (Real-ESRGAN x4plus) e, nas peças soltas, tiveram o fundo removido (página **02 · Assets**).
-2. ⏳ **Tela piloto** (página **01**): Visão geral da Copa, Desktop 1440, aguardando validação.
-3. ⬜ **Todas as telas** em Desktop 1440, Tablet 768 e Celular 375.
-4. ⬜ **Sobrepostos**, sempre com véu.
-5. ⬜ **Componentes** da jornada.
-6. ⬜ **Protótipo e handoff.**
-7. ⬜ **Navegável** e registro como navegável na plataforma.
+1. ✅ **Mapeamento** (página **00**): telas de conceito, PRD e bibliotecas. As artes foram recortadas do conceito e ampliadas 4× (Real-ESRGAN x4plus). Nas peças soltas, o fundo foi removido (página **02 · Assets**).
+2. ✅ **Tela piloto** (página **01**): Visão geral da Copa. Aprovada em 10/11/2026.
+3. ✅ **Todas as telas** em Desktop 1440 (**05**), Tablet 768 (**06**) e Celular 375 (**07**): 21 telas por largura.
+4. ✅ **Sobrepostos** (página **08**), sempre com véu (40% nos modais, 24% nos avisos): 7 por largura.
+5. ✅ **Componentes** (página **04**): 11 sets da jornada, usados como instâncias em todas as telas.
+6. ✅ **Protótipo** (página **09**, 4 fluxos em Desktop e Celular, 44 ligações) e **handoff** (página **10**, 11 seções com 38 notas no padrão do time).
+7. ⏳ **Navegável** e registro como navegável na plataforma.
+
+## Telas no Figma
+
+| Seção | Telas |
+| --- | --- |
+| 1 · Campeonatos | 1.1 lista (em andamento e encerrados) · 1.2 vazio |
+| 2 · Visão geral | 2.1 em andamento · 2.2 encerrado |
+| 3 · Batalhas | 3.1 aba Batalhas (desafios recebidos, oponentes, minhas batalhas) · 3.2 Minhas batalhas (histórico) |
+| 4 · Ranking | 4.1 classificação com pódio e destaque “Você” |
+| 5 · Regras | 5.1 como funciona, regras, ranking e dúvidas |
+| 6 · Nova batalha · Oponente | 6.1 escolher oponente |
+| 7 · Nova batalha · Disciplinas e tópicos | 7.1 válido · 7.2 falta escolher tópico |
+| 8 · Nova batalha · Resumo | 8.1 resumo da batalha |
+| 9 · Batalha | 9.1 questão em andamento (10 min) |
+| 10 · Resultado | 10.1 aguardando · 10.2 vitória · 10.3 empate · 10.4 derrota · 10.5 W.O. · 10.6 sem vencedor |
+| 11 · Revisão | 11.1 revisão das questões |
+| Sobrepostos (08) | O1 Sair da batalha · O2 Tempo esgotado · O3 Desafio enviado · O4 Limite de disciplinas · O5 Conteúdo indisponível · O6 Copa encerrada · O7 Oponente indisponível |
+
+## Componentes da jornada (página 04)
+
+- Status
+- Selo de posição
+- Disciplina · Ícone
+- Disciplina · Chip
+- Abas do campeonato
+- Etapas da nova batalha
+- Número
+- Marcador de questão
+- Quadrado de progresso
+- Card de oponente
+- Linha de batalha
+
+Também na página 04: **Shell · Sidebar Campeonato** e **Logo GenieX (oficial)**.
+
+## Protótipo (página 09)
+
+1. **Nova batalha completa:** lista → visão geral → oponente → disciplinas → resumo → questão → aguardando → revisão.
+2. **Abas do campeonato.**
+3. **Desafio recebido:** responder → vitória → ranking.
+4. **Copa encerrada.**
+
+## Pontos em aberto (handoff)
+
+- Validação técnica do PRD §10: fórmula do tempo médio, disponibilidade de questões, mudança de matrícula, rotina de encerramento e ordenação determinística.
+- Definir se os acertos de uma batalha encerrada sem vencedor entram nos acertos acumulados.
