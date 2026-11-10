@@ -338,6 +338,46 @@ export const journeys: Journey[] = [
     ],
     component: lazy(() => import('../prototypes/teste-vocacional')),
   },
+  {
+    slug: 'relatorios-teste-vocacional',
+    branch: 'relatorios-teste-vocacional',
+    name: 'Relatórios do Teste Vocacional',
+    product: 'Educadores · Relatórios institucionais',
+    audience: 'Professores do Ensino Médio',
+    description:
+      'Professor acompanha por turma quem concluiu, está fazendo ou não começou o Teste Vocacional e abre o relatório individual de cada estudante: código RIASEC, radar das seis áreas, profissões para explorar, valores, preferências, habilidades percebidas e uma síntese para apoiar conversas de orientação.',
+    icon: './voc/bar-chart.webp',
+    accent: '#6a3df0',
+    status: 'navegavel',
+    dispositivo: 'desktop',
+    dominio: 'educadores.jovensgenios.com',
+    etapas: [
+      { nome: 'Navegável da jornada', estado: 'feito' },
+      { nome: 'Telas no Figma (após aprovação)', estado: 'proximo' },
+    ],
+    links: [
+      { label: 'Figma da jornada', url: 'https://www.figma.com/design/7zr3xsn26enztIgzasLSkd/Relat%C3%B3rios---Teste-Vocacional' },
+      { label: 'Referência (Teste Vocacional - Educadores)', url: 'https://www.figma.com/design/CFgSTHDpGqyNluCYfHxj7U/CAMPEONATO---GENIEX--CONCEITO-?node-id=99-2' },
+    ],
+    flows: [
+      { id: 'lista', label: 'Estudantes da turma', icon: './3d/clipboard.png' },
+      { id: 'concluidos', label: 'Filtro: concluídos', icon: './voc/check-mark-button.webp' },
+      { id: 'andamento', label: 'Filtro: em andamento', icon: './voc/hourglass-not-done.webp' },
+      { id: 'busca', label: 'Busca por nome', icon: './voc/magnifying-glass-tilted-left.webp' },
+      { id: 'outra-turma', label: 'Outra turma', icon: './voc/graduation-cap.webp' },
+      { id: 'visao', label: 'Relatório: visão geral', icon: './3d/glowing-star.png' },
+      { id: 'areas', label: 'Áreas de interesse', icon: './voc/bar-chart.webp' },
+      { id: 'profissoes', label: 'Profissões recomendadas', icon: './voc/briefcase.webp' },
+      { id: 'profissao', label: 'Detalhe da profissão', icon: './voc/microscope.webp' },
+      { id: 'valores', label: 'Valores', icon: './3d/heart.png' },
+      { id: 'preferencias', label: 'Preferências', icon: './voc/world-map.webp' },
+      { id: 'habilidades', label: 'Habilidades', icon: './voc/puzzle-piece.webp' },
+      { id: 'sintese', label: 'Síntese do perfil', icon: './voc/memo.webp' },
+      { id: 'exportar', label: 'Exportar relatório', icon: './3d/rocket.png' },
+      { id: 'sem-dado', label: 'Dado opcional ausente', icon: './voc/thinking-face.webp' },
+    ],
+    component: lazy(() => import('../prototypes/relatorios-teste-vocacional')),
+  },
 ]
 
 export const findJourney = (slug?: string) => journeys.find((j) => j.slug === slug)

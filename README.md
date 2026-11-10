@@ -29,7 +29,7 @@ Antes de uma iniciativa virar produto, o time precisa mostrar como ela vai funci
 
 <!-- jornadas:inicio (gerado automaticamente a partir de src/platform/journeys.ts — não edite à mão) -->
 
-A plataforma tem hoje **10 jornadas**. Cada uma vive na sua própria branch, com um README dedicado.
+A plataforma tem hoje **11 jornadas**. Cada uma vive na sua própria branch, com um README dedicado.
 
 ### Alfabetização
 
@@ -110,6 +110,14 @@ Relatórios da gamificação da GenieX para professores e gestores: turmas com X
 Estudante responde 52 perguntas sobre interesses, valores, preferências e habilidades, recebe um perfil RIASEC com profissões explicadas, explora e compara carreiras e segue próximos passos para investigar o futuro.
 
 [Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/teste-vocacional) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/teste-vocacional) · [Branch `teste-vocacional-geniex`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/teste-vocacional-geniex)
+
+### Relatórios do Teste Vocacional
+
+**Educadores · Relatórios institucionais** · Professores do Ensino Médio
+
+Professor acompanha por turma quem concluiu, está fazendo ou não começou o Teste Vocacional e abre o relatório individual de cada estudante: código RIASEC, radar das seis áreas, profissões para explorar, valores, preferências, habilidades percebidas e uma síntese para apoiar conversas de orientação.
+
+[Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/relatorios-teste-vocacional) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/relatorios-teste-vocacional) · [Branch `relatorios-teste-vocacional`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/relatorios-teste-vocacional)
 
 <!-- jornadas:fim -->
 
