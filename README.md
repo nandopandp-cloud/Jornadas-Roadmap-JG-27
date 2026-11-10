@@ -14,12 +14,33 @@ Jornada das **Batalhas** na plataforma do estudante GenieX: o estudante testa o 
 
 ## Processo
 
-1. ✅ **Mapeamento:** o navegável foi lido tela a tela. As 33 artes do Make (Nexo, cenas, banners e avatares) foram convertidas para PNG e estão na página **02 · Assets**. O de-para Make → bibliotecas está na página **00 · Mapeamento de bibliotecas**.
-2. 🟡 **Piloto:** a tela Início (primeiro acesso), em Desktop 1440, está na página **01 · Piloto · Validação** e aguarda validação.
-3. ⏳ **Todas as telas** em Desktop 1440, Tablet 768 e Celular 375.
-4. ⏳ **Sobrepostos:** modal Reportar questão, confirmação de saída e toasts, sempre com véu.
+1. ✅ **Mapeamento:** o navegável foi lido tela a tela. As 33 artes do Make (Nexo, cenas, banners e avatares) foram refeitas em alta resolução com Real-ESRGAN x4plus (4×) e estão na página **02 · Assets**. O de-para Make → bibliotecas está na página **00 · Mapeamento de bibliotecas**.
+2. ✅ **Piloto:** a tela Início (primeiro acesso), na página **01 · Piloto · Validação**, foi aprovada em 09/11/2026.
+3. ✅ **Todas as telas** em Desktop 1440 (**05**), Tablet 768 (**06**) e Celular 375 (**07**): 26 telas por largura.
+4. ✅ **Sobrepostos** (página **08**), sempre com véu: Reportar questão, Sair da batalha (Solo e VS) e 4 avisos.
 5. ⏳ **Componentes, protótipo e handoff.**
 6. ⏳ **Navegável e registro na plataforma** (quando estiver tudo pronto).
+
+**Logo:** sempre a logo oficial da GenieX (geniex-light.svg, e a dark em fundo escuro). Ela fica no componente local **Logo GenieX (oficial)**, que tem versão Completa e versão Ícone.
+
+## Telas no Figma
+
+| Seção | Telas |
+| --- | --- |
+| 1 · Início | 1.1 primeiro acesso · 1.2 com histórico |
+| 2 · Batalha Solo · Introdução | 2.1 Enfrente o Nexo! |
+| 3 · Batalha Solo · Seleção de tópicos | 3.1 tópicos escolhidos |
+| 4 · Batalha Solo · Questão | 4.1 escolhendo · 4.2 correta · 4.3 incorreta · 4.4 tempo esgotado |
+| 5 · Batalha Solo · Resultado | 5.1 vitória · 5.2 empate · 5.3 derrota |
+| 6 · Batalha Solo · Gabarito | 6.1 com questão aberta |
+| 7 · Batalha VS · Introdução | 7.1 Desafie um colega |
+| 8 · Batalha VS · Escolher oponente | 8.1 estudantes da sala |
+| 9 · Batalha VS · Selecionar tópicos | 9.1 falta escolher 1 tópico |
+| 10 · Batalha VS · Confirmar desafio | 10.1 novo · 10.2 recebido · 10.3 retomar |
+| 11 · Batalha VS · Batalha em andamento | 11.1 questão 4 de 10 |
+| 12 · Batalha VS · Resultado | 12.1 aguardando · 12.2 vitória · 12.3 derrota · 12.4 empate · 12.5 W.O. |
+| 13 · Batalha VS · Minhas batalhas | 13.1 todas as batalhas |
+| O1–O4 (página 08) | Reportar questão · Sair da batalha (Solo) · Sair da batalha (VS) · avisos de limite de disciplinas, desafio enviado, questão reportada e tempo esgotado |
 
 ## Bibliotecas
 
