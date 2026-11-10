@@ -6,7 +6,8 @@ Relatórios da gamificação da GenieX na **Plataforma Educadores**, parte do Ro
 - **Referências:**
   - Padrão de relatório Educadores (Teste Vocacional): relatório por turma com métricas, filtros por status e tabela; perfil do estudante com abas. As imagens estão na pasta local `public/relatorios-gamificacao-geniex/` (fora do Git).
   - Conceito da gamificação para Educadores: página “Gamificação Geniex” do arquivo [Campeonato GenieX (conceito)](https://www.figma.com/design/CFgSTHDpGqyNluCYfHxj7U/CAMPEONATO---GENIEX--CONCEITO-?node-id=28-140) (Relatórios de Estudantes com XP válido e elo; aba Gamificação do estudante).
-- **PRD:** Sistema de Gamificação da GenieX v2.0 (copiado em `PRD.md` na branch `gamificacao-geniex`). Para os relatórios valem as métricas de sucesso (§13): distribuição por elo, XP médio por estudante ativo, percentual de estudantes com XP, XP por modalidade, badges por estudante e regressões de elo.
+- **PRD dos relatórios:** [PRD-relatorios.md](PRD-relatorios.md) (Relatórios de Gamificação da GenieX): XP válido, elo atual e histórico de evolução; requisitos RF01 a RF05, critérios de aceite e regras de dados.
+- **PRD da Gamificação:** Sistema de Gamificação da GenieX v2.0 (copiado em `PRD.md` na branch `gamificacao-geniex`). Dele vêm as regras de XP, elos, badges e expiração e as métricas da turma (§13).
 - **Protótipo navegável:** https://jornadas-roadmap-jg-27.vercel.app/#/p/gamificacao-geniex-educadores
 - **Na plataforma:** https://jornadas-roadmap-jg-27.vercel.app/#/jornada/gamificacao-geniex-educadores
 
@@ -54,6 +55,26 @@ Código em `src/prototypes/gamificacao-geniex-educadores/` (`index.tsx`, `data.t
 | T4.2 | Estudante · Gamificação · Elos | Os 5 elos, histórico e regressão |
 | T4.3 | Estudante · Gamificação · Badges | 25 badges por elo (PRD §11.3) |
 | T4.4 | Estudante · Gamificação · Extrato de XP | Lotes com validade (PRD §11.5) |
+
+## Requisitos do PRD nas telas
+
+| Requisito | Onde está |
+| --- | --- |
+| RF01 · XP válido | T1 (média da turma), T2 (XP válido e próximo elo), T3 (coluna XP válido), T4.1 (cartão) |
+| RF02 · Elo atual | T1 (elo médio), T2 (coluna e distribuição por elo), T3 (coluna), T4.1 (cartão com maior elo) |
+| RF03 · Histórico de evolução | T4.1 (Evolução do XP válido), T4.2 (histórico de elos com regressões), T4.4 (extrato de lotes) |
+| RF04 · Filtros e ordenação | T2: abas por elo e ordenação por XP válido. T3: ordenação por XP válido e elo. **Pendente:** filtro por elo na T3 |
+| RF05 · Detalhamento individual | Ver relatório (T2) e linha da tabela (T3) abrem a T4 |
+
+O handoff no Figma (página 10) abre com a seção **0 · PRD**, que reúne:
+
+- o problema, a solução, o escopo e as métricas;
+- os requisitos ligados às telas;
+- os critérios de aceite com o que testar;
+- as regras de dados: fonte única GenieX, atualização de até 2 horas e estudante sem XP;
+- os eventos sugeridos para medir as métricas de sucesso.
+
+Cada seção ganhou uma nota com os requisitos que aquela tela atende.
 
 ## Decisões
 
