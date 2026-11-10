@@ -29,10 +29,26 @@ Jornada do **Campeonato** na plataforma do estudante GenieX. Os educadores criam
 | Desafio recebido | Botões “Aceitar” | **Sem etapa de aceite** (PRD, Feature 06). O botão vira “Responder”. |
 | Avatares | Ilustrações do conceito | **Biblioteca de avatares** (Open Peeps, componente Busto), como nas Batalhas. |
 
+## Bibliotecas
+
+| Biblioteca | Uso |
+| --- | --- |
+| 🎨 Style Guide - GenieX | Sidebar, Top Bar v2, Tabs Trigger, Button, Badge, Stepper, Input e tokens da coleção “3. Modes” (Light); texto em Geist |
+| 🧩 Objetos de Aprendizagem | Alternativas e Componente de Quiz (questão da batalha) |
+| Untitled UI Icons v7 | Ícones de linha, o padrão da GenieX |
+| Lucide | Espadas do item e da aba Batalhas |
+| Open Peeps (Busto) | Todos os avatares de estudantes |
+
+Componentes locais (página **04**): **Logo GenieX (oficial)** e **Shell · Sidebar Campeonato** (Expandida e Recolhida), com os itens Campeonatos e Batalhas depois de Simulados.
+
+## Dados de exemplo
+
+A estudante logada é a **Mariana Alves** (1º ano A, Escola GenieX), em **5º lugar** na Copa GenieX · 1º ano (01 a 30 nov. 2026, 128 participantes, Matemática, Física e Química). Ela tem 9 vitórias, 81 acertos e 23 s de tempo médio. O João Pedro tem as mesmas vitórias e acertos; ela fica à frente pelo tempo médio, o que mostra o desempate do PRD.
+
 ## Processo
 
-1. ⏳ **Mapeamento** das telas de conceito, do PRD e das bibliotecas.
-2. ⬜ **Tela piloto** para validação.
+1. ✅ **Mapeamento** (página **00**): telas de conceito, PRD e bibliotecas. As artes foram recortadas do conceito, ampliadas 4× (Real-ESRGAN x4plus) e, nas peças soltas, tiveram o fundo removido (página **02 · Assets**).
+2. ⏳ **Tela piloto** (página **01**): Visão geral da Copa, Desktop 1440, aguardando validação.
 3. ⬜ **Todas as telas** em Desktop 1440, Tablet 768 e Celular 375.
 4. ⬜ **Sobrepostos**, sempre com véu.
 5. ⬜ **Componentes** da jornada.
