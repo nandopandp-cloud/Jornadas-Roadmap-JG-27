@@ -122,6 +122,11 @@ As artes HD, os avatares Open Peeps e a logo oficial ficam em `public/bat/`.
 - desafio enviado vai para “Aguardando oponente”;
 - reportar questão e sair da batalha, sempre com véu.
 
+**Decisões (09/11/2026):**
+- as batalhas **não geram XP** por enquanto;
+- as questões de História da Batalha VS, escritas para o protótipo, estão aprovadas;
+- véu de 24% nos avisos rápidos e de 40% nos modais.
+
 **Responsivo:**
 
 | Largura | Sidebar |
