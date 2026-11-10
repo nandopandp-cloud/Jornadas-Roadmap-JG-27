@@ -29,7 +29,7 @@ Antes de uma iniciativa virar produto, o time precisa mostrar como ela vai funci
 
 <!-- jornadas:inicio (gerado automaticamente a partir de src/platform/journeys.ts — não edite à mão) -->
 
-A plataforma tem hoje **13 jornadas**. Cada uma vive na sua própria branch, com um README dedicado.
+A plataforma tem hoje **14 jornadas**. Cada uma vive na sua própria branch, com um README dedicado.
 
 ### Alfabetização
 
@@ -134,6 +134,14 @@ Estudante enfrenta o Nexo na Batalha Solo (10 questões, até 3 disciplinas, 45 
 Estudante participa de campeonatos criados pelos educadores: desafia colegas do mesmo ano e da mesma escola (inclusive de outras turmas) em Batalhas VS de 10 questões e 10 minutos, acompanha as batalhas pendentes, sobe no ranking por vitórias (com desempate por acertos, tempo médio e ordem alfabética) e revisa as questões.
 
 [Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/campeonato-geniex) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/campeonato-geniex) · [Branch `campeonato-geniex`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/campeonato-geniex)
+
+### Relatórios do Campeonato GenieX
+
+**Educadores · Relatórios de atividades** · Professores e coordenação do Ensino Médio
+
+Em Relatórios › Atividades › Campeonatos, o educador acompanha cada campeonato da GenieX em 4 abas: visão geral, engajamento (participação, médias e ranking por vitórias), aprendizagem por estudante e por questão/tópico (acurácia, rubricas e o novo tempo médio de resposta correta) e glossário, com exportação e compartilhamento do relatório.
+
+[Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/relatorios-campeonato) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/relatorios-campeonato) · [Branch `relatorios-campeonato`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/relatorios-campeonato)
 
 <!-- jornadas:fim -->
 
