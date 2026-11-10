@@ -29,7 +29,7 @@ Antes de uma iniciativa virar produto, o time precisa mostrar como ela vai funci
 
 <!-- jornadas:inicio (gerado automaticamente a partir de src/platform/journeys.ts — não edite à mão) -->
 
-A plataforma tem hoje **11 jornadas**. Cada uma vive na sua própria branch, com um README dedicado.
+A plataforma tem hoje **12 jornadas**. Cada uma vive na sua própria branch, com um README dedicado.
 
 ### Alfabetização
 
@@ -118,6 +118,14 @@ Estudante responde 52 perguntas sobre interesses, valores, preferências e habil
 Em Relatórios › Atividades, o educador escolhe a escola, acompanha por turma quem concluiu, está fazendo ou não começou o Teste Vocacional e abre o relatório individual de cada estudante: código RIASEC, radar das seis áreas, profissões para explorar, valores, preferências, habilidades percebidas e uma síntese para apoiar conversas de orientação.
 
 [Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/relatorios-teste-vocacional) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/relatorios-teste-vocacional) · [Branch `relatorios-teste-vocacional`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/relatorios-teste-vocacional)
+
+### Batalhas VS GenieX
+
+**GenieX · Plataforma do Estudante** · Estudantes do Fundamental II e do Ensino Médio
+
+Estudante enfrenta o Nexo na Batalha Solo (10 questões, até 3 disciplinas, 45 s por questão, vitória com 7 acertos) ou desafia um colega da mesma série na Batalha VS (mesmos tópicos, 10 minutos por rodada, 24 h para o oponente, W.O.), com placar, resultado, gabarito e histórico em Minhas batalhas.
+
+[Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/batalhas-vs-geniex) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/batalhas-vs-geniex) · [Branch `batalhas-vs-geniex`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/batalhas-vs-geniex)
 
 <!-- jornadas:fim -->
 
