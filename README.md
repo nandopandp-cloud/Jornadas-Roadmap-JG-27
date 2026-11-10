@@ -18,8 +18,16 @@ Jornada das **Batalhas** na plataforma do estudante GenieX: o estudante testa o 
 2. ✅ **Piloto:** a tela Início (primeiro acesso), na página **01 · Piloto · Validação**, foi aprovada em 09/11/2026.
 3. ✅ **Todas as telas** em Desktop 1440 (**05**), Tablet 768 (**06**) e Celular 375 (**07**): 26 telas por largura.
 4. ✅ **Sobrepostos** (página **08**), sempre com véu: Reportar questão, Sair da batalha (Solo e VS) e 4 avisos.
-5. ⏳ **Componentes, protótipo e handoff.**
-6. ⏳ **Navegável e registro na plataforma** (quando estiver tudo pronto).
+5. ✅ **Componentes** (página **04**):
+   - Shell · Sidebar Batalhas, Logo GenieX (oficial), Selo de batalha, Etiqueta de disciplina (13 × Caixa);
+   - Status da batalha VS, Resultado da batalha Solo, Progresso da batalha · questão e Balão do Nexo.
+
+   As telas usam instâncias desses componentes.
+6. ✅ **Protótipo** (página **09**): 3 fluxos em Desktop e Celular (Batalha Solo completa, Desafiar um colega e Desafio recebido), com 66 ligações.
+7. ✅ **Handoff** (página **10**): 8 seções e 43 notas (regras, interações, dados, responsivo e engenharia).
+8. ⏳ **Navegável e registro na plataforma.**
+
+**Avatares:** os rostos dos estudantes vêm da biblioteca Open Peeps (componente Busto), com camiseta Tee GenieX e fundo pastel. O “Você” do placar também.
 
 **Logo:** sempre a logo oficial da GenieX (geniex-light.svg, e a dark em fundo escuro). Ela fica no componente local **Logo GenieX (oficial)**, que tem versão Completa e versão Ícone.
 
