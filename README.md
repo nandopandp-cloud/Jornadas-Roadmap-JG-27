@@ -115,7 +115,7 @@ Estudante responde 52 perguntas sobre interesses, valores, preferências e habil
 
 **Educadores · Relatórios institucionais** · Professores do Ensino Médio
 
-Professor acompanha por turma quem concluiu, está fazendo ou não começou o Teste Vocacional e abre o relatório individual de cada estudante: código RIASEC, radar das seis áreas, profissões para explorar, valores, preferências, habilidades percebidas e uma síntese para apoiar conversas de orientação.
+Em Relatórios › Atividades, o educador escolhe a escola, acompanha por turma quem concluiu, está fazendo ou não começou o Teste Vocacional e abre o relatório individual de cada estudante: código RIASEC, radar das seis áreas, profissões para explorar, valores, preferências, habilidades percebidas e uma síntese para apoiar conversas de orientação.
 
 [Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/relatorios-teste-vocacional) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/relatorios-teste-vocacional) · [Branch `relatorios-teste-vocacional`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/relatorios-teste-vocacional)
 

@@ -3090,3 +3090,67 @@ strong.is-m,
 .rv-card__linha > .rv-area-cel {
   display: inline-flex;
 }
+
+/* ---------- escolas ---------- */
+.rv-t-escolas {
+  min-width: 1000px;
+}
+.rv-t-escolas .rv-tr {
+  grid-template-columns: minmax(200px, 2fr) 62px 92px minmax(130px, 1fr) 100px 96px 138px 124px;
+  gap: 10px;
+  font-size: 15px;
+}
+.rv-t-escolas .rv-tr.is-cab {
+  font-size: 14px;
+  padding-top: 14px;
+  padding-bottom: 14px;
+  background: var(--rv-lavanda-2);
+}
+.rv-escola {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.rv-escola > span:last-child {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+.rv-escola b {
+  font-weight: 600;
+  color: var(--rv-tinta);
+}
+.rv-escola__ic {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--rv-lavanda-2);
+  color: var(--rv-violeta-2);
+  flex: none;
+}
+.rv-cel-conc {
+  display: grid;
+  gap: 6px;
+}
+.rv-cel-conc b {
+  color: var(--rv-tinta);
+}
+.rv-cel-conc .rv-barra {
+  height: 8px;
+  background: #e8f6ec;
+}
+.rv-sobre {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--rv-violeta-2);
+  margin-bottom: 4px;
+}
+.rv-filtros .rv-h2 {
+  font-size: 18px;
+}

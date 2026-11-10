@@ -281,7 +281,6 @@ export const journeys: Journey[] = [
       { id: 'turmas', label: 'Relatórios de Turmas', icon: './3d/books.png' },
       { id: 'turma', label: 'Relatório da turma', icon: './3d/trophy.png' },
       { id: 'estudantes', label: 'Relatórios de Estudantes', icon: './3d/boy-1.png' },
-      { id: 'estudantes-elo', label: 'Estudantes filtrados por elo', icon: './3d/bullseye.png' },
       { id: 'resumo', label: 'Estudante: resumo', icon: './3d/glowing-star.png' },
       { id: 'elos', label: 'Estudante: elos', icon: './3d/crown.png' },
       { id: 'badges', label: 'Estudante: badges', icon: './3d/gem.png' },
@@ -346,7 +345,7 @@ export const journeys: Journey[] = [
     product: 'Educadores · Relatórios institucionais',
     audience: 'Professores do Ensino Médio',
     description:
-      'Professor acompanha por turma quem concluiu, está fazendo ou não começou o Teste Vocacional e abre o relatório individual de cada estudante: código RIASEC, radar das seis áreas, profissões para explorar, valores, preferências, habilidades percebidas e uma síntese para apoiar conversas de orientação.',
+      'Em Relatórios › Atividades, o educador escolhe a escola, acompanha por turma quem concluiu, está fazendo ou não começou o Teste Vocacional e abre o relatório individual de cada estudante: código RIASEC, radar das seis áreas, profissões para explorar, valores, preferências, habilidades percebidas e uma síntese para apoiar conversas de orientação.',
     icon: './voc/bar-chart.webp',
     accent: '#6a3df0',
     status: 'navegavel',
@@ -361,6 +360,7 @@ export const journeys: Journey[] = [
       { label: 'Referência (Teste Vocacional - Educadores)', url: 'https://www.figma.com/design/CFgSTHDpGqyNluCYfHxj7U/CAMPEONATO---GENIEX--CONCEITO-?node-id=99-2' },
     ],
     flows: [
+      { id: 'escolas', label: 'Escolas', icon: './voc/classical-building.webp' },
       { id: 'lista', label: 'Estudantes da turma', icon: './3d/clipboard.png' },
       { id: 'concluidos', label: 'Filtro: concluídos', icon: './voc/check-mark-button.webp' },
       { id: 'andamento', label: 'Filtro: em andamento', icon: './voc/hourglass-not-done.webp' },
