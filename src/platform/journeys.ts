@@ -281,6 +281,7 @@ export const journeys: Journey[] = [
       { id: 'turmas', label: 'Relatórios de Turmas', icon: './3d/books.png' },
       { id: 'turma', label: 'Relatório da turma', icon: './3d/trophy.png' },
       { id: 'estudantes', label: 'Relatórios de Estudantes', icon: './3d/boy-1.png' },
+      { id: 'estudantes-elo', label: 'Estudantes filtrados por elo', icon: './3d/bullseye.png' },
       { id: 'resumo', label: 'Estudante: resumo', icon: './3d/glowing-star.png' },
       { id: 'elos', label: 'Estudante: elos', icon: './3d/crown.png' },
       { id: 'badges', label: 'Estudante: badges', icon: './3d/gem.png' },
