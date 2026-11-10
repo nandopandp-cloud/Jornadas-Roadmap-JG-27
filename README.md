@@ -5,10 +5,25 @@ Parte da iniciativa **Orientação Vocacional e Exploração de Carreiras** do R
 - **PRD da iniciativa:** [`PRD.md`](PRD.md)
 - **Metodologia do teste:** [`METODOLOGIA.md`](METODOLOGIA.md)
 - **Figma · jornada navegável de referência:** https://www.figma.com/design/CFgSTHDpGqyNluCYfHxj7U/CAMPEONATO---GENIEX--CONCEITO-?node-id=24-70 (página “Teste Vocacional - Geniex”)
-- **Figma · telas em alta fidelidade (após aprovação da jornada):** https://www.figma.com/design/Hz67j5SdcyZzMLW3wfb9wd/Teste-Vocacional
-- **Jornada dos Educadores (relatórios):** branch [`teste-vocacional-educadores`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/teste-vocacional-educadores)
+- **Figma · jornada em alta fidelidade:** https://www.figma.com/design/Hz67j5SdcyZzMLW3wfb9wd/Teste-Vocacional
+- **Jornada dos Educadores (relatórios):** branch [`relatorios-teste-vocacional`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/relatorios-teste-vocacional)
 - **Protótipo navegável:** `#/p/teste-vocacional` · na plataforma: `#/jornada/teste-vocacional`
-- **Status:** protótipo navegável completo para validação da jornada. Se aprovado, as telas serão construídas no Figma com as bibliotecas da GenieX.
+- **Status:** jornada aprovada e construída no Figma (capa, assets, compostos, Desktop, Tablet, Celular, sobrepostos, fluxos e handoff).
+
+## No Figma
+
+| Página | O que tem |
+| --- | --- |
+| 02 · Assets | Galeria das artes usadas nas telas (ampliadas com Real-ESRGAN), com o caminho em `public/` |
+| 04 · Compostos | Seção “Compostos da jornada”: Sidebar · GenieX (Teste Vocacional ativo, expandida e recolhida), Letra RIASEC, Selo de afinidade, Nota da área, Posição no perfil, Posição no ranking, Etapa do questionário, Número da escala, Passo do plano, Atalho de próximos passos e Seta do cartão de profissão |
+| 05 · Desktop (1440) · 06 · Tablet (768) · 07 · Celular (375) | 21 telas em cada largura, em seções 1 Entrada e questionário, 2 Conclusão e resultado e 3 Explorar profissões |
+| 08 · Sobrepostos | O1 Clareza final, O2 Obrigado, O3 Como chegamos a este resultado, O4 Detalhe da dimensão, O5 Sair do teste, O6 Recomeçar do zero, O7 Fazer o teste de novo, O8 Menu em gaveta (celular), O9 Bandeja de comparação |
+| 09 · Fluxos | 8 fluxos navegáveis, Desktop e Celular: Começar o teste · Responder o questionário · Sair e retomar · Entender o resultado · Explorar o perfil e clareza final · Conhecer e comparar profissões · Explorar outras profissões · Histórico e novo teste |
+| 10 · Handoff | Infos, Design System, pontos em aberto e 12 seções com marcações numeradas (telas, sobrepostos, responsivo e componentes) |
+
+Códigos das telas: **V1** Abertura (V1.1 retomar) · **V2** Clareza inicial · **V3** Questionário (V3.1 valores, V3.2 preferências, V3.3 habilidades) · **V4** Revisão · **V5** Você concluiu o teste · **V6** Resultado (V6.1 a V6.6: áreas, profissões, valores, preferências, habilidades e próximos passos) · **V7** Conheça a profissão · **V8** Explorar profissões · **V9** Comparar · **V10** Histórico · **V11** Página Inicial.
+
+Pontos em aberto registrados no handoff: revisão especializada do catálogo e das justificativas antes do piloto, fonte de dados de conteúdos e eventos, e Universidades, Meu Plano e Favoritos fora desta etapa.
 
 ## A jornada
 
