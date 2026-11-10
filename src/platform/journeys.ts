@@ -305,8 +305,8 @@ export const journeys: Journey[] = [
     etapas: [
       { nome: 'Navegável da jornada', estado: 'feito' },
       { nome: 'Telas nas 3 larguras e sobrepostos', estado: 'feito' },
-      { nome: 'Componentes da jornada', estado: 'atual' },
-      { nome: 'Protótipo e handoff', estado: 'proximo' },
+      { nome: 'Componentes da jornada', estado: 'feito' },
+      { nome: 'Protótipo e handoff', estado: 'feito' },
     ],
     links: [
       { label: 'Figma da jornada', url: 'https://www.figma.com/design/Hz67j5SdcyZzMLW3wfb9wd/Teste-Vocacional' },

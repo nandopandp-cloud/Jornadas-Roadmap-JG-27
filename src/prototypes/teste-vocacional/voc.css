@@ -4574,6 +4574,18 @@
     display: none !important;
   }
 }
+/* celular: botões das janelas empilhados, o principal em cima */
+@media (max-width: 560px) {
+  .tv-modal__caixa footer {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .tv-modal__caixa footer > * {
+    width: 100%;
+    justify-content: center;
+  }
+}
 /* celular: menu em gaveta abaixo de 768 px */
 @media (max-width: 767px) {
   .tv {
