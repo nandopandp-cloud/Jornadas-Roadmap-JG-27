@@ -129,11 +129,11 @@ Estudante enfrenta o Nexo na Batalha Solo (10 questões, até 3 disciplinas, 45 
 
 ### Campeonato GenieX
 
-**GenieX · Plataforma do Estudante** · Estudantes do Ensino Médio · _em construção_
+**GenieX · Plataforma do Estudante** · Estudantes do Ensino Médio
 
 Estudante participa de campeonatos criados pelos educadores: desafia colegas do mesmo ano e da mesma escola (inclusive de outras turmas) em Batalhas VS de 10 questões e 10 minutos, acompanha as batalhas pendentes, sobe no ranking por vitórias (com desempate por acertos, tempo médio e ordem alfabética) e revisa as questões.
 
-[Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/campeonato-geniex) · [Branch `campeonato-geniex`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/campeonato-geniex)
+[Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/campeonato-geniex) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/campeonato-geniex) · [Branch `campeonato-geniex`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/campeonato-geniex)
 
 <!-- jornadas:fim -->
 
