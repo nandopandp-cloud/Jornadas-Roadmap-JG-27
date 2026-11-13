@@ -19,19 +19,19 @@ Experiência de **encerramento da Gamificação dos Educadores 2026** na platafo
 ## Decisões
 
 - **Só o top 3:** a classificação completa não é exibida.
-- **Pontos = saldo do Clube JG:** o card “Seus pontos no Clube JG” mostra esse saldo.
+- **Só a pontuação da gamificação:** hoje não dá para consultar o extrato de pontos do Clube JG, então a tela não mostra saldo do Clube.
 - **Premiação:** existe, mas não é comunicada nesta tela.
 - **Saem da tela:**
   - “Visualizar minha inscrição”;
   - “Crie novas atividades”, porque a edição acabou;
-  - o botão extra “Trocar meus pontos no Clube JG”, porque o gatilho atual já faz isso.
-- **Gatilho do Clube JG:**
-  - continua o card “Programa de Recompensas” com “Acessar Clube JG”, igual à tela atual;
-  - ao lado dele fica o card de saldo.
+  - qualquer card de saldo e o botão extra “Trocar meus pontos no Clube JG”.
+- **Gatilho do Clube JG:** só o card “Programa de Recompensas” com “Acessar Clube JG”, igual à tela atual.
+- **Resultados:** o card leva para a tela atual “Resultados das atividades”. Essa tela só existe no navegável, como referência.
 - **Pódio:**
   - ordem 2º · 1º · 3º;
   - o 1º tem coroa e degrau mais alto;
-  - cada colocação tem o anel da sua medalha (ouro, prata e bronze).
+  - cada colocação tem o anel da sua medalha (ouro, prata e bronze);
+  - quando o professor tiver foto cadastrada na plataforma, ela aparece na elipse do avatar (pódio, modal e educador logado). As iniciais ficam só para quem não tem foto.
 - **Meu resultado final:**
   - a colocação é revelada;
   - fora do pódio, mostra quantos pontos faltaram;
@@ -43,7 +43,7 @@ Experiência de **encerramento da Gamificação dos Educadores 2026** na platafo
 
 ## Processo
 
-1. ✅ **Mapeamento** (página 00) e ✅ **piloto** (página 01), validado em 13/11/2026.
+1. ✅ **Mapeamento** (página 00) e ✅ **piloto**, validado em 13/11/2026. A página 01 · Piloto foi excluída ao final.
 2. ✅ **Telas** nas páginas **05 Desktop**, **06 Tablet** e **07 Celular**. São 3 estados em cada largura:
    - 1.1 fora do pódio;
    - 1.2 no pódio (1º lugar);
@@ -53,7 +53,6 @@ Experiência de **encerramento da Gamificação dos Educadores 2026** na platafo
    - Shell · Sidebar Gamificação;
    - Pódio · Coluna;
    - Card · Programa de Recompensas;
-   - Card · Seus pontos no Clube JG;
    - Card · Resultados;
    - Modal · Linha do vencedor.
 5. ✅ **Protótipo** (página **09**): 3 fluxos × Desktop e Celular, do modal à tela.
@@ -74,10 +73,16 @@ Experiência de **encerramento da Gamificação dos Educadores 2026** na platafo
 | `#/?screen=sem` | Ranking encerrado · não participou |
 | `#/?screen=modal-podio` | Modal de encerramento · no pódio |
 | `#/?screen=modal-sem` | Modal de encerramento · não participou |
+| `#/?screen=resultados` | Resultados das atividades (tela atual, aberta pelo card Resultados) |
 
 O botão tracejado **“Cenário”**, no canto inferior direito, existe só no protótipo. Ele alterna os 3 estados e reabre o modal.
 
-“Acessar Clube JG” e o card de saldo mostram um aviso de que o Clube JG abriria em nova aba, porque a URL ainda está pendente.
+“Acessar Clube JG” mostra um aviso de que o Clube JG abriria em nova aba, porque a URL ainda está pendente.
+
+**Resultados das atividades:**
+- é uma réplica da tela atual da plataforma, com 600 atividades em 60 páginas, ordenação por coluna e paginação;
+- a soma dos pontos fecha com a pontuação do cenário: 11.820 fora do pódio e 15.240 no pódio;
+- sem participação, a tela mostra o estado vazio.
 
 ## Dados de exemplo
 
@@ -90,7 +95,7 @@ São todos fictícios.
   - 3º Juliana Ferreira, com 13.075 pontos.
 - **Educador logado:** Rodrigo Ribeiro, em 5º lugar, com 11.820 pontos, 600 atividades e 96% de engajamento.
   - No cenário do pódio, ele é o 1º, com 15.240 pontos.
-  - No cenário sem participação, o saldo é 0.
+  - No cenário sem participação, ele não tem pontuação nem atividades.
 
 ## Deploy
 

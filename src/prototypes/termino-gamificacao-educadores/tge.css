@@ -242,7 +242,7 @@
 .tg .tg-clube__arte {
   flex: 1 1 auto;
   min-height: 124px;
-  background: url('/tge/professor-recompensas.png') center / cover no-repeat;
+  background: #fff url('/tge/professor-recompensas.png') center / contain no-repeat;
 }
 .tg .tg-clube__corpo {
   display: grid;
@@ -303,20 +303,6 @@
 .tg .tg-mini small {
   font-size: 12px;
   color: var(--rx-suave);
-}
-.tg .tg-tile {
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: var(--rx-lilas);
-  color: var(--rx-roxo);
-}
-.tg .tg-mini .tg-saldo {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--rx-roxo);
 }
 
 /* meu resultado */
@@ -650,6 +636,7 @@
   }
   .tg .tg-clube__arte {
     flex: 0 0 260px;
+    background-size: cover;
     min-height: 180px;
   }
   .tg .tg-clube__corpo {
@@ -741,5 +728,148 @@
   .tg .tg-cen {
     right: 12px;
     bottom: 12px;
+  }
+}
+
+/* ---------- Resultados das atividades (tela atual, só no navegável) ---------- */
+.tg .tg-migalha {
+  color: var(--rx-suave);
+}
+.tg .tg-migalha:hover {
+  color: var(--rx-roxo);
+  text-decoration: underline;
+}
+.tg .tg-res__h1 {
+  margin-top: 8px;
+}
+.tg .tg-res {
+  padding: 32px;
+  gap: 28px;
+}
+.tg .tg-res h2 {
+  font-size: 18px;
+  font-weight: 600;
+}
+.tg .tg-tabela-rola {
+  overflow-x: auto;
+  margin: 0 -4px;
+  padding: 0 4px;
+}
+.tg .tg-tabela {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: separate;
+  border-spacing: 0;
+  text-align: center;
+}
+.tg .tg-tabela thead th {
+  height: 56px;
+  padding: 0 6px;
+  background: var(--rx-lilas);
+  font-weight: 400;
+  white-space: nowrap;
+}
+.tg .tg-tabela thead th:first-child {
+  border-radius: 10px 0 0 10px;
+  padding-left: 20px;
+}
+.tg .tg-tabela thead th:last-child {
+  border-radius: 0 10px 10px 0;
+  padding-right: 20px;
+}
+.tg .tg-tabela th button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  color: var(--rx-texto);
+}
+.tg .tg-tabela th[aria-sort='ascending'] button,
+.tg .tg-tabela th[aria-sort='descending'] button {
+  color: var(--rx-tinta);
+  font-weight: 500;
+}
+.tg .tg-tabela th button svg {
+  color: var(--rx-suave);
+}
+.tg .tg-tabela tbody td {
+  height: 72px;
+  padding: 0 6px;
+  white-space: nowrap;
+  color: var(--rx-texto);
+}
+.tg .tg-tabela tbody td:nth-child(3) {
+  text-transform: uppercase;
+  font-size: 12px;
+}
+.tg .tg-tabela tbody td b {
+  font-weight: 600;
+  color: var(--rx-tinta);
+}
+.tg .tg-tabela tbody tr:nth-child(even) td {
+  background: #f4f4f5;
+}
+.tg .tg-tabela tbody tr:nth-child(even) td:first-child {
+  border-radius: 10px 0 0 10px;
+}
+.tg .tg-tabela tbody tr:nth-child(even) td:last-child {
+  border-radius: 0 10px 10px 0;
+}
+.tg .tg-pag {
+  display: grid;
+  grid-template-columns: 160px 1fr 160px;
+  align-items: center;
+  gap: 12px;
+}
+.tg .tg-pag small {
+  color: var(--rx-suave);
+  font-size: 14px;
+}
+.tg .tg-pag nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+.tg .tg-pag nav button {
+  display: grid;
+  place-items: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--rx-linha);
+  border-radius: 8px;
+  background: #fff;
+  font-weight: 500;
+  color: var(--rx-tinta);
+}
+.tg .tg-pag nav button:hover:not(:disabled) {
+  background: var(--rx-cinza);
+}
+.tg .tg-pag nav button.is-on {
+  background: var(--rx-roxo);
+  border-color: var(--rx-roxo);
+  color: #fff;
+}
+.tg .tg-pag nav button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.tg .tg-pag nav span {
+  color: var(--rx-suave);
+}
+@media (max-width: 899px) {
+  .tg .tg-res {
+    padding: 20px;
+  }
+  .tg .tg-pag {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+  }
+}
+@media (max-width: 640px) {
+  .tg .tg-res {
+    padding: 16px;
+    gap: 16px;
   }
 }

@@ -8,15 +8,17 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
+  ChevronsUpDown,
   CircleCheck,
   CircleHelp,
   Crown,
   ExternalLink,
   Flag,
-  Gift,
   GraduationCap,
   Home,
   Info,
+  ListChecks,
   Medal,
   Menu,
   PartyPopper,
@@ -30,10 +32,10 @@ import {
   X,
   type LucideIcon,
 } from 'lucide-react'
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { PrototypeProps } from '../../platform/journeys'
 import '../gamificacao-geniex-educadores/rgx.css'
-import { ESTADOS, MEDALHA, MEDALHA_FUNDO, dados, faltouPodio, fmt, vantagem, type Dados, type Educador, type Estado } from './data'
+import { ESTADOS, MEDALHA, MEDALHA_FUNDO, atividades, dados, faltouPodio, fmt, vantagem, type Atividade, type Dados, type Educador, type Estado } from './data'
 import './tge.css'
 
 type Toast = { titulo: string; texto: string; icone: LucideIcon }
@@ -50,8 +52,12 @@ function useMedia(q: string) {
   return ok
 }
 
-function inicio(screen?: string | null): { estado: Estado; modal: boolean } {
+type Tela = 'ranking' | 'resultados'
+
+function inicio(screen?: string | null): { estado: Estado; modal: boolean; tela?: Tela } {
   switch (screen) {
+    case 'resultados':
+      return { estado: 'fora', modal: false, tela: 'resultados' }
     case 'fora':
     case 'podio':
     case 'sem':
@@ -69,6 +75,7 @@ export default function TerminoGamificacaoEducadores({ startScreen }: PrototypeP
   const ini = inicio(startScreen)
   const [estado, setEstado] = useState<Estado>(ini.estado)
   const [modal, setModal] = useState(ini.modal)
+  const [tela, setTela] = useState<Tela>(ini.tela ?? 'ranking')
   const [gaveta, setGaveta] = useState(false)
   const [recolhida, setRecolhida] = useState(false)
   const [cenarios, setCenarios] = useState(false)
@@ -100,43 +107,62 @@ export default function TerminoGamificacaoEducadores({ startScreen }: PrototypeP
     setGaveta(false)
     setToast({ icone: Info, titulo: `“${n}” não faz parte deste protótipo`, texto: 'Aqui você navega pelo Ranking com a Gamificação 2026 encerrada.' })
   }
-  const clube = () => setToast({ icone: ExternalLink, titulo: 'O Clube JG abriria em uma nova aba', texto: `Lá o educador troca seus ${fmt(d.eu.saldo)} pontos por benefícios exclusivos da JG.` })
+  const clube = () => setToast({ icone: ExternalLink, titulo: 'O Clube JG abriria em uma nova aba', texto: 'Lá o educador troca seus pontos por benefícios exclusivos da JG.' })
+  const ir = (t: Tela) => {
+    setTela(t)
+    setGaveta(false)
+    document.querySelector('.rx-rolagem')?.scrollTo({ top: 0 })
+  }
   const trocarCenario = (e: Estado, comModal: boolean) => {
     setEstado(e)
     setModal(comModal)
     setCenarios(false)
-    document.querySelector('.rx-rolagem')?.scrollTo({ top: 0 })
+    ir('ranking')
   }
 
   return (
     <div className={`rx tg ${recolhida ? 'is-recolhida' : ''}`}>
       <AnimatePresence>{gaveta && <motion.div className="rx-veu" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setGaveta(false)} />}</AnimatePresence>
-      <Sidebar aberta={gaveta} recolhida={recolhida && !semLateral} eu={d.eu} onFora={fora} onRanking={() => setGaveta(false)} onRecolher={() => (semLateral ? setGaveta(false) : setRecolhida((r) => !r))} />
+      <Sidebar aberta={gaveta} recolhida={recolhida && !semLateral} eu={d.eu} rankingAtivo={tela === 'ranking'} onFora={fora} onRanking={() => ir('ranking')} onRecolher={() => (semLateral ? setGaveta(false) : setRecolhida((r) => !r))} />
       <div className="rx-principal">
         <header className="rx-topo">
           <button className="rx-icone-btn rx-topo__menu" onClick={() => setGaveta(true)} aria-label="Abrir menu">
             <Menu size={22} />
           </button>
           <nav className="rx-migalhas" aria-label="Você está em">
-            <span>Jornada dos professores</span>
+            <span>
+              {tela === 'ranking' ? (
+                'Jornada dos professores'
+              ) : (
+                <button className="tg-migalha" onClick={() => ir('ranking')}>
+                  Jornada dos professores
+                </button>
+              )}
+            </span>
             <span className="is-atual">
-              <i>/</i>Ranking
+              <i>/</i>
+              {tela === 'ranking' ? 'Ranking' : 'Resultados das atividades'}
             </span>
           </nav>
         </header>
         <main className="rx-rolagem">
-          <motion.div key={estado} className="rx-conteudo tg-conteudo" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
-            <Cabecalho d={d} />
-            <div className="tg-linha">
-              <CardPodio d={d} celular={celular} />
-              <div className="tg-coluna">
-                <CardClube onClube={clube} />
-                <CardPontos d={d} onClube={clube} />
-                <CardResultados onClick={() => fora('Resultados')} />
+          {tela === 'ranking' ? (
+            <motion.div key={`r-${estado}`} className="rx-conteudo tg-conteudo" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+              <Cabecalho d={d} />
+              <div className="tg-linha">
+                <CardPodio d={d} celular={celular} />
+                <div className="tg-coluna">
+                  <CardClube onClube={clube} />
+                  <CardResultados onClick={() => ir('resultados')} />
+                </div>
               </div>
-            </div>
-            <CardMeu d={d} />
-          </motion.div>
+              <CardMeu d={d} />
+            </motion.div>
+          ) : (
+            <motion.div key={`a-${estado}`} className="rx-conteudo tg-conteudo" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+              <ResultadosAtividades d={d} celular={celular} />
+            </motion.div>
+          )}
         </main>
       </div>
 
@@ -165,7 +191,7 @@ export default function TerminoGamificacaoEducadores({ startScreen }: PrototypeP
 }
 
 /* ------------------------------------------------------------------ casca */
-function Sidebar({ aberta, recolhida, eu, onFora, onRanking, onRecolher }: { aberta: boolean; recolhida: boolean; eu: Dados['eu']; onFora: (n: string) => void; onRanking: () => void; onRecolher: () => void }) {
+function Sidebar({ aberta, recolhida, eu, rankingAtivo, onFora, onRanking, onRecolher }: { aberta: boolean; recolhida: boolean; eu: Dados['eu']; rankingAtivo: boolean; onFora: (n: string) => void; onRanking: () => void; onRecolher: () => void }) {
   const item = (Ic: LucideIcon, n: string) => (
     <button className="rx-side__item" onClick={() => onFora(n)} title={n}>
       <Ic size={18} /> <span>{n}</span> <ChevronRight size={16} className="rx-side__seta" />
@@ -204,7 +230,7 @@ function Sidebar({ aberta, recolhida, eu, onFora, onRanking, onRecolher }: { abe
           <Star size={18} /> <span>Gamificação</span> <ChevronDown size={16} className="rx-side__seta" />
         </div>
         <div className="rx-side__sub">
-          <button className="rx-side__subitem tg-on" onClick={onRanking} aria-current="page">
+          <button className={`rx-side__subitem ${rankingAtivo ? 'tg-on' : ''}`} onClick={onRanking} aria-current={rankingAtivo ? 'page' : undefined}>
             Ranking
           </button>
         </div>
@@ -331,19 +357,121 @@ function CardClube({ onClube }: { onClube: () => void }) {
   )
 }
 
-function CardPontos({ d, onClube }: { d: Dados; onClube: () => void }) {
+/* ------------------------------------------------------------------ Resultados das atividades (tela atual da plataforma, só no navegável) */
+type Col = 'nome' | 'tipo' | 'turma' | 'inicio' | 'fim' | 'eng' | 'pontos' | 'status'
+const COLS: { id: Col; rot: string }[] = [
+  { id: 'nome', rot: 'Atividade' },
+  { id: 'tipo', rot: 'Tipo' },
+  { id: 'turma', rot: 'Turma' },
+  { id: 'inicio', rot: 'Início' },
+  { id: 'fim', rot: 'Fim' },
+  { id: 'eng', rot: 'Engajamento' },
+  { id: 'pontos', rot: 'Pontos' },
+  { id: 'status', rot: 'Status de processamento' },
+]
+const POR_PAGINA = 10
+
+function paginas(atual: number, total: number): (number | '…')[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
+  if (atual <= 3) return [1, 2, 3, '…', total - 2, total - 1, total]
+  if (atual >= total - 2) return [1, 2, 3, '…', total - 2, total - 1, total]
+  return [1, '…', atual - 1, atual, atual + 1, '…', total]
+}
+
+function ResultadosAtividades({ d, celular }: { d: Dados; celular: boolean }) {
+  const [ord, setOrd] = useState<{ col: Col; dir: 1 | -1 }>({ col: 'pontos', dir: -1 })
+  const [pag, setPag] = useState(1)
+  const lista = useMemo(() => {
+    const l = atividades(d)
+    const v = (a: Atividade) => (ord.col === 'inicio' ? a.inicioISO : ord.col === 'fim' ? a.fimISO : a[ord.col])
+    return l.sort((a, b) => {
+      const x = v(a), y = v(b)
+      const c = typeof x === 'number' && typeof y === 'number' ? x - y : String(x).localeCompare(String(y), 'pt-BR', { numeric: true })
+      return c * ord.dir || a.id - b.id
+    })
+  }, [d, ord])
+  const total = Math.max(1, Math.ceil(lista.length / POR_PAGINA))
+  const pagina = lista.slice((pag - 1) * POR_PAGINA, pag * POR_PAGINA)
+  const ordenar = (col: Col) => {
+    setOrd((o) => (o.col === col ? { col, dir: o.dir === 1 ? -1 : 1 } : { col, dir: col === 'pontos' || col === 'eng' ? -1 : 1 }))
+    setPag(1)
+  }
+  const ir = (p: number) => {
+    setPag(Math.min(total, Math.max(1, p)))
+    document.querySelector('.rx-rolagem')?.scrollTo({ top: 0, behavior: 'smooth' })
+  }
   return (
-    <button className="rx-cartao is-p tg-mini" onClick={onClube}>
-      <span className="tg-mini__topo">
-        <span className="tg-tile">
-          <Gift size={16} />
-        </span>
-        <b>Seus pontos no Clube JG</b>
-        <ChevronRight size={16} />
-      </span>
-      <strong className="tg-saldo">{fmt(d.eu.saldo)} pontos</strong>
-      <small>{d.eu.saldo ? 'disponíveis para trocar por benefícios exclusivos' : 'Crie atividades e engaje seus estudantes para acumular pontos.'}</small>
-    </button>
+    <>
+      <h1 className="rx-h1 tg-res__h1">Resultados das atividades</h1>
+      <section className="rx-cartao tg-res">
+        <h2>Resultados das atividades</h2>
+        {lista.length === 0 ? (
+          <div className="tg-vazio">
+            <span className="tg-vazio__ic">
+              <ListChecks size={20} />
+            </span>
+            <b>Nenhum resultado por aqui ainda</b>
+            <p>Quando você criar atividades para suas turmas, os resultados aparecem nesta lista.</p>
+          </div>
+        ) : (
+          <>
+            <div className="tg-tabela-rola">
+              <table className="tg-tabela">
+                <thead>
+                  <tr>
+                    {COLS.map((c) => (
+                      <th key={c.id} aria-sort={ord.col === c.id ? (ord.dir === 1 ? 'ascending' : 'descending') : 'none'}>
+                        <button onClick={() => ordenar(c.id)}>
+                          {c.rot} {ord.col === c.id ? ord.dir === 1 ? <ChevronUp size={16} /> : <ChevronDown size={16} /> : <ChevronsUpDown size={16} />}
+                        </button>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {pagina.map((a) => (
+                    <tr key={a.id}>
+                      <td>{a.nome}</td>
+                      <td>{a.tipo}</td>
+                      <td>{a.turma}</td>
+                      <td>{a.inicio}</td>
+                      <td>{a.fim}</td>
+                      <td>{a.eng}%</td>
+                      <td>
+                        <b>{a.pontos}</b>
+                      </td>
+                      <td>{a.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="tg-pag">
+              <small>
+                {(pag - 1) * POR_PAGINA + 1} - {Math.min(pag * POR_PAGINA, lista.length)} de {fmt(lista.length)} itens
+              </small>
+              <nav aria-label="Paginação">
+                <button onClick={() => ir(pag - 1)} disabled={pag === 1} aria-label="Página anterior">
+                  <ChevronLeft size={16} />
+                </button>
+                {(celular ? [pag] : paginas(pag, total)).map((p, i) =>
+                  p === '…' ? (
+                    <span key={`r${i}`}>…</span>
+                  ) : (
+                    <button key={p} className={p === pag ? 'is-on' : ''} onClick={() => ir(p)} aria-current={p === pag ? 'page' : undefined}>
+                      {p}
+                    </button>
+                  ),
+                )}
+                <button onClick={() => ir(pag + 1)} disabled={pag === total} aria-label="Próxima página">
+                  <ChevronRight size={16} />
+                </button>
+              </nav>
+            </div>
+          </>
+        )}
+      </section>
+    </>
   )
 }
 
@@ -452,7 +580,7 @@ function ModalFim({ d, celular, onFechar }: { d: Dados; celular: boolean; onFech
         </ol>
         <p className={`tg-destaque ${d.estado === 'sem' ? 'is-neutro' : ''}`}>
           {d.estado === 'sem' ? <Info size={18} /> : voce ? <PartyPopper size={18} /> : <Target size={18} />}
-          {d.estado === 'sem' ? 'Você não participou desta edição. Fique de olho nas próximas!' : voce ? `Seus ${fmt(d.eu.saldo)} pontos já estão disponíveis no Clube JG.` : `Você terminou em ${d.eu.pos}º lugar, com ${fmt(d.eu.pontos)} pontos.`}
+          {d.estado === 'sem' ? 'Você não participou desta edição. Fique de olho nas próximas!' : voce ? `Você terminou ${fmt(vantagem(d))} pontos à frente do 2º lugar.` : `Você terminou em ${d.eu.pos}º lugar, com ${fmt(d.eu.pontos)} pontos.`}
         </p>
         <button className="rx-btn is-primario tg-modal__ok" onClick={onFechar}>
           Ver resultado final
