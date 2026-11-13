@@ -2,43 +2,82 @@
 
 Experiência de **encerramento da Gamificação dos Educadores 2026** na plataforma Educadores (Gamificação › Ranking). A tela mostra, de forma simples, que a edição terminou e quem ficou nos **3 primeiros lugares**. Ela mantém o **gatilho atual do Clube Jovens Gênios**, onde o educador troca seus pontos por benefícios exclusivos da JG.
 
-> Esta iniciativa **não entra na plataforma de jornadas**: o protótipo navegável terá um link próprio. A plataforma completa está documentada no README da `main`.
+**Protótipo navegável:** https://termino-gamificacao-educadores.vercel.app
+
+> Esta iniciativa **não entra na plataforma de jornadas**. O navegável tem link e projeto Vercel próprios (`termino-gamificacao-educadores`). Nesta branch, o `src/main.tsx` abre direto o protótipo. A plataforma completa está documentada no README da `main`.
 
 ## Referências
 
 | O quê | Onde |
 | --- | --- |
 | Tela atual (ranking em andamento) | print de 13/11/2026, na página **00 · Mapeamento** do Figma |
-| Figma de destino (telas) | https://www.figma.com/design/jJugywGtJ9ZberC6jC6ZC6 |
+| Figma (telas, protótipo e handoff) | https://www.figma.com/design/jJugywGtJ9ZberC6jC6ZC6 |
 | Bibliotecas | Relatórios de Trilhas de Aprendizagem (Sidebar - Educadores, tokens “Educadores — Cor”), Redação - Educadores (Botão), Lucide |
+| Código do navegável | `src/prototypes/termino-gamificacao-educadores` (data, index, tge.css) + casca do kit Educadores (`rgx.css`) |
+| Artes | `public/tge`, recortadas do print da tela atual |
 
-## Decisões até aqui
+## Decisões
 
-- **Mesma rota e mesmo shell de hoje:**
-  - sidebar com Gamificação › Ranking ativo, criada a partir da “Sidebar - Educadores” da lib;
-  - breadcrumb Jornada dos professores / Ranking.
-- **Pódio no lugar do suspense:**
-  - o card “Continue se Esforçando!” e a tabela borrada viram um único card com os vencedores, na ordem 2º · 1º · 3º;
-  - o 1º lugar tem coroa, e cada colocação tem o anel da sua medalha (ouro, prata e bronze).
+- **Só o top 3:** a classificação completa não é exibida.
+- **Pontos = saldo do Clube JG:** o card “Seus pontos no Clube JG” mostra esse saldo.
+- **Premiação:** existe, mas não é comunicada nesta tela.
+- **Saem da tela:**
+  - “Visualizar minha inscrição”;
+  - “Crie novas atividades”, porque a edição acabou;
+  - o botão extra “Trocar meus pontos no Clube JG”, porque o gatilho atual já faz isso.
+- **Gatilho do Clube JG:**
+  - continua o card “Programa de Recompensas” com “Acessar Clube JG”, igual à tela atual;
+  - ao lado dele fica o card de saldo.
+- **Pódio:**
+  - ordem 2º · 1º · 3º;
+  - o 1º tem coroa e degrau mais alto;
+  - cada colocação tem o anel da sua medalha (ouro, prata e bronze).
 - **Meu resultado final:**
-  - a colocação é revelada e ganha o badge “Resultado final”;
-  - aparece quantos pontos faltaram para o pódio.
-- **Clube JG:**
-  - o card “Programa de Recompensas” com “Acessar Clube JG” continua igual;
-  - entram o card “Seus pontos no Clube JG” e o botão “Trocar meus pontos no Clube JG” no rodapé do pódio;
-  - o card “Crie novas atividades” sai, porque a edição acabou.
-- **Estados:**
-  - educador fora do pódio (5º);
-  - educador no pódio (1º);
-  - educador que não participou;
-  - modal de encerramento no primeiro acesso.
+  - a colocação é revelada;
+  - fora do pódio, mostra quantos pontos faltaram;
+  - no pódio, mostra a vantagem sobre o 2º colocado.
+- **Modal de encerramento:**
+  - abre no primeiro acesso depois do fim, com os 3 vencedores e a colocação do educador;
+  - no celular, vira bottom sheet;
+  - o véu é de 40%.
 
 ## Processo
 
-1. ✅ **Mapeamento** (página 00), com o print da tela atual, o fluxo e as telas previstas.
-2. 🔄 **Tela piloto** (página 01): P1 · Ranking encerrado com o educador fora do pódio, no Desktop 1440. Aguarda validação.
-3. ⏳ Todas as telas nas 3 larguras, sobrepostos, componentes, protótipo e handoff.
-4. ⏳ Protótipo navegável em React, com link próprio fora da plataforma de jornadas.
+1. ✅ **Mapeamento** (página 00) e ✅ **piloto** (página 01), validado em 13/11/2026.
+2. ✅ **Telas** nas páginas **05 Desktop**, **06 Tablet** e **07 Celular**. São 3 estados em cada largura:
+   - 1.1 fora do pódio;
+   - 1.2 no pódio (1º lugar);
+   - 1.3 não participou.
+3. ✅ **Sobrepostos** (página **08**): O1.1–O1.3, o modal de encerramento nos 3 estados × 3 larguras.
+4. ✅ **Componentes** (página **04**):
+   - Shell · Sidebar Gamificação;
+   - Pódio · Coluna;
+   - Card · Programa de Recompensas;
+   - Card · Seus pontos no Clube JG;
+   - Card · Resultados;
+   - Modal · Linha do vencedor.
+5. ✅ **Protótipo** (página **09**): 3 fluxos × Desktop e Celular, do modal à tela.
+6. ✅ **Handoff** (página **10**):
+   - visão geral e decisões;
+   - Ranking encerrado;
+   - Modal de encerramento;
+   - Engenharia.
+7. ✅ **Navegável** em React, publicado no link acima e testado nas 3 larguras.
+
+## Atalhos do navegável
+
+| Atalho | Tela |
+| --- | --- |
+| `#/?screen=modal` (padrão) | Modal de encerramento + educador fora do pódio |
+| `#/?screen=fora` | Ranking encerrado · fora do pódio (5º) |
+| `#/?screen=podio` | Ranking encerrado · no pódio (1º) |
+| `#/?screen=sem` | Ranking encerrado · não participou |
+| `#/?screen=modal-podio` | Modal de encerramento · no pódio |
+| `#/?screen=modal-sem` | Modal de encerramento · não participou |
+
+O botão tracejado **“Cenário”**, no canto inferior direito, existe só no protótipo. Ele alterna os 3 estados e reabre o modal.
+
+“Acessar Clube JG” e o card de saldo mostram um aviso de que o Clube JG abriria em nova aba, porque a URL ainda está pendente.
 
 ## Dados de exemplo
 
@@ -50,3 +89,13 @@ São todos fictícios.
   - 2º Carlos Eduardo Lima, com 14.310 pontos;
   - 3º Juliana Ferreira, com 13.075 pontos.
 - **Educador logado:** Rodrigo Ribeiro, em 5º lugar, com 11.820 pontos, 600 atividades e 96% de engajamento.
+  - No cenário do pódio, ele é o 1º, com 15.240 pontos.
+  - No cenário sem participação, o saldo é 0.
+
+## Deploy
+
+1. Rode `npm run build`.
+2. Copie `dist/index.html`, `dist/assets` e `dist/tge` para uma pasta vinculada ao projeto Vercel `termino-gamificacao-educadores`.
+3. Rode `vercel deploy --prod --yes --scope fernando-rodrigues-projects-b0dfe047`.
+
+Não use o deploy da `main`.

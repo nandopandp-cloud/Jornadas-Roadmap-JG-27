@@ -1,0 +1,745 @@
+/* Término da Gamificação dos Educadores 2026 · peças da tela de ranking encerrado.
+   A casca (sidebar, topo, botões, cartões) vem de ../gamificacao-geniex-educadores/rgx.css.
+   Todas as regras levam o prefixo .tg para ganhar dos resets do rgx. */
+
+.tg {
+  --tg-ouro: #e8a800;
+}
+.tg .tg-conteudo {
+  max-width: 1280px;
+  align-content: start;
+}
+
+/* ---------- topo e sidebar ---------- */
+.tg .rx-topo__menu {
+  display: none;
+}
+@media (max-width: 899px) {
+  .tg .rx-topo__menu {
+    display: grid;
+  }
+}
+.tg .rx-side__subitem.tg-on {
+  background: var(--rx-roxo);
+  color: #fff;
+}
+.tg .rx-side__subitem.tg-on:hover {
+  background: var(--rx-roxo-2);
+}
+.tg .tg-avatar-eu {
+  background: var(--rx-lilas);
+  color: var(--rx-roxo);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ---------- peças comuns ---------- */
+.tg .tg-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  background: var(--rx-cinza);
+  color: var(--rx-suave);
+  width: fit-content;
+}
+.tg .tg-badge.is-roxo {
+  background: var(--rx-lilas);
+  color: var(--rx-roxo);
+}
+.tg .tg-av {
+  display: grid;
+  place-items: center;
+  flex: none;
+  border-radius: 50%;
+  border-style: solid;
+  font-weight: 600;
+  color: var(--rx-tinta);
+}
+.tg .tg-destaque {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: var(--rx-lilas);
+  color: var(--rx-tinta);
+  text-align: left;
+}
+.tg .tg-destaque svg {
+  flex: none;
+  color: var(--rx-roxo);
+}
+.tg .tg-destaque.is-neutro {
+  background: var(--rx-cinza);
+}
+.tg .tg-destaque.is-neutro svg {
+  color: var(--rx-suave);
+}
+
+/* ---------- cabeçalho ---------- */
+.tg .tg-cab {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+.tg .tg-cab > div {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.tg .tg-cab__titulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.tg .tg-cab p {
+  color: var(--rx-suave);
+}
+.tg .tg-cab > small {
+  color: var(--rx-suave);
+  white-space: nowrap;
+}
+
+/* ---------- linha principal: pódio + coluna do Clube JG ---------- */
+.tg .tg-linha {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 16px;
+  align-items: stretch;
+}
+.tg .tg-coluna {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+/* pódio */
+.tg .tg-podio {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 28px 28px 0;
+}
+.tg .tg-podio__topo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 24px;
+}
+.tg .tg-podio__topo > div {
+  flex: 1;
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.tg .tg-podio h2 {
+  display: block;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--rx-tinta);
+}
+.tg .tg-podio__topo p {
+  color: var(--rx-suave);
+}
+.tg .tg-podio__arte {
+  width: 132px;
+  height: auto;
+  flex: none;
+}
+.tg .tg-podio__palco {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 16px;
+  padding-top: 8px;
+  border-bottom: 1px solid var(--rx-linha);
+}
+.tg .tg-col {
+  flex: 0 1 220px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.tg .tg-col__info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding-bottom: 16px;
+  text-align: center;
+}
+.tg .tg-col__coroa {
+  display: grid;
+  color: var(--tg-ouro);
+}
+.tg .tg-col__nome {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 4px 6px;
+}
+.tg .tg-col__nome b {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--rx-tinta);
+}
+.tg .tg-col__info > small {
+  font-size: 12px;
+  color: var(--rx-suave);
+}
+.tg .tg-col__info > strong {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--rx-roxo);
+}
+.tg .tg-col__degrau {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 16px;
+  border-radius: 12px 12px 0 0;
+  background: var(--rx-lilas);
+  color: var(--rx-roxo);
+  transform-origin: bottom;
+}
+.tg .tg-col__degrau b {
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.tg .tg-col__degrau small {
+  font-size: 12px;
+  color: inherit;
+}
+.tg .tg-col.is-1 .tg-col__degrau {
+  background: var(--rx-roxo);
+  color: #fff;
+}
+
+/* Clube JG (gatilho atual) */
+.tg .tg-clube {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+}
+.tg .tg-clube__arte {
+  flex: 1 1 auto;
+  min-height: 124px;
+  background: url('/tge/professor-recompensas.png') center / cover no-repeat;
+}
+.tg .tg-clube__corpo {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+}
+.tg .tg-clube__corpo > div {
+  display: grid;
+  gap: 12px;
+}
+.tg .tg-clube h2 {
+  font-size: 16px;
+  color: var(--rx-roxo);
+}
+.tg .tg-clube p {
+  font-size: 12px;
+  color: var(--rx-suave);
+}
+.tg .tg-btn-clube {
+  width: 100%;
+  border: 1px solid var(--rx-roxo);
+  color: var(--rx-roxo);
+  background: #fff;
+}
+.tg .tg-btn-clube:hover {
+  background: var(--rx-lilas-2);
+}
+
+/* cards pequenos */
+.tg .tg-mini {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.tg .tg-mini:hover {
+  border-color: #d4b6f5;
+  box-shadow: 0 4px 16px rgba(68, 31, 103, 0.08);
+}
+.tg .tg-mini__topo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.tg .tg-mini__topo b {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--rx-tinta);
+}
+.tg .tg-mini__topo b svg,
+.tg .tg-mini__topo > svg {
+  color: var(--rx-suave);
+}
+.tg .tg-mini small {
+  font-size: 12px;
+  color: var(--rx-suave);
+}
+.tg .tg-tile {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--rx-lilas);
+  color: var(--rx-roxo);
+}
+.tg .tg-mini .tg-saldo {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--rx-roxo);
+}
+
+/* meu resultado */
+.tg .tg-meu__topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.tg .tg-meu h2 {
+  font-size: 16px;
+}
+.tg .tg-meu h2 svg {
+  color: var(--rx-suave);
+}
+.tg .tg-metricas {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.tg .tg-metricas > div {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+}
+.tg .tg-metricas > div + div {
+  border-left: 1px solid var(--rx-linha);
+}
+.tg .tg-metricas small {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--rx-suave);
+}
+.tg .tg-metricas strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--rx-tinta);
+}
+.tg .tg-vazio {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  text-align: center;
+}
+.tg .tg-vazio__ic {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--rx-cinza);
+  color: var(--rx-suave);
+}
+.tg .tg-vazio b {
+  color: var(--rx-tinta);
+}
+.tg .tg-vazio p {
+  color: var(--rx-suave);
+}
+
+/* ---------- O1 · modal de encerramento ---------- */
+.tg .tg-veu {
+  z-index: 60;
+}
+.tg .tg-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 61;
+  width: 520px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  padding: 32px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.16);
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+  text-align: center;
+}
+.tg .tg-modal.is-sheet {
+  top: auto;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: auto;
+  max-width: none;
+  max-height: 92vh;
+  padding: 12px 20px 32px;
+  border-radius: 20px 20px 0 0;
+}
+.tg .tg-modal__x {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+.tg .tg-modal__arte {
+  width: 140px;
+  height: auto;
+}
+.tg .tg-modal.is-sheet .tg-modal__arte {
+  width: 112px;
+}
+.tg .tg-modal h2 {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--rx-tinta);
+}
+.tg .tg-modal > p:not(.tg-destaque) {
+  color: var(--rx-suave);
+}
+.tg .tg-modal .tg-destaque {
+  width: 100%;
+}
+.tg .tg-modal__ok {
+  width: 100%;
+}
+.tg .tg-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: grid;
+  gap: 8px;
+}
+.tg .tg-lista li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  text-align: left;
+}
+.tg .tg-lista__pos {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+.tg .tg-lista .tg-av {
+  background: #fff !important;
+}
+.tg .tg-lista__nome {
+  flex: 1;
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.tg .tg-lista__nome b {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--rx-tinta);
+}
+.tg .tg-lista__nome small {
+  font-size: 12px;
+  color: var(--rx-suave);
+}
+.tg .tg-modal.is-sheet .tg-lista__nome small {
+  color: var(--rx-roxo);
+}
+.tg .tg-lista strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--rx-roxo);
+  white-space: nowrap;
+}
+.tg .tg-modal:focus {
+  outline: none;
+}
+.tg .tg-confete {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 210px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.tg .tg-confete i {
+  position: absolute;
+  top: 0;
+  width: 8px;
+  height: 10px;
+}
+
+/* ---------- toast ---------- */
+.tg .tg-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 72px;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: max-content;
+  max-width: min(520px, calc(100vw - 32px));
+  padding: 12px 12px 12px 16px;
+  border-radius: 10px;
+  background: #0a0a0a;
+  color: #fff;
+  box-shadow: 0 14px 40px rgba(10, 10, 10, 0.3);
+}
+.tg .tg-toast > span:not(.tg-toast__ic) {
+  display: grid;
+  gap: 2px;
+}
+.tg .tg-toast small {
+  color: #d4d4d4;
+}
+.tg .tg-toast__ic {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+}
+.tg .tg-toast .rx-icone-btn {
+  color: #fff;
+}
+.tg .tg-toast .rx-icone-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* ---------- só do protótipo: cenários ---------- */
+.tg .tg-cen {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 50;
+}
+.tg .tg-cen__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px dashed #b9a3cf;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--rx-roxo);
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: 0 6px 18px rgba(10, 10, 10, 0.12);
+}
+.tg .tg-cen__menu {
+  position: absolute;
+  right: 0;
+  bottom: 46px;
+  width: 290px;
+  padding: 6px;
+  border: 1px solid var(--rx-linha);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgba(10, 10, 10, 0.16);
+  display: grid;
+  gap: 2px;
+}
+.tg .tg-cen__menu > p {
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--rx-suave);
+}
+.tg .tg-cen__menu button {
+  display: grid;
+  gap: 2px;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: left;
+}
+.tg .tg-cen__menu button:hover {
+  background: var(--rx-cinza);
+}
+.tg .tg-cen__menu button.is-on {
+  background: var(--rx-lilas-2);
+}
+.tg .tg-cen__menu b {
+  font-weight: 500;
+  color: var(--rx-tinta);
+}
+.tg .tg-cen__menu small {
+  font-size: 12px;
+  color: var(--rx-suave);
+}
+.tg .tg-cen__menu .tg-cen__modal {
+  margin-top: 4px;
+  border-top: 1px solid var(--rx-linha);
+  border-radius: 0 0 8px 8px;
+}
+
+/* ---------- responsivo ---------- */
+@media (max-width: 1180px) {
+  .tg .tg-linha {
+    display: contents;
+  }
+  .tg .tg-cab {
+    order: 0;
+  }
+  .tg .tg-podio {
+    order: 1;
+  }
+  .tg .tg-meu {
+    order: 2;
+  }
+  .tg .tg-coluna {
+    order: 3;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .tg .tg-clube {
+    grid-column: 1 / -1;
+    flex-direction: row;
+  }
+  .tg .tg-clube__arte {
+    flex: 0 0 260px;
+    min-height: 180px;
+  }
+  .tg .tg-clube__corpo {
+    flex: 1;
+    align-content: center;
+  }
+  .tg .tg-col {
+    flex-basis: 200px;
+  }
+}
+@media (max-width: 899px) {
+  .tg .tg-cab {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .tg .tg-conteudo {
+    padding: 24px 24px 88px;
+    gap: 24px;
+  }
+}
+@media (max-width: 640px) {
+  .tg .tg-conteudo {
+    padding: 20px 16px 88px;
+    gap: 16px;
+  }
+  .tg .tg-cab .rx-h1 {
+    font-size: 20px;
+  }
+  .tg .tg-cab > small {
+    white-space: normal;
+  }
+  .tg .tg-podio {
+    padding: 16px 16px 0;
+  }
+  .tg .tg-podio__topo {
+    padding-bottom: 16px;
+  }
+  .tg .tg-podio__arte {
+    display: none;
+  }
+  .tg .tg-podio h2 {
+    font-size: 20px;
+  }
+  .tg .tg-podio__palco {
+    gap: 8px;
+  }
+  .tg .tg-col {
+    flex: 1 1 0;
+  }
+  .tg .tg-col__info {
+    padding-bottom: 12px;
+  }
+  .tg .tg-col__nome {
+    flex-direction: column;
+  }
+  .tg .tg-col__nome b,
+  .tg .tg-col__info > strong {
+    font-size: 14px;
+  }
+  .tg .tg-col__degrau {
+    padding-top: 10px;
+  }
+  .tg .tg-col__degrau b {
+    font-size: 20px;
+  }
+  .tg .tg-coluna {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .tg .tg-clube {
+    flex-direction: column;
+  }
+  .tg .tg-clube__arte {
+    flex: 0 0 168px;
+  }
+  .tg .tg-metricas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 16px;
+  }
+  .tg .tg-metricas > div + div {
+    border-left: 0;
+  }
+  .tg .tg-metricas strong {
+    font-size: 20px;
+  }
+  .tg .tg-modal h2 {
+    font-size: 20px;
+  }
+  .tg .tg-cen {
+    right: 12px;
+    bottom: 12px;
+  }
+}
