@@ -17,7 +17,7 @@ Também tem a exportação completa em PDF.
 | --- | --- |
 | Mapeamento (PRD + prints dos relatórios de Tarefa) | ✅ página **00 · Mapeamento** |
 | Piloto desktop: R1 Visão Geral, R2 Engajamento, R3 Aprendizagem, R4 Glossário, R5 Exportar PDF, R6 Análise da questão | ✅ página **01 · Piloto**, aguardando validação |
-| Layout do PDF exportado (33 páginas, no padrão do PDF de Tarefa) | 🔧 página **03 · PDF do relatório** |
+| Layout do PDF exportado (33 páginas, no padrão do PDF de Tarefa) | ✅ página **03 · PDF do relatório**, aguardando validação |
 | Navegável | ⏳ depois da validação |
 
 ## Referências
@@ -34,6 +34,10 @@ Também tem a exportação completa em PDF.
   - **Finalizado:** concluiu os conteúdos obrigatórios, ou seja, o quiz de cada tópico;
   - **Em progresso:** começou, mas ainda tem quizzes pendentes;
   - **Não iniciado:** sem nenhuma interação.
+- **PDF:**
+  - mesmo visual do PDF de Tarefa (1920×1080, Inter, capa, sumário, divisórias teal, tabelas de cabeçalho teal, cards de indicador e rodapé com escola e página);
+  - tabelas completas, paginadas no PDF;
+  - capa com a data e hora de geração.
 - **Avaliação:** desempenho, acurácia e proficiência vêm só dos quizzes. Resumo, vídeo e áudio contam para o engajamento.
 - **Não avaliados:** quem não iniciou fica fora do gráfico de dispersão e do ranking, mas continua nos indicadores de participação.
 - **Novidades em relação a Tarefa:**
