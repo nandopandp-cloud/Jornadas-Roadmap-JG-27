@@ -1,14 +1,16 @@
-import { StrictMode, Suspense } from 'react'
+// Branch modo-licao-educadores: este deploy abre direto o protótipo do Modo Lição (criação de lições na plataforma Educadores).
+// A iniciativa não aparece na plataforma de jornadas. Atalhos: #/?screen=configuracoes | estudantes | topicos | exemplos | conteudos | resumo | resumo-autoral | video | audio | revisao | publicada | zero
+import { StrictMode, Suspense, lazy } from 'react'
 import { createRoot } from 'react-dom/client'
 import { useRoute } from './router'
-import Hub from './platform/Hub'
-import Standalone from './platform/Standalone'
-import './platform/platform.css'
+
+const ModoLicao = lazy(() => import('./prototypes/modo-licao-educadores'))
 
 function App() {
   const route = useRoute()
-  if (route.name === 'prototype') return <Standalone key={`${route.slug}?${route.params}`} slug={route.slug} params={route.params} />
-  return <Hub slug={route.slug} />
+  const params = route.name === 'prototype' ? route.params : new URLSearchParams(window.location.hash.split('?')[1] ?? '')
+  const screen = params.get('screen')
+  return <ModoLicao key={screen ?? 'configuracoes'} startScreen={screen} />
 }
 
 createRoot(document.getElementById('root')!).render(
