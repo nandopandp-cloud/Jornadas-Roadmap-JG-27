@@ -5,7 +5,7 @@ Fluxo de **criação de lições** na plataforma Educadores (Criar › Lição).
 1. **Configurações iniciais:** nome da lição, para quem ela vai (escola, ano, turmas e estudantes) e período de realização.
 2. **Disciplinas e tópicos:** até 5 disciplinas, com tópicos organizados por unidade temática da BNCC.
 3. **Conteúdos dos tópicos:** resumo, vídeo, áudio e o quiz obrigatório de cada tópico.
-4. **Mensagem e revisão:** mensagem para os estudantes, imagem de capa, revisão e publicação.
+4. **Mensagem e revisão:** mensagem para os estudantes (editor rico), revisão e publicação.
 
 O estudante faz a lição no Exploradores.
 
@@ -27,7 +27,8 @@ O estudante faz a lição no Exploradores.
 
 - **Etapa 1 enxuta:**
   - só nome (obrigatório, até 255 caracteres), público e período;
-  - a **mensagem do educador fica sempre nas últimas etapas**, junto com a imagem de capa (as duas opcionais).
+  - a **mensagem do educador fica sempre nas últimas etapas** e é opcional;
+  - **não existe imagem de capa:** a mensagem é um editor rico, como o componente Tiny usado hoje na plataforma. Nele o educador estiliza o texto (título, negrito, cores, listas, link) e, se quiser, coloca imagens, tudo dentro do próprio campo.
 - **Público:**
   - segue a lógica de Tarefas: etapa → anos → escolas → turmas;
   - marcar a turma = todos os estudantes;

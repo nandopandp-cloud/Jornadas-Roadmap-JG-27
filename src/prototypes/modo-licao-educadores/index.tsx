@@ -24,7 +24,6 @@ import {
   GraduationCap,
   GripVertical,
   Home,
-  ImageIcon,
   Info,
   Lock,
   Menu,
@@ -38,7 +37,6 @@ import {
   Sparkles,
   Trash2,
   TriangleAlert,
-  Upload,
   UserRound,
   Users,
   X,
@@ -76,15 +74,13 @@ import {
   type Tipo,
 } from './data'
 import './lic.css'
-import { DrawerEstudantes, DrawerExemplos, ModalAudio, ModalPrevia, ModalResumo, ModalVideo } from './modais'
+import { DrawerEstudantes, DrawerExemplos, EditorMensagem, ModalAudio, ModalPrevia, ModalResumo, ModalVideo, textoDoHtml } from './modais'
 import { Aviso, Badge, Caixa, Contador, Erro, ICONE_OBJ, Modal, Ponto, SecTit, TileObj } from './pecas'
 
 type Toast = { titulo: string; texto?: string; icone: LucideIcon }
-type Capa = { url: string; nome: string; tamanho: string } | null
 type Sobre = { tipo: 'resumo' | 'video' | 'audio'; topico: string; editar?: Conteudo } | null
 
 const ETAPAS = ['Configurações iniciais', 'Disciplinas e tópicos', 'Conteúdos dos tópicos', 'Mensagem e revisão']
-const CAPA_EXEMPLO: Capa = { url: './lic/piramide.jpg', nome: 'piramides-do-egito.png', tamanho: '240 KB' }
 
 type Estado = {
   etapa: number
@@ -99,8 +95,8 @@ type Estado = {
   topicos: Record<string, string[]>
   conteudos: Record<string, Conteudo[]>
   topAtivo: string | null
+  /** HTML do editor rico (texto, cores e imagens) */
   mensagem: string
-  capa: Capa
 }
 
 function exemplo(): Estado {
@@ -118,11 +114,10 @@ function exemplo(): Estado {
     conteudos: conteudosIniciais(),
     topAtivo: T_PIRAMIDES,
     mensagem: MENSAGEM_INICIAL,
-    capa: CAPA_EXEMPLO,
   }
 }
 function zero(): Estado {
-  return { etapa: 0, alcancada: 0, publicada: false, nome: '', sel: {}, ini: { d: '', h: '' }, fim: { d: '', h: '' }, discs: [], ativa: null, topicos: {}, conteudos: {}, topAtivo: null, mensagem: '', capa: null }
+  return { etapa: 0, alcancada: 0, publicada: false, nome: '', sel: {}, ini: { d: '', h: '' }, fim: { d: '', h: '' }, discs: [], ativa: null, topicos: {}, conteudos: {}, topAtivo: null, mensagem: '' }
 }
 
 function inicio(screen?: string | null) {
@@ -204,7 +199,7 @@ function errosEtapa(e: Estado, etapa: number): Record<string, string> {
     const sem = e.discs.filter((d) => !(e.topicos[d] ?? []).length)
     if (sem.length) er.discs = `Escolha pelo menos 1 tópico em ${sem.join(' e ')} ou remova a disciplina.`
   }
-  if (etapa === 3 && e.mensagem.length > MAX_MSG) er.mensagem = `Use no máximo ${MAX_MSG.toLocaleString('pt-BR')} caracteres.`
+  if (etapa === 3 && textoDoHtml(e.mensagem).length > MAX_MSG) er.mensagem = `Use no máximo ${MAX_MSG.toLocaleString('pt-BR')} caracteres.`
   return er
 }
 
@@ -1123,15 +1118,9 @@ function Etapa3({ e, set, onSobre, onPrevia, onExemplos, onToast }: { e: Estado;
 
 /* ================================================================= etapa 4 */
 function Etapa4({ e, set, er, total, onIr }: { e: Estado; set: SetE; er: Record<string, string>; total: number; onIr: (n: number) => void }) {
-  const arq = useRef<HTMLInputElement>(null)
   const sels = topicosOrdenados(e)
   const todos = sels.flatMap(({ t }) => sequencia(e, t.id))
   const cont = (tp: Tipo) => todos.filter((c) => c.tipo === tp).length
-  const capa = (f?: File) => {
-    if (!f) return
-    if (!/^image\/(png|jpe?g)$/.test(f.type)) return
-    set({ capa: { url: URL.createObjectURL(f), nome: f.name, tamanho: `${Math.max(1, Math.round(f.size / 1024))} KB` } })
-  }
   const editar = (n: number) => (
     <button className="rx-link" onClick={() => onIr(n)}>
       <Pencil size={14} /> Editar
@@ -1156,57 +1145,13 @@ function Etapa4({ e, set, er, total, onIr }: { e: Estado; set: SetE; er: Record<
     <div className="lc-colunas">
       <div className="lc-pilha">
         <section className="rx-cartao">
-          <SecTit icone={MessageSquareText} titulo="Mensagem para os estudantes" desc="Aparece na abertura da lição no Exploradores, junto com o seu nome. É opcional." />
-          <div className="lc-msg">
-            <label className="lc-campo">
-              <span className="lc-rot">
-                Mensagem <i>(opcional)</i>
-              </span>
-              <textarea className={`lc-input lc-textarea ${er.mensagem ? 'is-erro' : ''}`} value={e.mensagem} onChange={(ev) => set({ mensagem: ev.target.value })} placeholder="Ex.: Olá, turma! Nesta lição, vocês vão…" rows={7} />
-              {er.mensagem ? <Erro>{er.mensagem}</Erro> : <Contador n={e.mensagem.length} max={MAX_MSG} />}
-            </label>
-            <div className="lc-campo lc-capa">
-              <span className="lc-rot">
-                Imagem de capa <i>(opcional)</i>
-              </span>
-              {e.capa ? (
-                <div className="lc-capa__prev">
-                  <img src={e.capa.url} alt="Imagem de capa da lição" />
-                  <span className="lc-linha">
-                    <span className="lc-capa__nome">
-                      <b>{e.capa.nome}</b>
-                      <small>{e.capa.tamanho}</small>
-                    </span>
-                    <button className="rx-icone-btn" title="Trocar imagem" aria-label="Trocar imagem" onClick={() => arq.current?.click()}>
-                      <Upload size={16} />
-                    </button>
-                    <button className="rx-icone-btn is-red" title="Remover imagem" aria-label="Remover imagem" onClick={() => set({ capa: null })}>
-                      <Trash2 size={16} />
-                    </button>
-                  </span>
-                </div>
-              ) : (
-                <button
-                  className="lc-envio is-capa"
-                  onClick={() => arq.current?.click()}
-                  onDragOver={(ev) => ev.preventDefault()}
-                  onDrop={(ev) => {
-                    ev.preventDefault()
-                    capa(ev.dataTransfer.files[0])
-                  }}
-                >
-                  <ImageIcon size={22} />
-                  <span>Arraste uma imagem ou clique para escolher</span>
-                  <small>PNG ou JPG</small>
-                </button>
-              )}
-              <input ref={arq} type="file" accept="image/png,image/jpeg" hidden onChange={(ev) => capa(ev.target.files?.[0])} />
-              {!e.capa && (
-                <button className="rx-link lc-mini" onClick={() => set({ capa: CAPA_EXEMPLO })}>
-                  Usar a imagem de exemplo
-                </button>
-              )}
-            </div>
+          <SecTit icone={MessageSquareText} titulo="Mensagem para os estudantes" desc="Aparece na abertura da lição no Exploradores, junto com o seu nome. Você pode formatar o texto, mudar cores e colocar imagens. É opcional." />
+          <div className="lc-campo">
+            <span className="lc-rot">
+              Mensagem <i>(opcional)</i>
+            </span>
+            <EditorMensagem html={e.mensagem} onChange={(h) => set({ mensagem: h })} erro={!!er.mensagem} />
+            {er.mensagem ? <Erro>{er.mensagem}</Erro> : <Contador n={textoDoHtml(e.mensagem).length} max={MAX_MSG} />}
           </div>
         </section>
 
@@ -1312,18 +1257,17 @@ function PreviaExploradores({ e }: { e: Estado }) {
       </span>
       <small className="lc-explo__tag">LIÇÃO</small>
       <b className="lc-explo__tit">{e.nome || 'Nome da lição'}</b>
-      {(e.mensagem.trim() || e.capa) && (
+      {textoDoHtml(e.mensagem) || e.mensagem.includes('<img') ? (
         <div className="lc-explo__msg">
           <span className="lc-linha">
             <span className="lc-explo__av">RR</span>
             <b>Professor(a) Rodrigo Ribeiro</b>
           </span>
           <div className="lc-explo__msgcorpo">
-            {e.mensagem.trim() && <p>{e.mensagem}</p>}
-            {e.capa && <img src={e.capa.url} alt="" />}
+            <div className="lc-explo__html" dangerouslySetInnerHTML={{ __html: e.mensagem }} />
           </div>
         </div>
-      )}
+      ) : null}
       <b className="lc-explo__sel">Selecione o tópico que deseja estudar</b>
       {sels.map(({ d, t }) => (
         <div key={t.id} className="lc-explo__top">

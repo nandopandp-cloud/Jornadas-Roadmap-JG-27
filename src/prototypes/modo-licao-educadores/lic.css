@@ -1885,3 +1885,52 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+/* mensagem: editor rico (como o Tiny da plataforma) */
+.lc .lc-editor-msg .lc-editor__area {
+  min-height: 200px;
+}
+.lc .lc-cores {
+  position: relative;
+}
+.lc .lc-cores__pop {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 10;
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--rx-linha);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+.lc .lc-cores__pop button {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px var(--rx-linha);
+}
+.lc .lc-explo__html {
+  flex: 1;
+  min-width: 0;
+  color: var(--rx-suave);
+  max-height: 150px;
+  overflow: hidden;
+}
+.lc .lc-explo__html p {
+  margin: 0 0 4px;
+}
+.lc .lc-explo__html h3 {
+  font-size: 13px;
+  margin: 0 0 4px;
+  color: var(--rx-tinta);
+}
+.lc .lc-explo__html img {
+  max-width: 100%;
+  max-height: 72px;
+  border-radius: 6px;
+  display: block;
+  margin: 4px 0;
+}

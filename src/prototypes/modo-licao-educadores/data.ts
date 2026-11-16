@@ -283,8 +283,9 @@ export const AUDIO_EXEMPLO = { link: 'https://youtu.be/Qm8r2VtYk1A', id: 'Qm8r2V
 export const RESUMO_AUTORAL_HTML =
   '<h3>O que é uma pirâmide?</h3><p>A pirâmide é um sólido geométrico formado por uma base, que é um polígono, e por faces laterais triangulares que se encontram em um mesmo ponto: o vértice da pirâmide.</p><p><img src="./lic/piramide.jpg" alt="Pirâmides de Gizé"></p><ul><li>Faces: a base + as faces laterais (numa pirâmide de base quadrada, 5 faces).</li><li>Arestas: os segmentos onde as faces se encontram (8 arestas).</li><li>Vértices: os “cantos” da pirâmide (5 vértices).</li></ul><p>Dica: conte as faces, as arestas e os vértices de uma caixa de sapatos e compare com a pirâmide.</p>'
 
+/** HTML do editor rico da mensagem (como o Tiny da plataforma): texto, cores e imagem dentro do próprio campo */
 export const MENSAGEM_INICIAL =
-  'Olá, turminha!\n\nNesta lição, vocês vão aprender mais sobre as pirâmides e descobrir a relação entre História e Matemática. Leiam os conteúdos com atenção, respondam com calma e aproveitem esse momento de aprendizagem.\n\nBoa atividade!'
+  '<p>Olá, turminha!</p><p>Nesta lição, vocês vão aprender mais sobre as pirâmides e descobrir a relação entre <b style="color:#DC2626">Matemática</b> e <b style="color:#B7791F">História</b>. Leiam os conteúdos com atenção, respondam com calma e aproveitem esse momento de aprendizagem.</p><p><img src="./lic/piramide.jpg" alt="Pirâmides de Gizé"></p><p>Boa atividade!</p>'
 
 let seq = 100
 export const novoId = () => `c${++seq}`

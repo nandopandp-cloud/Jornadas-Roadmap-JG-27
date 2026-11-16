@@ -14,6 +14,7 @@ import {
   List,
   ListChecks,
   ListOrdered,
+  Palette,
   PenLine,
   Play,
   Search,
@@ -677,3 +678,101 @@ export function ModalPrevia({ c, onFechar }: { c: Conteudo | null; onFechar: () 
   )
 }
 const findResumo = (id: string) => Object.values(RESUMOS).flat().find((r) => r.id === id) ?? (id.startsWith('rp-') ? resumosDe(id.slice(3))[0] : null)
+
+/* =============================================================== mensagem para os estudantes (editor rico, como o Tiny da plataforma) */
+const CORES = ['#262626', '#441F67', '#7C3AED', '#2563EB', '#15803D', '#C27C00', '#DC2626']
+export const textoDoHtml = (html: string) => {
+  const d = document.createElement('div')
+  d.innerHTML = html
+  return (d.textContent ?? '').replace(/\s+/g, ' ').trim()
+}
+export function EditorMensagem({ html, onChange, erro }: { html: string; onChange: (h: string) => void; erro?: boolean }) {
+  const ed = useRef<HTMLDivElement>(null)
+  const arq = useRef<HTMLInputElement>(null)
+  const [cores, setCores] = useState(false)
+  const [vazio, setVazio] = useState(!html)
+  useEffect(() => {
+    if (ed.current) ed.current.innerHTML = html
+    setVazio(!textoDoHtml(html) && !html.includes('<img'))
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  const sync = () => {
+    const h = ed.current?.innerHTML ?? ''
+    setVazio(!ed.current?.textContent?.trim() && !ed.current?.querySelector('img'))
+    onChange(h)
+  }
+  const cmd = (c: string, v?: string) => {
+    ed.current?.focus()
+    document.execCommand(c, false, v)
+    sync()
+  }
+  const insereImg = (f: File) => {
+    const r = new FileReader()
+    r.onload = () => cmd('insertImage', String(r.result))
+    r.readAsDataURL(f)
+  }
+  const colar = (e: ClipboardEvent<HTMLDivElement>) => {
+    const img = [...e.clipboardData.files].find((f) => f.type.startsWith('image/'))
+    if (img) {
+      e.preventDefault()
+      insereImg(img)
+    } else setTimeout(sync, 0)
+  }
+  return (
+    <div className={`lc-editor lc-editor-msg ${erro ? 'is-erro' : ''}`}>
+      <div className="lc-editor__barra" role="toolbar" aria-label="Formatação da mensagem">
+        {(
+          [
+            [Heading2, 'Título', () => cmd('formatBlock', 'h3')],
+            [Bold, 'Negrito', () => cmd('bold')],
+            [Italic, 'Itálico', () => cmd('italic')],
+            [Underline, 'Sublinhado', () => cmd('underline')],
+          ] as const
+        ).map(([Ic, n, f]) => (
+          <button key={n} type="button" className="rx-icone-btn" title={n} aria-label={n} onMouseDown={(e) => e.preventDefault()} onClick={f}>
+            <Ic size={16} />
+          </button>
+        ))}
+        <span className="lc-cores">
+          <button type="button" className="rx-icone-btn" title="Cor do texto" aria-label="Cor do texto" aria-expanded={cores} onMouseDown={(e) => e.preventDefault()} onClick={() => setCores((c) => !c)}>
+            <Palette size={16} />
+          </button>
+          {cores && (
+            <span className="lc-cores__pop" role="menu">
+              {CORES.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  role="menuitem"
+                  aria-label={`Cor ${c}`}
+                  style={{ background: c }}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => {
+                    cmd('foreColor', c)
+                    setCores(false)
+                  }}
+                />
+              ))}
+            </span>
+          )}
+        </span>
+        <i />
+        {(
+          [
+            [List, 'Lista', () => cmd('insertUnorderedList')],
+            [ListOrdered, 'Lista numerada', () => cmd('insertOrderedList')],
+            [Link2, 'Link', () => { const u = window.prompt('Cole o endereço do link'); if (u) cmd('createLink', u) }],
+            [ImageIcon, 'Imagem', () => arq.current?.click()],
+          ] as const
+        ).map(([Ic, n, f]) => (
+          <button key={n} type="button" className="rx-icone-btn" title={n} aria-label={n} onMouseDown={(e) => e.preventDefault()} onClick={f}>
+            <Ic size={16} />
+          </button>
+        ))}
+        <span className="rx-espaco" />
+        <small>Cole textos e imagens com Ctrl + V</small>
+        <input ref={arq} type="file" accept="image/png,image/jpeg,image/gif,image/webp" hidden onChange={(e) => e.target.files?.[0] && insereImg(e.target.files[0])} />
+      </div>
+      <div ref={ed} className="lc-editor__area" contentEditable suppressContentEditableWarning role="textbox" aria-multiline="true" aria-label="Mensagem para os estudantes" data-vazio={vazio ? 'Ex.: Olá, turma! Nesta lição, vocês vão… Você pode formatar o texto, mudar cores e colocar imagens.' : undefined} onInput={sync} onPaste={colar} onBlur={sync} />
+    </div>
+  )
+}
