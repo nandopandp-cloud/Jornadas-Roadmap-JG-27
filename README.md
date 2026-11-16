@@ -11,7 +11,7 @@ O estudante faz a lição no Exploradores.
 
 **Protótipo navegável:** https://modo-licao-educadores.vercel.app
 
-> Esta iniciativa **não entra na plataforma de jornadas**. O navegável tem link e projeto Vercel próprios (`modo-licao-educadores`). Nesta branch, o `src/main.tsx` abre direto o protótipo. A plataforma completa está documentada no README da `main`.
+> Esta iniciativa **não entra na plataforma de jornadas**. O navegável tem link e projeto Vercel próprios (`modo-licao-educadores`). Esta é a branch `licao-criacao-educadores` (antes `modo-licao-educadores`). Nela, o `src/main.tsx` abre direto o protótipo. A plataforma completa está documentada no README da `main`.
 
 ## Referências
 
