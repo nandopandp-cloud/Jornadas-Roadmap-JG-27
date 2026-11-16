@@ -9,7 +9,9 @@ Relatório da lição na plataforma Educadores (Relatórios › Atividades › L
 
 Também tem a exportação completa em PDF.
 
-> Continuação de [`licao-criacao-educadores`](../../tree/licao-criacao-educadores), o fluxo de criação de lições. Esta iniciativa **não entra na plataforma de jornadas**. Quando o Figma for validado, o navegável fica nesta branch, com projeto Vercel próprio.
+**Protótipo navegável:** https://licao-relatorios-educadores.vercel.app
+
+> Continuação de [`licao-criacao-educadores`](../../tree/licao-criacao-educadores), o fluxo de criação de lições. Esta iniciativa **não entra na plataforma de jornadas**. O navegável tem link e projeto Vercel próprios (`licao-relatorios-educadores`). Nesta branch, o `src/main.tsx` abre direto o protótipo.
 
 ## Status
 
@@ -18,7 +20,7 @@ Também tem a exportação completa em PDF.
 | Mapeamento (PRD + prints dos relatórios de Tarefa) | ✅ página **00 · Mapeamento** |
 | Piloto desktop: R1 Visão Geral, R2 Engajamento, R3 Aprendizagem, R4 Glossário, R5 Exportar PDF, R6 Análise da questão | ✅ página **01 · Piloto**, aguardando validação |
 | Layout do PDF exportado (33 páginas, no padrão do PDF de Tarefa) | ✅ página **03 · PDF do relatório**, aguardando validação |
-| Navegável | ⏳ depois da validação |
+| Navegável | ✅ https://licao-relatorios-educadores.vercel.app |
 
 ## Referências
 
@@ -45,3 +47,34 @@ Também tem a exportação completa em PDF.
   - ranking de tópicos por formato e disciplina;
   - aprendizagem por disciplina → tópico;
   - análise de quem marcou cada alternativa.
+
+## Navegável
+
+- **Visão Geral:**
+  - acompanhamento dos 44 estudantes, com ordenação, filtro por situação, busca, paginação e exportar;
+  - dispersão com tooltip, filtro por quadrante (nos cards e no select) e a tabela complementar.
+- **Engajamento:**
+  - KPIs com meta;
+  - progresso com "Ver estudantes" em cada situação;
+  - consumo dos objetos em % ou em quantidade;
+  - ranking de tópicos com filtro por disciplina, busca, ordenação e "Ranking completo".
+- **Aprendizagem:**
+  - KPIs e rubricas;
+  - ranking da turma (resumido e completo, com busca e ordenação);
+  - acordeão de disciplina → tópico;
+  - as 39 questões com filtros e paginação, e a **análise detalhada** (quem marcou cada alternativa e navegação entre questões).
+- **Glossário.**
+- **Compartilhar:**
+  - seleção das seções por aba;
+  - **Baixar PDF** abre a prévia do documento (33 páginas, no visual do PDF de Tarefa), e **Salvar PDF** usa a impressão do navegador em 1920×1080;
+  - o PDF muda de acordo com as seções escolhidas, e o sumário acompanha.
+
+**Atalhos:** `#/?screen=` + `visao` (padrão) · `engajamento` · `aprendizagem` · `glossario` · `compartilhar` · `pdf` · `questao` · `estudantes`.
+
+## Deploy
+
+```bash
+npm run build
+cp -R dist/index.html dist/assets dist/rl <pasta-de-deploy>/   # pasta ligada ao projeto Vercel licao-relatorios-educadores
+vercel deploy --prod --yes
+```
