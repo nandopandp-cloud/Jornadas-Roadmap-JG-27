@@ -4,6 +4,15 @@ Iniciativa **Planetas** na plataforma do estudante Exploradores (Fundamental I).
 
 > Esta branch guarda a iniciativa Planetas e a **metodologia para novos planetas**. A plataforma completa e a lista de todas as jornadas ficam no README da `main`.
 
+## Para a engenharia: kit pronto
+
+**[kit-planetas/](kit-planetas/)** é o pacote para a plataforma Jovens Gênios. Basta copiar duas pastas e instalar o `three`.
+
+- O guia em PDF está em [kit-planetas/GUIA-ENGENHARIA.pdf](kit-planetas/GUIA-ENGENHARIA.pdf).
+- Para baixar só o kit: `npx degit nandopandp-cloud/Jornadas-Roadmap-JG-27/kit-planetas#exploradores-planetas-360 kit-planetas`.
+- O kit já é um mini-projeto Next.js que mostra todos os planetas (`npm install && npm run dev`).
+- Planeta novo: a pasta em `kit-planetas/public/planetas/<id>/` e uma linha em `kit-planetas/components/planetas/planetas.ts`. O `otimizar_glb.py` imprime essa linha.
+
 ## Links
 
 | O quê | Onde |

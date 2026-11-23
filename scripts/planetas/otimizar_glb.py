@@ -12,7 +12,8 @@ O que faz, nesta ordem:
   3. Reduz os triângulos (Decimate, colapso de arestas, preserva UV) para o orçamento da web.
   4. Reduz as texturas (4K → 2K) e exporta em WebP, com malha comprimida por meshopt.
   5. Renderiza o pôster (imagem de reserva e primeiro quadro) no mesmo enquadramento do site.
-Grava planeta.glb, poster.webp e info.json na pasta de saída.
+Grava planeta.glb, poster.webp e info.json na pasta de saída e imprime a LINHA DO CATÁLOGO
+(components/planetas/planetas.ts) pronta para colar. Opcional: --id planeta-02 --nome "Planeta 02".
 """
 import json
 import math
@@ -153,4 +154,10 @@ info = {
     'poster_bytes': os.path.getsize(os.path.join(SAIDA, 'poster.webp')), 'segundos': round(time.time() - t0, 1),
 }
 json.dump(info, open(os.path.join(SAIDA, 'info.json'), 'w'), ensure_ascii=False, indent=2)
+PID = arg('--id', os.path.basename(os.path.normpath(SAIDA)))
+NOME = arg('--nome', PID.replace('-', ' ').title())
+info['linha_catalogo'] = (f"  '{PID}': {{ id: '{PID}', nome: '{NOME}', pasta: 'planetas/{PID}', modelo: 'planeta.glb', "
+                          f"poster: 'poster.webp', raioQuadro: {round(raio_quadro, 3)}, inicio: {INICIO:g}, elevacao: {ELEV:g}, fov: {FOV:g} }},")
+json.dump(info, open(os.path.join(SAIDA, 'info.json'), 'w'), ensure_ascii=False, indent=2)
+print('\nCole esta linha em components/planetas/planetas.ts:\n' + info['linha_catalogo'] + '\n')
 print('@@JSON@@' + json.dumps(info, ensure_ascii=False))

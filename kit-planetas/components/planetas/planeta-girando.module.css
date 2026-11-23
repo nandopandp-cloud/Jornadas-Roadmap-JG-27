@@ -1,0 +1,144 @@
+/* =====================================================================
+   PlanetaGirando · Exploradores
+   Variáveis (preenchidas pelo componente):
+     --pl-tam   tamanho do planeta
+     --pl-r     raio aparente da esfera, em % da largura (sem unidade)
+     --pl-halo  cor do halo (r, g, b)
+   O canvas (three.js) desenha o modelo 3D girando; o pôster aparece enquanto carrega.
+   ===================================================================== */
+
+.planeta {
+  position: relative;
+  width: var(--pl-tam);
+  height: var(--pl-tam);
+  flex: none;
+  isolation: isolate;
+}
+
+/* ---- flutuação --------------------------------------------------------- */
+.flutua {
+  position: absolute;
+  inset: 0;
+  animation: pl-flutua 7s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* ---- halo atrás da esfera ---------------------------------------------- */
+.halo {
+  position: absolute;
+  inset: -20%;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse calc(var(--pl-r) * 0.94%) calc(var(--pl-r) * 0.94%) at 50% 50%,
+    rgba(var(--pl-halo), 0.5) 0%,
+    rgba(var(--pl-halo), 0.5) 68%,
+    rgba(var(--pl-halo), 0.16) 84%,
+    rgba(var(--pl-halo), 0) 100%
+  );
+  filter: blur(calc(var(--pl-tam) * 0.02));
+}
+
+/* ---- arte original (primeiro quadro e fallback) ------------------------ */
+.arte {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+/* ---- palco 3D (three.js) ---------------------------------------------- */
+.palco {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+.esfera {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.oculta {
+  opacity: 0;
+}
+
+/* ---- sombra de contato (acompanha a flutuação) ------------------------- */
+.sombra {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + var(--pl-r) * 1% + 9%);
+  width: calc(var(--pl-r) * 1.5%);
+  height: 9%;
+  translate: -50% -50%;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(18, 10, 46, 0.42), rgba(18, 10, 46, 0));
+  animation: pl-sombra 7s ease-in-out infinite;
+}
+
+.arrastavel {
+  cursor: grab;
+  touch-action: pan-y; /* arrastar na vertical continua rolando a página */
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.arrastavel[data-arrastando] {
+  cursor: grabbing;
+}
+.arrastavel:focus {
+  outline: none;
+}
+.arrastavel:focus-visible::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--pl-r) * 2.16%);
+  height: calc(var(--pl-r) * 2.16%);
+  translate: -50% -50%;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(0, 161, 154, 0.75);
+  pointer-events: none;
+}
+
+.parado .flutua,
+.parado .sombra {
+  animation: none;
+}
+
+@keyframes pl-flutua {
+  0%,
+  100% {
+    transform: translateY(-2.6%);
+  }
+  50% {
+    transform: translateY(2.6%);
+  }
+}
+@keyframes pl-sombra {
+  0%,
+  100% {
+    transform: scale(0.84);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flutua,
+  .sombra {
+    animation: none;
+  }
+}
