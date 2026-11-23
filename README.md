@@ -29,7 +29,7 @@ Antes de uma iniciativa virar produto, o time precisa mostrar como ela vai funci
 
 <!-- jornadas:inicio (gerado automaticamente a partir de src/platform/journeys.ts — não edite à mão) -->
 
-A plataforma tem hoje **14 jornadas**. Cada uma vive na sua própria branch, com um README dedicado.
+A plataforma tem hoje **15 jornadas**. Cada uma vive na sua própria branch, com um README dedicado.
 
 ### Alfabetização
 
@@ -142,6 +142,14 @@ Estudante participa de campeonatos criados pelos educadores: desafia colegas do 
 Em Relatórios › Atividades › Campeonatos, o educador acompanha cada campeonato da GenieX em 4 abas: visão geral, engajamento (participação, médias e ranking por vitórias), aprendizagem por estudante e por questão/tópico (acurácia, rubricas e o novo tempo médio de resposta correta) e glossário, com exportação e compartilhamento do relatório.
 
 [Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/relatorios-campeonato) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/relatorios-campeonato) · [Branch `relatorios-campeonato`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/relatorios-campeonato)
+
+### Planetas
+
+**Exploradores · Plataforma do Estudante** · Estudantes do Fundamental I
+
+Os novos planetas de massinha dos Exploradores ganham vida: giram 360° como um globo, no eixo vertical. A superfície corre na horizontal, a casa, a caverna, o polvo e a ilha dão a volta e passam por trás, e a luz fica parada, com flutuação leve, halo e sombra de contato. A arte é a mesma. Componente pronto para o Next.js (WebGL2), com a arte original parada para quem pede menos movimento.
+
+[Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/planetas) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/planetas) · [Branch `exploradores-planetas-360`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/exploradores-planetas-360)
 
 <!-- jornadas:fim -->
 
