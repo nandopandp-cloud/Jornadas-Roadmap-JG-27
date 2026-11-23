@@ -38,19 +38,48 @@ import numpy as np
 RAIZ = Path(__file__).resolve().parents[2]
 
 PLANETAS = {
+    # ---- MONTADO A PARTIR DE PEÇAS (metodologia atual) ----
+    # Cada peça é um PNG transparente desenhado de frente. Ela vira um "adesivo" no globo: fica
+    # exatamente como desenhada quando passa de frente para a câmera e só gira, aparece e some.
+    #   lon, lat  onde fica o centro da peça (graus; lon 0 = frente, positivo = à direita da frente)
+    #   giro      gira a peça no próprio plano (graus, anti-horário) para ela ficar de pé
+    #   escala    1 = o tamanho que ela tem em relação à bola no kit
+    #   altura    quanto ela sai da esfera (em raios); o contorno vira uma cúpula arredondada
+    #   espelhar  vira na horizontal (para reaproveitar uma peça do outro lado)
     'planeta-01': {
-        'storyboard': 'public/planetas/planeta-01-storyboard.png',
+        'pecas_dir': 'arte/planetas/planeta-01/pecas',
+        'base': '01-base-azul.png',
+        'pecas': [
+            # lado da casa (lon ≈ −90°): cinturão de mata (a peça deitada), cachoeira e casa
+            # a floresta é uma faixa alta: deitada (girada 90°) vira um cinturão de mata no lado da casa,
+            # com as moitas no tamanho do kit e longe dos polos
+            {'arq': '02-floresta.png', 'lon': -150, 'lat': -22, 'giro': 0, 'escala': 0.55, 'altura': 0.05},
+            {'arq': '02-floresta.png', 'lon': -122, 'lat': 10, 'giro': 90, 'escala': 0.8, 'altura': 0.06},
+            {'arq': '02-floresta.png', 'lon': -82, 'lat': -14, 'giro': 270, 'escala': 0.78, 'altura': 0.06, 'espelhar': True},
+            {'arq': '02-floresta.png', 'lon': -96, 'lat': 18, 'giro': 180, 'escala': 0.55, 'altura': 0.06},
+            {'arq': '08-cachoeira.png', 'lon': -92, 'lat': -34, 'giro': -10, 'escala': 0.95, 'altura': 0.08},
+            {'arq': '04-casa.png', 'lon': -84, 'lat': 34, 'giro': 16, 'escala': 1.0, 'altura': 0.2},
+            # topo, puxado para a frente
+            {'arq': '03-vulcao-e-pedras.png', 'lon': -26, 'lat': 40, 'giro': 0, 'escala': 0.95, 'altura': 0.18},
+            # frente (lon ≈ 0°)
+            {'arq': '07-serpente.png', 'lon': -14, 'lat': -34, 'giro': 0, 'escala': 0.85, 'altura': 0.025},
+            {'arq': '09-aves.png', 'lon': 16, 'lat': -6, 'giro': 0, 'escala': 0.8, 'altura': 0.03},
+            {'arq': '06-barco.png', 'lon': 50, 'lat': 20, 'giro': 0, 'escala': 1.0, 'altura': 0.07},
+            # lado do polvo (lon ≈ +90°)
+            {'arq': '10-lira.png', 'lon': 92, 'lat': -24, 'giro': 22, 'escala': 1.0, 'altura': 0.1},
+            {'arq': '05-polvo.png', 'lon': 108, 'lat': 32, 'giro': 10, 'escala': 0.95, 'altura': 0.12},
+            # costas (lon ≈ 180°): um rio
+            {'arq': '07-serpente.png', 'lon': 158, 'lat': -20, 'giro': 20, 'escala': 0.9, 'altura': 0.025, 'espelhar': True},
+        ],
+    },
+    # ---- a partir de um STORYBOARD do giro (metodologia anterior, guardada para comparação) ----
+    'planeta-01-storyboard': {
+        'storyboard': 'arte/planetas/planeta-01/storyboard.png',
         # Ordem do giro (números dos quadros, lendo o storyboard da esquerda para a direita e de
         # cima para baixo, a partir de 0). No storyboard do Planeta 01 os quadros 7 a 14 vieram
-        # fora de ordem: 9–14 invertidos e 7–8 (lado do polvo) antes da hora. A ordem abaixo
-        # segue o conteúdo e fecha a volta (os giros medidos somam ≈ 360°).
+        # fora de ordem: 9–14 invertidos e 7–8 (lado do polvo) antes da hora.
         'ordem': [0, 1, 2, 3, 4, 5, 6, 14, 13, 12, 11, 10, 9, 8, 7, 15, 16, 17, 18, 19, 20, 21],
-        # Quadros-chave da COR: cada região do planeta vem inteira de um deles (o que a vê mais de
-        # frente). Escolhidos para que cada elemento fique no centro de um quadro: frente (q00),
-        # casa e floresta (q06), costas (q11), polvo e ilha (q16) e os intermediários.
-        # Misturar todos os quadros borra os elementos: cada quadro gerado os desenha diferente.
         'chave': ['q00', 'q03', 'q06', 'q13', 'q11', 'q08', 'q16', 'q18'],
-        # quanto do relevo medido nas silhuetas entra no planeta (1 = tudo)
         'relevo': 0.8,
     },
 }
@@ -457,6 +486,128 @@ def main(pid):
     print(f'ok: planeta montado a partir de {len(quadros)} quadros em {destino}')
 
 
+# ---------------------------------------------------------------- montagem a partir de peças
+def _cupula(alfa, altura):
+    """Relevo de uma peça: o contorno vira uma cúpula arredondada (borda baixa, miolo alto)."""
+    dentro = (alfa > 128).astype(np.uint8)
+    if not dentro.any():
+        return np.zeros(alfa.shape, np.float32)
+    d = cv2.distanceTransform(dentro, cv2.DIST_L2, 5)
+    rampa = max(4.0, 0.45 * np.sqrt(dentro.sum() / np.pi))
+    t = np.clip(d / rampa, 0, 1)
+    return (altura * (1 - (1 - t) ** 2)).astype(np.float32)
+
+
+def montar(pid):
+    cfg = PLANETAS[pid]
+    pasta = RAIZ / cfg['pecas_dir']
+    base = cv2.imread(str(pasta / cfg['base']), cv2.IMREAD_UNCHANGED)
+    bcx, bcy, bR = medir_esfera(base[:, :, 3])
+    print(f'bola: centro ({bcx:.0f}, {bcy:.0f}), raio {bR:.0f} px')
+
+    # ---- luz da bola (o oceano é a bola inteira) → luz fixa do planeta ----
+    H0, W0 = base.shape[:2]
+    yy, xx = np.mgrid[0:H0, 0:W0]
+    gx, gy = (xx - bcx) / bR, -(yy - bcy) / bR
+    dentro = (np.hypot(gx, gy) < 0.95) & (base[:, :, 3] > 250)
+    with np.errstate(all='ignore'):
+        lum = base[:, :, :3].astype(np.float64) @ np.array([0.114, 0.587, 0.299])
+    luz = ajustar_luz([(gx[dentro], gy[dentro], lum[dentro])])
+    luz = luz / luz[0]  # S(0, 0) = 1
+    S = luz[0] + luz[1] * gx + luz[2] * gy + luz[3] * gx * gx + luz[4] * gy * gy + luz[5] * gx * gy + luz[6] * (gx * gx + gy * gy) ** 2
+
+    # ---- oceano 360°: cor da bola sem a luz + o granulado da massinha, repetido sem emenda ----
+    albedo = base[:, :, :3].astype(np.float32) / np.clip(S, 0.3, 2)[:, :, None].astype(np.float32)
+    cor_oceano = np.median(albedo[dentro], 0)
+    m = int(bR * 0.45)
+    remendo = albedo[int(bcy) - m:int(bcy) + m, int(bcx) - m:int(bcx) + m]
+    grao = remendo - cv2.GaussianBlur(remendo, (0, 0), 6)
+    ladrilho = np.vstack([np.hstack([grao, grao[:, ::-1]]), np.hstack([grao[::-1], grao[::-1, ::-1]])])
+    px_por_rad = TEX_W / (2 * np.pi)
+    ladrilho = cv2.resize(ladrilho, None, fx=px_por_rad / bR, fy=px_por_rad / bR, interpolation=cv2.INTER_CUBIC)
+    reps = (TEX_H // ladrilho.shape[0] + 1, TEX_W // ladrilho.shape[1] + 1, 1)
+    tex = (cor_oceano[None, None, :] + np.tile(ladrilho, reps)[:TEX_H, :TEX_W]).astype(np.float32)
+    rel = np.zeros((TEX_H, TEX_W), np.float32)
+
+    # ---- peças coladas no globo, na ordem da lista (as de baixo primeiro) ----
+    lon = ((np.arange(TEX_W) + 0.5) / TEX_W * 2 - 1) * np.pi
+    lat = (0.5 - (np.arange(TEX_H) + 0.5) / TEX_H) * np.pi
+    LON, LAT = np.meshgrid(lon, lat)
+    for p in cfg['pecas']:
+        img = cv2.imread(str(pasta / p['arq']), cv2.IMREAD_UNCHANGED).astype(np.float32)
+        al = img[:, :, 3]
+        x0, y0, w, h = cv2.boundingRect((al > 20).astype(np.uint8))
+        ax, ay = x0 + w / 2, y0 + h / 2
+        relevo_peca = _cupula(al, p.get('altura', 0.0))
+        lon0, lat0 = np.radians(p['lon']), np.radians(p['lat'])
+        dlon = (LON - lon0 + np.pi) % (2 * np.pi) - np.pi
+        # coordenadas da peça: u = arco para leste; v = altura na tela (a câmera fica sempre no
+        # equador, então assim a peça aparece exatamente como desenhada quando está de frente)
+        u = dlon * np.cos(LAT)
+        v = np.sin(LAT) - np.sin(lat0)
+        if p.get('espelhar'):
+            u = -u
+        g = np.radians(-p.get('giro', 0.0))
+        ur, vr = u * np.cos(g) - v * np.sin(g), u * np.sin(g) + v * np.cos(g)
+        esc = bR / p.get('escala', 1.0)  # px da peça por raio: escala 0,5 = metade do tamanho
+        mx = (ax + ur * esc).astype(np.float32)
+        my = (ay - vr * esc).astype(np.float32)
+        # a peça vale numa calota em volta do centro: some suavemente a mais de 76° de distância
+        # (medida pela superfície da esfera, então não há corte em linha reta) e perto dos polos,
+        # onde esticaria (acima de 72° de latitude)
+        dist = np.arccos(np.clip(np.sin(LAT) * np.sin(lat0) + np.cos(LAT) * np.cos(lat0) * np.cos(dlon), -1, 1))
+        frente = np.clip((np.radians(88) - dist) / np.radians(12), 0, 1) * np.clip((np.radians(80) - np.abs(LAT)) / np.radians(8), 0, 1)
+        amostra = cv2.remap(img, mx, my, cv2.INTER_CUBIC, borderValue=0)
+        hpeca = cv2.remap(relevo_peca, mx, my, cv2.INTER_LINEAR, borderValue=0)
+        a = (amostra[:, :, 3:4] / 255.0).clip(0, 1) * frente[:, :, None]
+        tex = amostra[:, :, :3] * a + tex * (1 - a)
+        rel = np.maximum(rel, hpeca * np.clip(a[:, :, 0] * 2 - 0.5, 0, 1))
+        print(f'  {p["arq"]}: lon {p["lon"]}°, lat {p["lat"]}°')
+    rel = cv2.GaussianBlur(rel, (0, 0), 1.2)
+    rel = cv2.resize(rel, (REL_W, REL_H), interpolation=cv2.INTER_AREA)
+    tex = tex.clip(0, 255).astype(np.uint8)
+
+    # ---- imagem de reserva: o planeta visto de frente (sem relevo), com a luz da bola ----
+    yy, xx = np.mgrid[0:LADO, 0:LADO]
+    qx, qy = (xx - LADO / 2) / RAIO, -(yy - LADO / 2) / RAIO
+    r2 = qx * qx + qy * qy
+    z = np.sqrt(np.clip(1 - r2, 0, 1))
+    tu = ((np.arctan2(qx, z) / (2 * np.pi) + 0.5) * TEX_W - 0.5).astype(np.float32)
+    tv = ((0.5 - np.arcsin(np.clip(qy, -1, 1)) / np.pi) * TEX_H - 0.5).astype(np.float32)
+    frente_img = cv2.remap(tex, tu, tv, cv2.INTER_LINEAR, borderMode=cv2.BORDER_WRAP).astype(np.float32)
+    Sq = luz[0] + luz[1] * qx + luz[2] * qy + luz[3] * qx * qx + luz[4] * qy * qy + luz[5] * qx * qy + luz[6] * r2 ** 2
+    frente_img *= np.clip(Sq, 0.5, 1.3)[:, :, None]
+    alfa = (np.clip((1 - np.sqrt(r2)) * RAIO / 1.5 + 0.5, 0, 1) * 255).astype(np.uint8)
+    frente_img = np.dstack([frente_img.clip(0, 255).astype(np.uint8), alfa])
+
+    destino = RAIZ / 'public/planetas' / pid
+    destino.mkdir(parents=True, exist_ok=True)
+    for velho in list(destino.glob('*.png')) + list(destino.glob('*.jpg')) + list(destino.glob('*.webp')):
+        velho.unlink()
+    cv2.imwrite(str(destino / 'textura.webp'), tex, [cv2.IMWRITE_WEBP_QUALITY, 92])
+    cv2.imwrite(str(destino / 'relevo.png'), np.round(rel / ALTURA_MAX * 255).clip(0, 255).astype(np.uint8))
+    cv2.imwrite(str(destino / 'frente.webp'), frente_img, [cv2.IMWRITE_WEBP_QUALITY, 90])
+    alt_max = float(rel.max())
+    dados = {
+        'id': pid,
+        'arte': f'planetas/{pid}/frente.webp',
+        'pasta': f'planetas/{pid}',
+        'tamanhoArte': LADO,
+        'centro': [LADO / 2, LADO / 2],
+        'raio': RAIO,
+        'raioQuadro': round(1 + alt_max + 0.02, 4),
+        'textura': 'textura.webp',
+        'relevo': 'relevo.png',
+        'alturaMax': ALTURA_MAX,
+        # luz da bola, completa (a textura é só cor): S(x, y) / S(0, 0)
+        'luz': [round(float(x), 5) for x in luz],
+        'luzCompleta': True,
+        'ganho': 1.0,
+    }
+    (RAIZ / f'src/prototypes/planetas/{pid}.json').write_text(json.dumps(dados, ensure_ascii=False, indent=2) + '\n')
+    print(f'ok: planeta montado com {len(cfg["pecas"])} peças em {destino}')
+
+
 def folha_de_quadros(pid):
     """Separa os quadros do storyboard e grava uma folha numerada, para definir a ordem."""
     cfg = PLANETAS[pid]
@@ -483,5 +634,7 @@ if __name__ == '__main__':
     alvo = sys.argv[1] if len(sys.argv) > 1 else 'planeta-01'
     if '--quadros' in sys.argv:
         folha_de_quadros(alvo)
+    elif 'pecas' in PLANETAS[alvo]:
+        montar(alvo)
     else:
         main(alvo)
