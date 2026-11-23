@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent } from 'react'
 import s from './planeta-girando.module.css'
 
 /* =====================================================================
@@ -11,46 +11,42 @@ import s from './planeta-girando.module.css'
 
    Como funciona:
    1. ESFERA (WebGL2). A arte de frente vira uma textura 360° (gerada
-      por scripts/planetas/preparar-planeta.py). Um shader desenha a
-      esfera girando, com uma luz parada (alto à esquerda) por pixel.
-   2. PEÇAS. Os elementos que saem da silhueta (casa, caverna, polvo,
-      ilha) são recortes da arte presos a um ponto da superfície. A cada
-      quadro eles acompanham esse ponto, giram com a normal, encurtam
-      quando ficam de frente para a câmera, escurecem do lado da sombra
-      e passam para trás da esfera.
-   3. Sem WebGL2 ou com “reduzir movimento”, mostra a arte original
-      parada. A arte também aparece enquanto a textura carrega.
+      por scripts/planetas/preparar-planeta.py) só com a cor da massinha.
+      A luz que vinha pintada na arte é medida pelo script; a parte que
+      mudaria de lugar com o giro (a horizontal) é devolvida aqui, parada:
+      no ângulo 0 o planeta fica igual à arte e, girando, a luz fica no
+      lugar, como num globo de verdade.
+   2. ELEMENTOS. O que sai da silhueta (casa, caverna, polvo, ilha) fica
+      PARADO por cima, exatamente com as proporções da arte. Só a esfera
+      gira por baixo.
+   3. MÃO. Arrastar na horizontal gira o planeta; ao soltar, ele segue
+      com inércia e volta ao giro normal no sentido em que foi jogado.
+      As setas do teclado fazem o mesmo.
+   4. Com “reduzir movimento”, o planeta não gira sozinho (mas dá para
+      girar com a mão). Sem WebGL2, mostra a arte original parada.
 
    Next.js: componente cliente ('use client'), sem dependências.
    ===================================================================== */
-
-export type PecaPlaneta = {
-  nome: string
-  src: string
-  /** caixa do recorte, em px da arte */
-  x: number
-  y: number
-  w: number
-  h: number
-  /** ponto de apoio na superfície, em px da arte */
-  apoio: number[]
-  /** posição do apoio na esfera (radianos, já na escala da textura) */
-  lon: number
-  lat: number
-}
 
 export type PlanetaDados = {
   id: string
   /** arte original (fallback e primeiro quadro) */
   arte: string
-  /** pasta da textura e das peças */
+  /** pasta da textura e dos elementos */
   pasta: string
   tamanhoArte: number
   centro: number[]
   raio: number
   textura: string
-  pecas: PecaPlaneta[]
+  /** camada estática com os elementos que saem da esfera */
+  elementos: string
+  /** luz pintada na arte, medida pelo script: S(x, y) = c0 + c1·x + c2·y + c3·x² + c4·y² + c5·x·y + c6·r⁴ */
+  luz?: number[]
+  /** a textura guarda cor × ganho (margem contra estouro); o shader desfaz */
+  ganho?: number
 }
+
+export type Sentido = 'direita' | 'esquerda'
 
 export type PlanetaGirandoProps = {
   planeta: PlanetaDados
@@ -59,15 +55,17 @@ export type PlanetaGirandoProps = {
   alt?: string
   /** largura e altura (px ou medida CSS). Padrão: 240 */
   tamanho?: number | string
-  /** segundos por volta. Padrão: 24 */
-  duracao?: number
   /** para onde a superfície da frente corre. Padrão: 'direita' */
-  sentido?: 'direita' | 'esquerda'
-  /** multiplicador da velocidade (0 pausa; negativo inverte). Muda suave. Padrão: 1 */
-  ritmo?: number
-  /** ângulo inicial (graus) */
+  sentido?: Sentido
+  /** chamado quando a pessoa joga o planeta para o outro lado */
+  onSentidoChange?: (s: Sentido) => void
+  /** para o giro automático (freia suave); a mão continua funcionando */
+  pausado?: boolean
+  /** deixa girar com a mão e com as setas. Padrão: true */
+  arrastavel?: boolean
+  /** ângulo inicial (graus); 0 = a arte original */
   inicio?: number
-  /** luz fixa (sombra e brilho). Padrão: true */
+  /** luz da arte, parada sobre a esfera (false = só a cor). Padrão: true */
   luz?: boolean
   /** sobe e desce devagar. Padrão: true */
   flutuar?: boolean
@@ -79,12 +77,11 @@ export type PlanetaGirandoProps = {
   style?: CSSProperties
 }
 
-/* luz parada, em coordenadas da tela (y para cima, z para a câmera) */
-const LUZ = (() => {
-  const v = [-0.45, 0.55, 0.7]
-  const n = Math.hypot(v[0], v[1], v[2])
-  return v.map((x) => x / n) as [number, number, number]
-})()
+/** uma volta a cada 40 s: a única velocidade do giro */
+export const SEGUNDOS_POR_VOLTA = 40
+const VEL_AUTO = (2 * Math.PI) / SEGUNDOS_POR_VOLTA
+const VEL_MAX = 7 // rad/s, teto do arremesso
+const IMPULSO_TECLA = 1.2 // rad/s por toque na seta (≈ 75° com o embalo)
 
 const VERT = `#version 300 es
 in vec2 p;
@@ -97,7 +94,8 @@ uniform sampler2D tex;
 uniform float ang;
 uniform float luz;
 uniform float borda;
-uniform vec3 L;
+uniform float C[7];
+uniform float ganho;
 in vec2 v;
 out vec4 cor;
 const float PI = 3.14159265359;
@@ -119,14 +117,18 @@ void main() {
   if (abs(dx2.x) < abs(dx.x)) dx.x = dx2.x;
   if (abs(dy2.x) < abs(dy.x)) dy.x = dy2.x;
   vec3 c3 = textureGrad(tex, uv, dx, dy).rgb;
-  float d = max(dot(n, L), 0.0);
-  float sombra = mix(1.0, mix(0.66, 1.1, d) * (0.84 + 0.16 * z), luz);
-  c3 = c3 * sombra + luz * 0.08 * pow(d, 8.0);
+  // a textura não tem a variação horizontal da luz da arte; ela volta aqui, parada na tela
+  // (a de cima para baixo continua pintada: no giro vertical ela nunca se move)
+  float y2 = v.y * v.y;
+  float S = C[0] + C[1] * v.x + C[2] * v.y + C[3] * v.x * v.x + C[4] * y2 + C[5] * v.x * v.y + C[6] * r2 * r2;
+  float S0 = C[0] + C[2] * v.y + C[4] * y2 + C[6] * y2 * y2;
+  float Sh = clamp(S / max(S0, 0.001), 0.5, 1.5);
+  c3 *= mix(1.0, Sh, luz) / ganho;
   float a = 1.0 - smoothstep(1.0 - borda, 1.0, sqrt(r2));
   cor = vec4(c3 * a, a);
 }`
 
-function criarGL(canvas: HTMLCanvasElement, img: HTMLImageElement) {
+function criarGL(canvas: HTMLCanvasElement, img: HTMLImageElement, coef: number[], ganho: number) {
   const gl = canvas.getContext('webgl2', { premultipliedAlpha: true, alpha: true, antialias: false })
   if (!gl) return null
   const sh = (tipo: number, src: string) => {
@@ -160,9 +162,11 @@ function criarGL(canvas: HTMLCanvasElement, img: HTMLImageElement) {
     ang: gl.getUniformLocation(prog, 'ang'),
     luz: gl.getUniformLocation(prog, 'luz'),
     borda: gl.getUniformLocation(prog, 'borda'),
-    L: gl.getUniformLocation(prog, 'L'),
+    C: gl.getUniformLocation(prog, 'C'),
+    ganho: gl.getUniformLocation(prog, 'ganho'),
   }
-  gl.uniform3f(u.L, LUZ[0], LUZ[1], LUZ[2])
+  gl.uniform1f(u.ganho, ganho)
+  gl.uniform1fv(u.C, new Float32Array([0, 1, 2, 3, 4, 5, 6].map((i) => coef[i] ?? (i === 0 ? 1 : 0))))
   gl.clearColor(0, 0, 0, 0)
   return {
     desenhar(ang: number, luz: number, w: number) {
@@ -182,7 +186,7 @@ function criarGL(canvas: HTMLCanvasElement, img: HTMLImageElement) {
 const juntar = (base: string, ...partes: string[]) => (base.endsWith('/') ? base : base + '/') + partes.join('/')
 
 function reduzMovimento() {
-  return typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+  return typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 }
 
 export function PlanetaGirando({
@@ -190,9 +194,10 @@ export function PlanetaGirando({
   base = '/',
   alt = '',
   tamanho = 240,
-  duracao = 24,
   sentido = 'direita',
-  ritmo = 1,
+  onSentidoChange,
+  pausado = false,
+  arrastavel = true,
   inicio = 0,
   luz = true,
   flutuar = true,
@@ -204,45 +209,40 @@ export function PlanetaGirando({
   const caixa = useRef<HTMLDivElement>(null)
   const palco = useRef<HTMLDivElement>(null)
   const canvas = useRef<HTMLCanvasElement>(null)
-  const pecas = useRef<(HTMLImageElement | null)[]>([])
   const [pronto, setPronto] = useState(false)
-  const [parado, setParado] = useState(false)
+  const [semGL, setSemGL] = useState(false)
+  const [reduz] = useState(reduzMovimento)
 
-  // valores que o laço lê a cada quadro sem reiniciar
-  const ao = useRef({ duracao, sentido, ritmo, luz })
-  ao.current = { duracao, sentido, ritmo, luz }
+  // estado do giro, lido pelo laço a cada quadro (sem re-render)
+  const giro = useRef({
+    ang: (inicio * Math.PI) / 180,
+    vel: 0,
+    dir: sentido === 'direita' ? 1 : -1,
+    tau: 0.6,
+    luz: luz ? 1 : 0,
+    arrastando: false,
+    escalaR: 1, // raio da esfera em px de tela
+  })
+  const props = useRef({ pausado, luz, onSentidoChange })
+  props.current = { pausado, luz, onSentidoChange }
+
+  // trocar o sentido por fora (ex.: um botão) vira o giro com suavidade
+  useEffect(() => {
+    giro.current.dir = sentido === 'direita' ? 1 : -1
+    giro.current.tau = 0.6
+  }, [sentido])
 
   const W = planeta.tamanhoArte
   const [cx, cy] = planeta.centro
   const R = planeta.raio
 
   useEffect(() => {
-    if (reduzMovimento()) {
-      setParado(true)
-      return
-    }
     let vivo = true
     let gl: ReturnType<typeof criarGL> = null
     let quadro = 0
     let visivel = true
-    let escala = 1
-    let ang = (inicio * Math.PI) / 180
-    let vel = ao.current.ritmo
-    let luzAtual = ao.current.luz ? 1 : 0
     let t0 = 0
-
-    const dados = planeta.pecas.map((p) => {
-      const ny0 = -(p.apoio[1] - cy) / R
-      const nx0 = (p.apoio[0] - cx) / R
-      const L0 = Math.min(1, Math.hypot(nx0, ny0))
-      const fi0 = Math.atan2(ny0, nx0)
-      const nx = Math.cos(p.lat) * Math.sin(p.lon)
-      const ny = Math.sin(p.lat)
-      const nz = Math.cos(p.lat) * Math.cos(p.lon)
-      const d0 = Math.max(0, nx * LUZ[0] + ny * LUZ[1] + nz * LUZ[2])
-      return { p, L0, fi0, nx, ny, nz, d0 }
-    })
-    const f = (L: number) => 0.45 + 0.55 * L
+    const g = giro.current
 
     const medir = () => {
       const el = caixa.current
@@ -250,7 +250,8 @@ export function PlanetaGirando({
       const cv = canvas.current
       if (!el || !st || !cv) return
       const B = el.clientWidth
-      escala = B / W
+      const escala = B / W
+      g.escalaR = R * escala
       st.style.transform = `translate(${B / 2 - escala * cx}px, ${B / 2 - escala * cy}px) scale(${escala})`
       const dpr = Math.min(window.devicePixelRatio || 1, 2)
       const lado = Math.max(2, Math.round(2 * R * escala * dpr))
@@ -260,51 +261,32 @@ export function PlanetaGirando({
       }
     }
 
-    const desenhar = (t: number) => {
+    const passo = (t: number) => {
       const dt = t0 ? Math.min(0.1, (t - t0) / 1000) : 0
       t0 = t
-      const alvo = ao.current
-      vel += (alvo.ritmo - vel) * (1 - Math.exp(-dt / 0.35))
-      if (Math.abs(alvo.ritmo - vel) < 0.004) vel = alvo.ritmo
-      luzAtual += ((alvo.luz ? 1 : 0) - luzAtual) * (1 - Math.exp(-dt / 0.2))
-      const dir = alvo.sentido === 'direita' ? 1 : -1
-      ang += ((dt * 2 * Math.PI) / Math.max(1, alvo.duracao)) * vel * dir
-      gl?.desenhar(ang, luzAtual, canvas.current?.width ?? 1)
-
-      const c = Math.cos(ang)
-      const sn = Math.sin(ang)
-      dados.forEach((d, i) => {
-        const el = pecas.current[i]
-        if (!el) return
-        const x = d.nx * c + d.nz * sn
-        const z = -d.nx * sn + d.nz * c
-        const y = d.ny
-        const L = Math.hypot(x, y)
-        const fi = Math.atan2(y, x)
-        const sN = f(L) / f(d.L0)
-        const ux = Math.cos(fi), uy = -Math.sin(fi)
-        const vx = Math.cos(d.fi0), vy = -Math.sin(d.fi0)
-        const a = sN * ux * vx + uy * vy
-        const cc = sN * ux * vy - uy * vx
-        const b = sN * uy * vx - ux * vy
-        const dd = sN * uy * vy + ux * vx
-        const tx = cx + R * x - d.p.apoio[0]
-        const ty = cy - R * y - d.p.apoio[1]
-        el.style.transform = `translate(${tx}px, ${ty}px) matrix(${a}, ${b}, ${cc}, ${dd}, 0, 0)`
-        el.style.zIndex = z >= 0 ? '3' : '1'
-        el.style.opacity = String(Math.min(1, Math.max(0, (z + 0.75) / 0.3)))
-        const dl = Math.max(0, x * LUZ[0] + y * LUZ[1] + z * LUZ[2])
-        const brilho = 1 + luzAtual * ((0.7 + 0.42 * dl) / (0.7 + 0.42 * d.d0) - 1)
-        el.style.filter = `brightness(${Math.min(1.15, Math.max(0.55, brilho)).toFixed(3)})`
-      })
+      const p = props.current
+      if (!g.arrastando) {
+        const alvo = p.pausado || reduz ? 0 : g.dir * VEL_AUTO
+        g.vel += (alvo - g.vel) * (1 - Math.exp(-dt / g.tau))
+        if (Math.abs(alvo - g.vel) < 0.0005) {
+          g.vel = alvo
+          g.tau = 0.6
+        }
+        g.ang += g.vel * dt
+      }
+      g.luz += ((p.luz ? 1 : 0) - g.luz) * (1 - Math.exp(-dt / 0.2))
+      gl?.desenhar(g.ang, g.luz, canvas.current?.width ?? 1)
     }
 
     const laco = (t: number) => {
       if (!vivo) return
-      if (visivel) desenhar(t)
+      if (visivel) passo(t)
       else t0 = 0
       quadro = requestAnimationFrame(laco)
     }
+
+    // estado do giro visível para testes automatizados (propriedade JS, não toca o DOM)
+    if (caixa.current) (caixa.current as HTMLDivElement & { __giro?: typeof g }).__giro = g
 
     const ro = new ResizeObserver(medir)
     if (caixa.current) ro.observe(caixa.current)
@@ -316,19 +298,19 @@ export function PlanetaGirando({
     img.onload = () => {
       if (!vivo || !canvas.current) return
       try {
-        gl = criarGL(canvas.current, img)
+        gl = criarGL(canvas.current, img, planeta.luz ?? [1], planeta.ganho ?? 1)
       } catch {
         gl = null
       }
       if (!gl) {
-        setParado(true)
+        setSemGL(true)
         return
       }
       medir()
       setPronto(true)
       quadro = requestAnimationFrame(laco)
     }
-    img.onerror = () => setParado(true)
+    img.onerror = () => setSemGL(true)
     img.src = juntar(base, planeta.pasta, planeta.textura)
 
     return () => {
@@ -338,9 +320,76 @@ export function PlanetaGirando({
       io.disconnect()
       gl?.liberar()
     }
-    // o laço lê duracao/sentido/ritmo/luz por ref; só reinicia se trocar o planeta
+    // o laço lê o resto por ref; só reinicia se trocar o planeta
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [planeta, base])
+
+  /* ---- mão: arrastar na horizontal ---------------------------------- */
+  const amostras = useRef<{ t: number; x: number }[]>([])
+  const ultimoX = useRef(0)
+  const animado = pronto && !semGL
+  const podeMexer = animado && arrastavel
+
+  const virar = (vel: number) => {
+    const g = giro.current
+    if (Math.abs(vel) < 0.25) return
+    const dir = vel > 0 ? 1 : -1
+    if (dir !== g.dir) {
+      g.dir = dir
+      props.current.onSentidoChange?.(dir > 0 ? 'direita' : 'esquerda')
+    }
+  }
+
+  const aoApertar = (e: PointerEvent<HTMLDivElement>) => {
+    if (!podeMexer || (e.pointerType === 'mouse' && e.button !== 0)) return
+    e.currentTarget.setPointerCapture(e.pointerId)
+    const g = giro.current
+    g.arrastando = true
+    g.vel = 0
+    ultimoX.current = e.clientX
+    amostras.current = [{ t: e.timeStamp, x: e.clientX }]
+    e.currentTarget.dataset.arrastando = ''
+  }
+  const aoMover = (e: PointerEvent<HTMLDivElement>) => {
+    const g = giro.current
+    if (!g.arrastando) return
+    const dx = e.clientX - ultimoX.current
+    ultimoX.current = e.clientX
+    // a superfície no centro acompanha o dedo: dx px = dx / raio radianos
+    g.ang += dx / Math.max(g.escalaR, 1)
+    const a = amostras.current
+    a.push({ t: e.timeStamp, x: e.clientX })
+    while (a.length > 2 && e.timeStamp - a[0].t > 90) a.shift()
+  }
+  const aoSoltar = (e: PointerEvent<HTMLDivElement>) => {
+    const g = giro.current
+    if (!g.arrastando) return
+    g.arrastando = false
+    delete e.currentTarget.dataset.arrastando
+    const a = amostras.current
+    const ini = a[0]
+    const fim = a[a.length - 1]
+    const dt = (fim.t - ini.t) / 1000
+    // parado antes de soltar (sem amostras recentes) = sem arremesso
+    const recente = e.timeStamp - fim.t < 60
+    const vel = dt > 0.012 && recente ? (fim.x - ini.x) / dt / Math.max(g.escalaR, 1) : 0
+    g.vel = reduz ? 0 : Math.max(-VEL_MAX, Math.min(VEL_MAX, vel))
+    g.tau = 1.1 // desacelera devagar, como um globo de verdade
+    virar(vel)
+  }
+  const aoTeclar = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (!podeMexer || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return
+    e.preventDefault()
+    const g = giro.current
+    const sinal = e.key === 'ArrowRight' ? 1 : -1
+    if (reduz) {
+      g.ang += sinal * 0.35
+      return
+    }
+    g.vel = Math.max(-VEL_MAX, Math.min(VEL_MAX, g.vel + sinal * IMPULSO_TECLA))
+    g.tau = 1.1
+    virar(g.vel)
+  }
 
   const vars = {
     '--pl-tam': typeof tamanho === 'number' ? `${tamanho}px` : tamanho,
@@ -351,32 +400,33 @@ export function PlanetaGirando({
     ...style,
   } as CSSProperties
 
-  const animado = pronto && !parado
-  const classes = [s.planeta, !flutuar && s.parado, className].filter(Boolean).join(' ')
+  const classes = [s.planeta, (!flutuar || reduz) && s.parado, podeMexer && s.arrastavel, className].filter(Boolean).join(' ')
+  const rotulo = [alt, podeMexer ? 'Arraste ou use as setas para girar.' : ''].filter(Boolean).join('. ')
 
   return (
-    <div ref={caixa} className={classes} style={vars} role={alt ? 'img' : undefined} aria-label={alt || undefined} aria-hidden={alt ? undefined : true}>
+    <div
+      ref={caixa}
+      className={classes}
+      style={vars}
+      role={rotulo ? 'img' : undefined}
+      aria-label={rotulo || undefined}
+      aria-hidden={rotulo ? undefined : true}
+      tabIndex={podeMexer ? 0 : undefined}
+      onPointerDown={aoApertar}
+      onPointerMove={aoMover}
+      onPointerUp={aoSoltar}
+      onPointerCancel={aoSoltar}
+      onKeyDown={aoTeclar}
+    >
       {sombra && <span className={s.sombra} aria-hidden />}
       <div className={s.flutua}>
         {halo && <span className={s.halo} aria-hidden />}
-        {/* arte original: primeiro quadro, enquanto carrega, e quando não dá para animar */}
+        {/* arte original: primeiro quadro, enquanto carrega, e quando não há WebGL2 */}
         <img className={`${s.arte} ${animado ? s.oculta : ''}`} src={juntar(base, planeta.arte)} alt="" draggable={false} />
-        {!parado && (
+        {!semGL && (
           <div ref={palco} className={`${s.palco} ${animado ? '' : s.oculta}`} style={{ width: W, height: W }}>
             <canvas ref={canvas} className={s.esfera} style={{ left: cx - R, top: cy - R, width: 2 * R, height: 2 * R }} />
-            {planeta.pecas.map((p, i) => (
-              <img
-                key={p.nome}
-                ref={(el) => {
-                  pecas.current[i] = el
-                }}
-                className={s.peca}
-                src={juntar(base, planeta.pasta, p.src)}
-                alt=""
-                draggable={false}
-                style={{ left: p.x, top: p.y, width: p.w, height: p.h, transformOrigin: `${p.apoio[0] - p.x}px ${p.apoio[1] - p.y}px` }}
-              />
-            ))}
+            <img className={s.elementos} src={juntar(base, planeta.pasta, planeta.elementos)} alt="" draggable={false} />
           </div>
         )}
       </div>

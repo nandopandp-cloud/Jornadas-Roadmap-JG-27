@@ -522,11 +522,14 @@
 
 /* ---- telas menores ---------------------------------------------------- */
 @media (max-width: 900px) {
+  /* a plataforma trava a rolagem do body no modo protótipo: a vitrine rola por dentro */
   .pv {
-    position: static;
-    min-height: 100vh;
     grid-template-columns: 1fr;
-    overflow: visible;
+    grid-template-rows: auto auto;
+    align-content: start;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     --pv-tam: min(260px, 64vw);
   }
   .pv-palco {
@@ -550,7 +553,7 @@
     padding: 28px 16px 40px;
   }
   .pv-dica {
-    display: none;
+    font-size: 12px;
   }
 }
 
@@ -558,4 +561,41 @@
   .pv-estrelas {
     animation: none;
   }
+}
+
+/* ---- giro com a mão --------------------------------------------------- */
+.pv-dica {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.pv-mao {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--teal-claro);
+}
+.pv-mao__icone {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--teal-2);
+}
+.pv-mao strong {
+  display: block;
+  font-size: 15px;
+  color: var(--tinta);
+}
+.pv-mao small {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #2f5f5c;
 }

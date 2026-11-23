@@ -1,7 +1,7 @@
-import { ArrowLeft, ArrowRight, Check, CircleDot, Code, Copy, Gauge, Info, Moon, MoveHorizontal, MoveVertical, Orbit, Pause, Play, Ruler, Sun, type LucideIcon } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, CircleDot, Code, Copy, Hand, Info, Moon, MoveHorizontal, MoveVertical, Orbit, Pause, Play, Ruler, Sun, type LucideIcon } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
 import type { PrototypeProps } from '../../platform/journeys'
-import { PlanetaGirando, type PlanetaDados } from './PlanetaGirando'
+import { PlanetaGirando, SEGUNDOS_POR_VOLTA, type PlanetaDados, type Sentido } from './PlanetaGirando'
 import planeta01 from './planeta-01.json'
 import './vitrine.css'
 
@@ -14,15 +14,7 @@ import './vitrine.css'
 const PLANETAS: { nome: string; dados: PlanetaDados }[] = [{ nome: 'Planeta 01', dados: planeta01 }]
 const BASE = './'
 
-const DURACAO_BASE = 24 // s por volta no ritmo 1; as outras velocidades mudam o ritmo (suave)
-const VELOCIDADES = [
-  { id: 'calmo', label: 'Calmo', s: 40 },
-  { id: 'padrao', label: 'Padrão', s: 24 },
-  { id: 'rapido', label: 'Rápido', s: 12 },
-] as const
-type Velocidade = (typeof VELOCIDADES)[number]['id']
 type Aba = 'giro' | 'tamanhos' | 'nextjs'
-const ACELERA_HOVER = 2.6
 
 const TAMANHOS = [
   { px: 96, label: 'Ícone', uso: 'listas e conquistas', inicio: 0 },
@@ -45,25 +37,19 @@ export default function Planetas({ startScreen }: PrototypeProps) {
   const inicial = startScreen === 'tamanhos' || startScreen === 'nextjs' ? startScreen : 'giro'
   const [aba, setAba] = useState<Aba>(inicial)
   const [fundo, setFundo] = useState<'espaco' | 'claro'>(startScreen === 'claro' ? 'claro' : 'espaco')
-  const [velocidade, setVelocidade] = useState<Velocidade>('padrao')
-  const [horario, setHorario] = useState(true)
+  const [sentido, setSentido] = useState<Sentido>('direita')
   const [pausado, setPausado] = useState(false)
   const [luz, setLuz] = useState(true)
   const [flutuar, setFlutuar] = useState(true)
   const [sombra, setSombra] = useState(true)
-  const [hover, setHover] = useState(false)
   const reduz = useReduzMovimento()
-
-  const seg = VELOCIDADES.find((v) => v.id === velocidade)!.s
-  const ritmo = pausado ? 0 : (DURACAO_BASE / seg) * (hover ? ACELERA_HOVER : 1)
 
   const planeta = PLANETAS[0]
   const comuns = {
     planeta: planeta.dados,
     base: BASE,
-    duracao: DURACAO_BASE,
-    ritmo,
-    sentido: horario ? ('direita' as const) : ('esquerda' as const),
+    sentido,
+    pausado,
     luz,
     flutuar,
     sombra,
@@ -99,21 +85,19 @@ export default function Planetas({ startScreen }: PrototypeProps) {
             ))}
           </div>
         ) : (
-          <div
-            className="pv-centro"
-            onPointerEnter={(e) => e.pointerType === 'mouse' && setHover(true)}
-            onPointerLeave={() => setHover(false)}
-          >
-            <PlanetaGirando {...comuns} tamanho="var(--pv-tam)" alt={planeta.nome} />
+          <div className="pv-centro">
+            <PlanetaGirando {...comuns} onSentidoChange={setSentido} tamanho="var(--pv-tam)" alt={planeta.nome} />
           </div>
         )}
 
         <div className="pv-palco__base">
           <span className="pv-legenda">
-            {pausado ? <Pause size={14} aria-hidden /> : horario ? <ArrowRight size={14} aria-hidden /> : <ArrowLeft size={14} aria-hidden />}
-            {planeta.nome} · {pausado ? 'pausado' : `1 volta a cada ${hover ? Math.round(seg / ACELERA_HOVER) : seg} s`}
+            {pausado || reduz ? <Pause size={14} aria-hidden /> : sentido === 'direita' ? <ArrowRight size={14} aria-hidden /> : <ArrowLeft size={14} aria-hidden />}
+            {planeta.nome} · {pausado || reduz ? 'giro automático parado' : `1 volta a cada ${SEGUNDOS_POR_VOLTA} s`}
           </span>
-          {aba !== 'tamanhos' && !reduz && <span className="pv-dica">Passe o mouse no planeta para acelerar</span>}
+          <span className="pv-dica">
+            <Hand size={15} aria-hidden /> {aba === 'tamanhos' ? 'Arraste qualquer planeta para girar' : 'Arraste o planeta para girar'}
+          </span>
         </div>
       </section>
 
@@ -122,8 +106,8 @@ export default function Planetas({ startScreen }: PrototypeProps) {
           <span className="pv-sobre">Planetas · Exploradores</span>
           <h1>Giro 360°</h1>
           <p>
-            O planeta gira como um globo, no eixo vertical: a superfície corre na horizontal, a casa, o polvo e a ilha dão a volta e passam por trás,
-            e a luz fica parada. A massinha continua a mesma.
+            O planeta gira como um globo, no eixo vertical, com uma volta a cada {SEGUNDOS_POR_VOLTA} s. A casa, a caverna, o polvo e a ilha ficam
+            parados, com as proporções da arte; só a superfície corre por baixo. Dá para girar com a mão, para qualquer lado.
           </p>
         </header>
 
@@ -143,8 +127,8 @@ export default function Planetas({ startScreen }: PrototypeProps) {
 
         {reduz && (
           <p className="pv-aviso">
-            <Info size={16} aria-hidden /> Seu sistema está com “reduzir movimento” ligado, então o planeta fica parado (o componente respeita essa
-            escolha).
+            <Info size={16} aria-hidden /> Seu sistema está com “reduzir movimento” ligado: o planeta não gira sozinho, mas dá para girar arrastando ou
+            com as setas.
           </p>
         )}
 
@@ -152,25 +136,27 @@ export default function Planetas({ startScreen }: PrototypeProps) {
           <Handoff />
         ) : (
           <div className="pv-controles">
-            <Campo titulo="Velocidade" icone={Gauge}>
-              <Segmentos
-                valor={velocidade}
-                opcoes={VELOCIDADES.map((v) => ({ id: v.id, label: v.label, sub: `${v.s} s` }))}
-                onChange={(v) => {
-                  setVelocidade(v as Velocidade)
-                  setPausado(false)
-                }}
-              />
-            </Campo>
+            <p className="pv-mao">
+              <span className="pv-mao__icone">
+                <Hand size={18} aria-hidden />
+              </span>
+              <span>
+                <strong>Gire com a mão</strong>
+                <small>
+                  Arraste para a esquerda ou para a direita. Ao soltar, o planeta segue com o embalo e volta ao giro normal no sentido em que foi
+                  jogado. No teclado: Tab até o planeta e setas.
+                </small>
+              </span>
+            </p>
 
             <Campo titulo="Sentido do giro" icone={MoveHorizontal}>
               <Segmentos
-                valor={horario ? 'h' : 'a'}
+                valor={sentido}
                 opcoes={[
-                  { id: 'h', label: 'Para a direita', icone: ArrowRight },
-                  { id: 'a', label: 'Para a esquerda', icone: ArrowLeft },
+                  { id: 'direita', label: 'Para a direita', icone: ArrowRight },
+                  { id: 'esquerda', label: 'Para a esquerda', icone: ArrowLeft },
                 ]}
-                onChange={(v) => setHorario(v === 'h')}
+                onChange={(v) => setSentido(v as Sentido)}
               />
             </Campo>
 
@@ -186,7 +172,7 @@ export default function Planetas({ startScreen }: PrototypeProps) {
             </Campo>
 
             <div className="pv-chaves">
-              <Chave icone={Sun} label="Luz fixa" desc="Brilho e sombra parados enquanto o planeta gira" on={luz} set={setLuz} />
+              <Chave icone={Sun} label="Luz fixa" desc="A luz da arte fica parada enquanto a esfera gira" on={luz} set={setLuz} />
               <Chave icone={MoveVertical} label="Flutuar" desc="Sobe e desce devagar, a cada 7 s" on={flutuar} set={setFlutuar} />
               <Chave icone={CircleDot} label="Halo e sombra" desc="Brilho atrás e sombra de contato" on={sombra} set={setSombra} />
             </div>
@@ -274,10 +260,11 @@ const PROPS: [string, string, string][] = [
   ['planeta', '—', 'dados do planeta (JSON gerado pelo script)'],
   ['base', "'/'", 'prefixo dos arquivos em public/'],
   ['tamanho', '240', 'px ou medida CSS'],
-  ['duracao', '24', 'segundos por volta'],
   ['sentido', "'direita'", "ou 'esquerda' (para onde a frente corre)"],
-  ['ritmo', '1', 'multiplica a velocidade; 0 pausa (sempre suave)'],
-  ['inicio', '0', 'ângulo inicial, para vários planetas na tela'],
+  ['onSentidoChange', '—', 'avisa quando a pessoa joga o planeta para o outro lado'],
+  ['pausado', 'false', 'para o giro automático (a mão continua)'],
+  ['arrastavel', 'true', 'girar com a mão e com as setas'],
+  ['inicio', '0', 'ângulo inicial; 0 = igual à arte'],
   ['luz · flutuar · sombra', 'true', 'liga e desliga cada camada'],
   ['halo', "'92, 196, 255'", 'cor do brilho (r, g, b) ou false'],
 ]
@@ -295,14 +282,14 @@ function Handoff() {
       <ol className="pv-passos">
         <li>
           <strong>Copie 3 arquivos</strong> para <code>components/planetas/</code>: <code>PlanetaGirando.tsx</code>,{' '}
-          <code>planeta-girando.module.css</code> e <code>planeta-01.json</code>. A textura e as peças vão para <code>public/planetas/planeta-01/</code>.
+          <code>planeta-girando.module.css</code> e <code>planeta-01.json</code>. A textura e a camada de elementos vão para <code>public/planetas/planeta-01/</code>.
         </li>
         <li>
           <strong>Use onde o planeta aparece.</strong> O componente já começa com <code>'use client'</code> e não tem dependências.
         </li>
         <li>
           <strong>Planeta novo?</strong> Rode <code>scripts/planetas/preparar-planeta.py</code> com o centro, o raio e as peças que saem da
-          esfera. Ele gera a textura 360°, os recortes e o JSON.
+          esfera. Ele gera a textura 360°, a camada de elementos e o JSON.
         </li>
       </ol>
 
@@ -343,8 +330,8 @@ function Handoff() {
       </table>
 
       <p className="pv-nota">
-        <Info size={16} aria-hidden /> Esfera em WebGL2 (1 desenho por quadro) e peças com transform. Para quando sai da tela e mostra a arte
-        original parada para quem liga “reduzir movimento” ou não tem WebGL2.
+        <Info size={16} aria-hidden /> Uma volta a cada {SEGUNDOS_POR_VOLTA} s, sem outras velocidades. Esfera em WebGL2 (1 desenho por quadro),
+        pausa sozinha fora da tela. Com “reduzir movimento” não gira sozinho; sem WebGL2 mostra a arte original.
       </p>
     </div>
   )
