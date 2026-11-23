@@ -1,0 +1,70 @@
+{
+  "id": "planeta-01",
+  "arte": "planetas/planeta-01.png",
+  "pasta": "planetas/planeta-01",
+  "tamanhoArte": 320,
+  "centro": [
+    155.0,
+    167.0
+  ],
+  "raio": 128.5,
+  "textura": "textura.jpg",
+  "pecas": [
+    {
+      "nome": "casa",
+      "src": "casa.png",
+      "x": 16,
+      "y": 44,
+      "w": 84,
+      "h": 84,
+      "apoio": [
+        84,
+        112
+      ],
+      "lon": -0.77386,
+      "lat": 0.4423
+    },
+    {
+      "nome": "caverna",
+      "src": "caverna.png",
+      "x": 113,
+      "y": 15,
+      "w": 81,
+      "h": 53,
+      "apoio": [
+        150,
+        60
+      ],
+      "lon": -0.08274,
+      "lat": 0.98394
+    },
+    {
+      "nome": "polvo",
+      "src": "polvo.png",
+      "x": 217,
+      "y": 35,
+      "w": 82,
+      "h": 107,
+      "apoio": [
+        248,
+        94
+      ],
+      "lon": 1.2643,
+      "lat": 0.60419
+    },
+    {
+      "nome": "ilha",
+      "src": "ilha.png",
+      "x": 213,
+      "y": 147,
+      "w": 100,
+      "h": 125,
+      "apoio": [
+        262,
+        212
+      ],
+      "lon": 1.28836,
+      "lat": -0.35778
+    }
+  ]
+}

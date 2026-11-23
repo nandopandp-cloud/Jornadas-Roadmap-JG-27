@@ -522,5 +522,26 @@ export const journeys: Journey[] = [
     ],
     component: lazy(() => import('../prototypes/relatorios-campeonato')),
   },
+  {
+    slug: 'planetas',
+    branch: 'exploradores-planetas-360',
+    name: 'Planetas',
+    product: 'Exploradores · Plataforma do Estudante',
+    audience: 'Estudantes do Fundamental I',
+    description:
+      'Os novos planetas de massinha dos Exploradores ganham vida: giram 360° como um globo, no eixo vertical. A superfície corre na horizontal, a casa, a caverna, o polvo e a ilha dão a volta e passam por trás, e a luz fica parada, com flutuação leve, halo e sombra de contato. A arte é a mesma. Componente pronto para o Next.js (WebGL2), com a arte original parada para quem pede menos movimento.',
+    icon: './planetas/planeta-01.png',
+    accent: '#2a1260',
+    status: 'navegavel',
+    dispositivo: 'desktop',
+    dominio: 'exploradores.jovensgenios.com',
+    flows: [
+      { id: 'giro', label: 'Giro 360°', icon: './planetas/planeta-01.png' },
+      { id: 'claro', label: 'Giro em fundo claro', icon: './3d/sparkles.png' },
+      { id: 'tamanhos', label: 'Tamanhos de uso', icon: './3d/planet.png' },
+      { id: 'nextjs', label: 'Handoff Next.js', icon: './3d/clipboard.png' },
+    ],
+    component: lazy(() => import('../prototypes/planetas')),
+  },
 ]
 export const findJourney = (slug?: string) => journeys.find((j) => j.slug === slug)
