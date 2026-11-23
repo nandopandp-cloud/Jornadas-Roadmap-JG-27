@@ -1,22 +1,26 @@
 """
 Prepara um planeta de massinha dos Exploradores para o giro 3D (eixo vertical),
-a partir de DUAS artes: a vista de frente e a vista de trás (PNG transparentes).
+a partir de VÁRIAS artes do mesmo planeta (frente, laterais, costas), cada uma com o
+ângulo em que foi "fotografada" (0° = frente; positivo = o lado da casa vem para a frente).
 
 Ideia: o planeta vira um objeto 3D único.
-  • Geometria: uma esfera + um relevo "inflado" a partir das silhuetas. Os elementos
-    que saem da esfera (casa, polvo, ilha, rochedo) ficam na borda das duas vistas,
-    então a silhueta conta o quanto eles saem; o relevo tem espessura arredondada.
-  • Cor: cada ponto do objeto pega a cor da vista que o enxerga (frente ou costas).
-    A 0° o planeta é exatamente a arte da frente; a 180°, exatamente a de trás.
+  • Geometria: uma esfera + um relevo "inflado" a partir da silhueta de cada vista
+    (no plano perpendicular a ela): a silhueta conta o quanto os elementos saem.
+  • Cor: cada ponto do objeto pega a cor da vista mais próxima do ângulo atual que o
+    enxerga. No ângulo de cada vista, o planeta é exatamente aquela arte.
+  • As artes geradas por IA não têm geometria exata entre si: o ângulo de cada uma foi
+    medido comparando as projeções (ver medir_angulo) e pode ser ajustado à mão.
 
 Gera em public/planetas/<id>/:
-  frente.webp, costas.webp  as duas vistas sem a parte horizontal da luz (a luz que
-                            mudaria de lugar ao girar), com as cores das duas equilibradas
-  perfil.png                1024×1: altura do relevo (R) e espessura (G) por ângulo
+  <vista>.webp   cada vista sem a parte horizontal da luz (a que mudaria de lugar ao
+                 girar), com o tom do oceano igual ao da frente
+  perfil.png     1024×N: altura do relevo (R) e espessura (G) por ângulo, uma linha por vista
 e src/prototypes/planetas/<id>.json com centro, raio, enquadramento das vistas e a luz.
 
 Uso (precisa de opencv-python-headless e numpy):
-  python scripts/planetas/preparar-planeta.py planeta-01
+  python scripts/planetas/preparar-planeta.py planeta-01                  gera tudo
+  python scripts/planetas/preparar-planeta.py planeta-01 --medir-angulos  só mede em que ângulo
+      cada vista foi "fotografada", comparando com a frente (e as costas, se houver)
 """
 import json
 import sys
@@ -29,12 +33,18 @@ RAIZ = Path(__file__).resolve().parents[2]
 
 PLANETAS = {
     'planeta-01': {
-        'frente': 'public/planetas/planeta-01.png',
-        'costas': 'public/planetas/planeta-01-costas.png',
-        # centro e raio da esfera em cada arte (px); None = medir sozinho pela silhueta
-        'esfera_frente': (155.0, 167.0, 128.5),
-        'esfera_costas': None,
-        'tamanho_costas': 1024,  # a vista de trás é reduzida para este lado (textura)
+        # (nome, arquivo, ângulo em graus, esfera (cx, cy, raio) em px da arte ou None = medir)
+        # Os ângulos seguem o guia (90° e 270°). Medidos pelo conteúdo (--medir-angulos), as
+        # laterais geradas dão ≈ 25° e ≈ −75°: estão menos giradas do que deveriam. Testamos os
+        # dois: com os ângulos medidos sobra um vão de ~145° borrado entre a direita e as costas;
+        # com 90°/270° quase toda a volta fica nítida e só a troca entre vistas fica mais curta.
+        'vistas': [
+            ('frente', 'public/planetas/planeta-01.png', 0, (155.0, 167.0, 128.5)),
+            ('direita', 'public/planetas/planeta-01-direita.png', 90, None),
+            ('costas', 'public/planetas/planeta-01-costas.png', 180, None),
+            ('esquerda', 'public/planetas/planeta-01-esquerda.png', 270, None),
+        ],
+        'tamanho_max': 1024,  # vistas maiores são reduzidas para este lado (textura)
     },
 }
 
@@ -111,24 +121,65 @@ def silhueta(alfa, cx, cy, R):
     return rr[idx] / R
 
 
+def medir_angulos(pid):
+    """Para cada vista que não é a frente/costas, procura o ângulo em que a projeção dela sobre a
+    esfera mais coincide com a da frente (0°) e a das costas (180°). Compara formas grandes
+    (imagem borrada) em cor Lab, só onde as duas vistas enxergam a superfície bem de frente."""
+    cfg = PLANETAS[pid]
+    TW, TH = 360, 180
+    lon = ((np.arange(TW) + 0.5) / TW * 2 - 1) * np.pi
+    lat = (0.5 - (np.arange(TH) + 0.5) / TH) * np.pi
+    LON, LAT = np.meshgrid(lon, lat)
+    Px, Py, Pz = np.cos(LAT) * np.sin(LON), np.sin(LAT), np.cos(LAT) * np.cos(LON)
+    cache = {}
+
+    def projetar(arq, esfera, alfa):
+        if arq not in cache:
+            img = cv2.imread(str(RAIZ / arq), cv2.IMREAD_UNCHANGED)
+            cx, cy, R = esfera if esfera else medir_esfera(img[:, :, 3])
+            cache[arq] = (cv2.GaussianBlur(img.astype(np.float32), (0, 0), R / 60), cx, cy, R)
+        img, cx, cy, R = cache[arq]
+        a = np.radians(alfa)
+        x, z = Px * np.cos(a) + Pz * np.sin(a), -Px * np.sin(a) + Pz * np.cos(a)
+        t = cv2.remap(img, (cx + x * R * 0.97).astype(np.float32), (cy - Py * R * 0.97).astype(np.float32), cv2.INTER_LINEAR)
+        peso = np.clip((z - 0.35) / 0.4, 0, 1) * (t[:, :, 3] > 200)
+        lab = cv2.cvtColor(t[:, :, :3].clip(0, 255).astype(np.uint8), cv2.COLOR_BGR2LAB).astype(np.float32)
+        return lab, peso
+
+    refs = [projetar(arq, esf, ang) for _, arq, ang, esf in cfg['vistas'] if ang % 180 == 0]
+    for nome, arq, ang, esf in cfg['vistas']:
+        if ang % 180 == 0:
+            continue
+        res = []
+        for alfa in range(-180, 180, 5):
+            lab, p = projetar(arq, esf, alfa)
+            tot = w = 0.0
+            for rl, rp in refs:
+                m = p * rp
+                tot += (np.abs(lab - rl).sum(2) * m).sum()
+                w += m.sum()
+            if w > 500:
+                res.append((tot / w, alfa))
+        res.sort()
+        print(f'{nome}: configurado {ang}°, melhor coincidência em', ', '.join(f'{a}° ({e:.0f})' for e, a in res[:3]))
+
+
 def main(pid):
     cfg = PLANETAS[pid]
-    vistas = {}
-    for nome in ('frente', 'costas'):
-        img = cv2.imread(str(RAIZ / cfg[nome]), cv2.IMREAD_UNCHANGED)
-        if nome == 'costas' and cfg.get('tamanho_costas') and img.shape[1] > cfg['tamanho_costas']:
-            lado = cfg['tamanho_costas']
+    vistas = []
+    for nome, arq, angulo, esfera in cfg['vistas']:
+        img = cv2.imread(str(RAIZ / arq), cv2.IMREAD_UNCHANGED)
+        lado = cfg.get('tamanho_max')
+        if lado and img.shape[1] > lado:
             img = cv2.resize(img, (lado, lado), interpolation=cv2.INTER_AREA)
-        alfa = img[:, :, 3]
-        esfera = cfg.get(f'esfera_{nome}')
         if esfera is None:
-            esfera = medir_esfera(alfa)
+            esfera = medir_esfera(img[:, :, 3])
         cx, cy, R = esfera
-        print(f'{nome}: {img.shape[1]} px, centro ({cx:.1f}, {cy:.1f}), raio {R:.1f}')
-        vistas[nome] = {'img': img, 'cx': cx, 'cy': cy, 'R': R}
+        print(f'{nome} ({angulo}°): {img.shape[1]} px, centro ({cx:.1f}, {cy:.1f}), raio {R:.1f}')
+        vistas.append({'nome': nome, 'arq': arq, 'angulo': angulo, 'img': img, 'cx': cx, 'cy': cy, 'R': R})
 
     # ---- luz de cada vista: tira a parte horizontal (ela mudaria de lugar ao girar) ----
-    for nome, v in vistas.items():
+    for v in vistas:
         img, cx, cy, R = v['img'], v['cx'], v['cy'], v['R']
         H, W = img.shape[:2]
         hsv = cv2.cvtColor(img[:, :, :3], cv2.COLOR_BGR2HSV)
@@ -141,65 +192,71 @@ def main(pid):
         v['luz'] = c
         v['cor'] = img[:, :, :3].astype(np.float64) / Sh[:, :, None]
         v['agua'] = agua
-        print(f'  luz horizontal de {Sh[dist < R].min():.2f} a {Sh[dist < R].max():.2f}')
+        print(f'  {v["nome"]}: luz horizontal de {Sh[dist < R].min():.2f} a {Sh[dist < R].max():.2f}')
 
-    # ---- equilibra as cores: o oceano das costas fica com o mesmo tom do da frente ----
-    ref = np.median(vistas['frente']['cor'][vistas['frente']['agua']], 0)
-    alvo = np.median(vistas['costas']['cor'][vistas['costas']['agua']], 0)
-    ajuste = np.clip(ref / np.maximum(alvo, 1), 0.8, 1.25)
-    vistas['costas']['cor'] *= ajuste[None, None, :]
-    print('ajuste de cor das costas (B, G, R):', ' '.join(f'{a:.3f}' for a in ajuste))
+    # ---- equilibra o brilho: o oceano de cada vista fica tão claro quanto o da frente ----
+    # (só o brilho: ajustar canal por canal puxava as laterais para o vermelho)
+    lum = lambda c: c @ np.array([0.114, 0.587, 0.299])
+    ref = np.median(lum(vistas[0]['cor'][vistas[0]['agua']]))
+    for v in vistas[1:]:
+        ajuste = float(np.clip(ref / max(np.median(lum(v['cor'][v['agua']])), 1), 0.8, 1.25))
+        v['cor'] *= ajuste
+        print(f'  brilho {v["nome"]}: × {ajuste:.3f}')
 
     # ---- margem contra estouro dos claros (a textura guarda cor × ganho; o shader desfaz) ----
-    picos = [np.percentile(v['cor'][v['img'][:, :, 3] > 200].max(1), 99.8) for v in vistas.values()]
+    picos = [np.percentile(v['cor'][v['img'][:, :, 3] > 200].max(1), 99.8) for v in vistas]
     ganho = float(min(1.0, 252.0 / max(picos)))
 
     destino = RAIZ / 'public/planetas' / pid
     destino.mkdir(parents=True, exist_ok=True)
     for velho in list(destino.glob('*.png')) + list(destino.glob('*.jpg')) + list(destino.glob('*.webp')):
         velho.unlink()
-    for nome, v in vistas.items():
+    for v in vistas:
         saida = v['img'].copy()
         saida[:, :, :3] = (v['cor'] * ganho).clip(0, 255).round().astype(np.uint8)
         # fora da silhueta a cor não importa (alfa 0), mas ajuda o filtro: puxa a cor da borda
         saida[:, :, :3] = np.where(saida[:, :, 3:4] > 0, saida[:, :, :3], cv2.dilate(saida[:, :, :3], np.ones((3, 3), np.uint8)))
-        cv2.imwrite(str(destino / f'{nome}.webp'), saida, [cv2.IMWRITE_WEBP_QUALITY, 92])
+        cv2.imwrite(str(destino / f'{v["nome"]}.webp'), saida, [cv2.IMWRITE_WEBP_QUALITY, 92])
 
-    # ---- relevo: silhueta da frente e da de trás espelhada, no mesmo plano ----
-    f, c = vistas['frente'], vistas['costas']
-    rf = silhueta(f['img'][:, :, 3], f['cx'], f['cy'], f['R'])
-    rc = silhueta(c['img'][:, :, 3], c['cx'], c['cy'], c['R'])
-    # ângulo fi na frente = ângulo (π − fi) na vista de trás
-    idx = (N_PERFIL - 1 - np.arange(N_PERFIL)) % N_PERFIL
-    bruto = np.maximum(np.maximum(rf, rc[idx]), 1.0)
-    rho = np.convolve(np.concatenate([bruto[-3:], bruto, bruto[:3]]), np.ones(7) / 7, 'same')[3:-3]
-    rho = np.maximum(rho, bruto - 0.004)
-    altura = np.clip(rho - 1.0, 0, ALTURA_MAX)
-    # meia espessura (rad): fina o bastante para o elemento não virar uma mancha larga quando aponta para a câmera
-    espessura = np.clip(0.06 + 0.6 * altura, 0.08, 0.32)
-    perfil = np.zeros((1, N_PERFIL, 4), np.uint8)
-    perfil[0, :, 2] = np.round(altura / ALTURA_MAX * 255)  # R (OpenCV grava BGR)
-    perfil[0, :, 1] = np.round(espessura / (np.pi / 2) * 255)  # G
-    perfil[0, :, 3] = 255
+    # ---- relevo: a silhueta de cada vista, inflada no plano perpendicular a ela ----
+    perfil = np.zeros((len(vistas), N_PERFIL, 4), np.uint8)
+    alt_max = 0.0
+    for i, v in enumerate(vistas):
+        rho = np.maximum(silhueta(v['img'][:, :, 3], v['cx'], v['cy'], v['R']), 1.0)
+        suave = np.convolve(np.concatenate([rho[-3:], rho, rho[:3]]), np.ones(7) / 7, 'same')[3:-3]
+        rho = np.maximum(suave, rho - 0.004)
+        altura = np.clip(rho - 1.0, 0, ALTURA_MAX)
+        # meia espessura (rad): fina o bastante para o elemento não virar uma mancha larga de frente
+        espessura = np.clip(0.06 + 0.6 * altura, 0.08, 0.32)
+        perfil[i, :, 2] = np.round(altura / ALTURA_MAX * 255)  # R (OpenCV grava BGR)
+        perfil[i, :, 1] = np.round(espessura / (np.pi / 2) * 255)  # G
+        perfil[i, :, 3] = 255
+        alt_max = max(alt_max, float(altura.max()))
     cv2.imwrite(str(destino / 'perfil.png'), perfil)
-    rho_max = float(1 + altura.max() + 0.02)
-    print(f'relevo: altura máx {altura.max():.2f} R, raio do quadro {rho_max:.2f} R')
+    rho_max = 1 + alt_max + 0.02
+    print(f'relevo: altura máx {alt_max:.2f} R, raio do quadro {rho_max:.2f} R')
 
-    def enquadramento(v):
-        H, W = v['img'].shape[:2]
-        return {'u': round(v['cx'] / W, 5), 'v': round(v['cy'] / H, 5), 'r': round(v['R'] / W, 5)}
-
-    fW = f['img'].shape[1]
+    f = vistas[0]
     dados = {
         'id': pid,
-        'arte': '/'.join(cfg['frente'].split('/')[1:]),
+        'arte': '/'.join(f['arq'].split('/')[1:]),
         'pasta': f'planetas/{pid}',
-        'tamanhoArte': fW,
+        'tamanhoArte': f['img'].shape[1],
         'centro': [f['cx'], f['cy']],
         'raio': f['R'],
         'raioQuadro': round(rho_max, 4),
-        'frente': {'src': 'frente.webp', **enquadramento(f)},
-        'costas': {'src': 'costas.webp', **enquadramento(c)},
+        # vistas: imagem, ângulo (graus) e enquadramento da esfera (centro u, v e raio r, em fração da imagem)
+        'vistas': [
+            {
+                'nome': v['nome'],
+                'src': f'{v["nome"]}.webp',
+                'angulo': v['angulo'],
+                'u': round(v['cx'] / v['img'].shape[1], 5),
+                'v': round(v['cy'] / v['img'].shape[0], 5),
+                'r': round(v['R'] / v['img'].shape[1], 5),
+            }
+            for v in vistas
+        ],
         'perfil': 'perfil.png',
         'alturaMax': ALTURA_MAX,
         # luz da frente (coeficientes de S(x, y)); o shader devolve a parte horizontal, parada
@@ -211,4 +268,8 @@ def main(pid):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1] if len(sys.argv) > 1 else 'planeta-01')
+    alvo = sys.argv[1] if len(sys.argv) > 1 else 'planeta-01'
+    if '--medir-angulos' in sys.argv:
+        medir_angulos(alvo)
+    else:
+        main(alvo)

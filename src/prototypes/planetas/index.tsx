@@ -17,8 +17,8 @@ const BASE = './'
 type Aba = 'giro' | 'tamanhos' | 'nextjs'
 
 const TAMANHOS = [
-  { px: 96, label: 'Ícone', uso: 'listas e conquistas', inicio: 320 },
-  { px: 160, label: 'Card', uso: 'escolha do planeta', inicio: 180 },
+  { px: 96, label: 'Ícone', uso: 'listas e conquistas', inicio: 270 },
+  { px: 160, label: 'Card', uso: 'escolha do planeta', inicio: 90 },
   { px: 260, label: 'Destaque', uso: 'abertura da trilha', inicio: 0 },
 ]
 
@@ -107,7 +107,7 @@ export default function Planetas({ startScreen }: PrototypeProps) {
           <h1>Giro 360°</h1>
           <p>
             O planeta inteiro gira como um objeto 3D, no eixo vertical, com uma volta a cada {SEGUNDOS_POR_VOLTA} s: a superfície, a casa, o
-            rochedo, o polvo e a ilha dão a volta juntos. De frente é a arte da frente; de costas, a arte de trás. Dá para girar com a mão.
+            rochedo, o polvo e a ilha dão a volta juntos, montados a partir de 4 artes (frente, laterais e costas). Dá para girar com a mão.
           </p>
         </header>
 
@@ -264,7 +264,7 @@ const PROPS: [string, string, string][] = [
   ['onSentidoChange', '—', 'avisa quando a pessoa joga o planeta para o outro lado'],
   ['pausado', 'false', 'para o giro automático (a mão continua)'],
   ['arrastavel', 'true', 'girar com a mão e com as setas'],
-  ['inicio', '0', 'ângulo inicial; 0 = arte da frente, 180 = de trás'],
+  ['inicio', '0', 'ângulo inicial; 0, 90, 180 e 270 = cada uma das 4 artes'],
   ['luz · flutuar · sombra', 'true', 'liga e desliga cada camada'],
   ['halo', "'92, 196, 255'", 'cor do brilho (r, g, b) ou false'],
 ]
@@ -282,15 +282,16 @@ function Handoff() {
       <ol className="pv-passos">
         <li>
           <strong>Copie 3 arquivos</strong> para <code>components/planetas/</code>: <code>PlanetaGirando.tsx</code>,{' '}
-          <code>planeta-girando.module.css</code> e <code>planeta-01.json</code>. As duas vistas e o relevo (<code>frente.webp</code>, <code>costas.webp</code>, <code>perfil.png</code>) vão para{' '}
+          <code>planeta-girando.module.css</code> e <code>planeta-01.json</code>. As 4 vistas e o relevo (<code>frente</code>, <code>direita</code>, <code>costas</code> e <code>esquerda.webp</code>, mais{' '}
+          <code>perfil.png</code>) vão para{' '}
           <code>public/planetas/planeta-01/</code>.
         </li>
         <li>
           <strong>Use onde o planeta aparece.</strong> O componente já começa com <code>'use client'</code> e não tem dependências.
         </li>
         <li>
-          <strong>Planeta novo?</strong> Rode <code>scripts/planetas/preparar-planeta.py</code> com a arte de frente e a de trás. Ele mede a
-          esfera, prepara as duas vistas, o relevo dos elementos e o JSON.
+          <strong>Planeta novo?</strong> Gere as 4 vistas (0°, 90°, 180° e 270°) e rode <code>scripts/planetas/preparar-planeta.py</code>.
+          Ele mede a esfera e os ângulos, prepara as vistas, o relevo dos elementos e o JSON (metodologia no README da branch).
         </li>
       </ol>
 

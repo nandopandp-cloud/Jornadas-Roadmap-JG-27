@@ -7,19 +7,17 @@ import s from './planeta-girando.module.css'
    PlanetaGirando · Exploradores — giro 3D no eixo vertical
    ---------------------------------------------------------------------
    O planeta inteiro (esfera + casa, polvo, ilha, rochedo…) gira como um
-   objeto 3D só, a partir de DUAS artes: a vista de frente e a de trás.
+   objeto 3D só, a partir de VÁRIAS artes (até 4): frente, laterais, costas.
 
    Como funciona (WebGL2):
-   1. GEOMETRIA. Uma esfera + um relevo "inflado" a partir das silhuetas
-      das duas vistas (perfil.png, gerado por scripts/planetas/
-      preparar-planeta.py). Os elementos que saem da esfera ficam na
-      borda das duas vistas, então a silhueta diz quanto eles saem; o
-      relevo tem espessura arredondada. O shader acha, para cada pixel,
-      onde o raio encosta nesse objeto (ray marching).
-   2. COR. Cada ponto do objeto pega a cor da vista que o enxerga, com
-      peso maior para a vista mais próxima do ângulo atual: a 0° o
-      planeta é exatamente a arte da frente e a 180°, exatamente a de
-      trás; no meio, a troca acontece no próprio 3D.
+   1. GEOMETRIA. Uma esfera + um relevo "inflado" a partir da silhueta
+      de cada vista, no plano perpendicular a ela (perfil.png, gerado
+      por scripts/planetas/preparar-planeta.py). O shader acha, para
+      cada pixel, onde o raio encosta nesse objeto (ray marching).
+   2. COR. Cada ponto pega a cor das duas vistas vizinhas do ângulo
+      atual que o enxergam. No ângulo de cada vista, o planeta é
+      exatamente aquela arte; entre duas vistas, a troca é rápida e
+      acontece no próprio 3D.
    3. LUZ. A parte horizontal da luz pintada nas artes foi tirada pelo
       script e volta aqui, parada na tela: girando, a luz fica no lugar.
    4. MÃO. Arrastar na horizontal gira o planeta; ao soltar, ele segue
@@ -31,7 +29,7 @@ import s from './planeta-girando.module.css'
    Next.js: componente cliente ('use client'), sem dependências.
    ===================================================================== */
 
-type Vista = { src: string; u: number; v: number; r: number }
+type Vista = { nome: string; src: string; angulo: number; u: number; v: number; r: number }
 
 export type PlanetaDados = {
   id: string
@@ -45,10 +43,10 @@ export type PlanetaDados = {
   raio: number
   /** raio do quadro que cabe o relevo, em raios da esfera */
   raioQuadro: number
-  /** vistas: imagem e enquadramento da esfera (centro u, v e raio r, em fração da imagem) */
-  frente: Vista
-  costas: Vista
-  /** altura (R) e espessura (G) do relevo por ângulo */
+  /** até 4 vistas: imagem, ângulo (graus; 0 = frente) e enquadramento da esfera
+      (centro u, v e raio r, em fração da imagem). A primeira é a frente. */
+  vistas: Vista[]
+  /** altura (R) e espessura (G) do relevo por ângulo, uma linha por vista */
   perfil: string
   alturaMax: number
   /** luz pintada na arte, medida pelo script: S(x, y) = c0 + c1·x + c2·y + c3·x² + c4·y² + c5·x·y + c6·r⁴ */
@@ -74,7 +72,7 @@ export type PlanetaGirandoProps = {
   pausado?: boolean
   /** deixa girar com a mão e com as setas. Padrão: true */
   arrastavel?: boolean
-  /** ângulo inicial (graus); 0 = a arte de frente, 180 = a de trás */
+  /** ângulo inicial (graus); 0 = a arte de frente; no ângulo de cada vista, aquela arte */
   inicio?: number
   /** luz das artes parada sobre o planeta (false = só a cor). Padrão: true */
   luz?: boolean
@@ -102,16 +100,16 @@ void main() { v = p; gl_Position = vec4(p, 0.0, 1.0); }`
 
 const FRAG = `#version 300 es
 precision highp float;
-uniform sampler2D texF;    // vista de frente (cor × ganho, alfa pré-multiplicado)
-uniform sampler2D texB;    // vista de trás
-uniform sampler2D perfil;  // R: altura do relevo, G: meia espessura, por ângulo
-uniform vec3 F;            // enquadramento da frente: centro (u, v) e raio, em uv
-uniform vec3 B;            // enquadramento das costas
+uniform sampler2D tex0, tex1, tex2, tex3;  // vistas (cor × ganho, alfa pré-multiplicado)
+uniform sampler2D perfil;  // uma linha por vista. R: altura do relevo, G: meia espessura
+uniform vec4 V[4];         // por vista: centro (u, v) e raio, em uv; ângulo (rad)
+uniform vec4 peso;         // peso de cada vista no ângulo atual (as duas vizinhas)
+uniform float lod[4];
+uniform int nVistas;
 uniform float ang;         // ângulo do giro
 uniform float rhoMax;      // raio do quadro, em raios da esfera
 uniform float alturaMax;
 uniform float espMax;      // maior meia espessura (rad)
-uniform float lodF, lodB;
 uniform float borda;       // largura do antisserrilhado da esfera, em raios
 uniform float luz;
 uniform float ganho;
@@ -120,11 +118,20 @@ in vec2 v;
 out vec4 cor;
 const float PI = 3.14159265359;
 
+// relevo: a silhueta de cada vista, inflada no plano perpendicular a ela
 float altura(vec3 d) {
-  vec2 hd = textureLod(perfil, vec2(atan(d.y, d.x) / (2.0 * PI) + 0.5, 0.5), 0.0).rg;
-  float esp = max(hd.g * 1.5707963, 0.001);
-  float t = asin(min(abs(d.z), 1.0)) / esp;
-  return t < 1.0 ? hd.r * alturaMax * sqrt(1.0 - t * t) : 0.0;
+  float h = 0.0;
+  for (int i = 0; i < 4; i++) {
+    if (i >= nVistas) break;
+    float al = V[i].w;
+    float dz = abs(-d.x * sin(al) + d.z * cos(al));     // distância ao plano da silhueta
+    if (dz > sin(espMax)) continue;
+    float fi = atan(d.y, d.x * cos(al) + d.z * sin(al));
+    vec2 hd = textureLod(perfil, vec2(fi / (2.0 * PI) + 0.5, (float(i) + 0.5) / float(nVistas)), 0.0).rg;
+    float t = asin(dz) / max(hd.g * 1.5707963, 0.001);
+    if (t < 1.0) h = max(h, hd.r * alturaMax * sqrt(1.0 - t * t));
+  }
+  return h;
 }
 
 float campo(vec3 P) {
@@ -137,40 +144,38 @@ float campo(vec3 P) {
 float suavizar(float agora, float naArte) {
   return clamp(log2(max(agora, 0.0) / max(naArte, 0.04)) - 0.6, 0.0, 4.0);
 }
-vec4 vistaF(vec3 P, float extra) { return textureLod(texF, vec2(F.x + P.x * F.z, F.y - P.y * F.z), lodF + extra); }
-vec4 vistaB(vec3 P, float extra) { return textureLod(texB, vec2(B.x - P.x * B.z, B.y - P.y * B.z), lodB + extra); }
 
-// cor de um ponto do objeto. Na esfera, cada lado usa a vista que o enxerga; nos elementos
-// (relevo alto), o elemento inteiro usa uma vista só, trocando perto de 90°: as duas artes
-// foram feitas separadas e um mesmo elemento muda um pouco de uma para a outra.
+vec4 vista(sampler2D t, vec4 Vi, vec3 P, float l) {
+  float x = P.x * cos(Vi.w) + P.z * sin(Vi.w);
+  return textureLod(t, vec2(Vi.x + x * Vi.z, Vi.y - P.y * Vi.z), l);
+}
+
+// soma a contribuição da vista i (macro: samplers não podem ser indexados por variável)
+#define SOMA(i, T) { \
+  float zi = -n.x * sin(V[i].w) + n.z * cos(V[i].w); \
+  float w = smoothstep(-0.1, 0.1, zi) * (peso[i] + 0.003); \
+  if (i < nVistas && w > 1e-4) { \
+    vec4 c = vista(T, V[i], P, lod[i] + suavizar(agora, zi)); \
+    if (corpo && c.a < 0.98) c = mix(vista(T, V[i], P * 0.95, lod[i] + 1.0), c, c.a); \
+    acc += c * w; soma += w; \
+    if (peso[i] > 0.1) amax = max(amax, c.a); \
+    wmax = max(wmax, w); \
+  } }
+
+// cor de um ponto do objeto: as vistas que o enxergam, pesadas pela proximidade do ângulo atual
 vec4 amostra(vec3 P, bool corpo) {
-  float r = length(P);
-  vec3 n = P / r;
-  float perto = 0.5 + 0.5 * cos(ang);          // 1 = de frente, 0 = de costas
-  float visF = smoothstep(-0.1, 0.1, n.z);
-  float wF = visF * (perto + 0.001);
-  float wB = (1.0 - visF) * (1.0 - perto + 0.001);
-  float fEsfera = wF / (wF + wB);
-  float el = corpo ? 0.0 : smoothstep(0.04, 0.12, r - 1.0);
-  float f = mix(fEsfera, smoothstep(0.3, 0.7, perto), el);
+  vec3 n = normalize(P);
   float agora = -n.x * sin(ang) + n.z * cos(ang);  // de frente para a câmera atual
-  vec4 a = f > 0.001 ? vistaF(P, suavizar(agora, n.z)) : vec4(0.0);
-  vec4 b = f < 0.999 ? vistaB(P, suavizar(agora, -n.z)) : vec4(0.0);
-  if (corpo) {
-    // a esfera é sólida: perto da borda das artes, puxa a cor para dentro ou usa a outra vista
-    if (a.a < 0.98 && f > 0.001) a = mix(vistaF(P * 0.95, 1.0), a, a.a);
-    if (b.a < 0.98 && f < 0.999) b = mix(vistaB(P * 0.95, 1.0), b, b.a);
-    float pa = f * a.a, pb = (1.0 - f) * b.a;
-    if (pa + pb < 0.02) { pa = a.a; pb = b.a; }
-    vec3 rgb = (a.rgb * f + b.rgb * (1.0 - f)) / max(pa + pb, 1e-3);
-    return vec4(rgb, 1.0);
-  }
-  // elementos: na troca de vista, a forma é a união das duas (sem fantasma semitransparente);
-  // nas pontas (0° e 180°) fica exatamente a arte
-  vec4 mist = a * f + b * (1.0 - f);
-  float alfa = mix(mist.a, max(a.a, b.a), 4.0 * f * (1.0 - f));
-  vec3 rgb = mist.rgb / max(mist.a, 1e-3);
-  return vec4(rgb * alfa, alfa);
+  vec4 acc = vec4(0.0);
+  float soma = 0.0, amax = 0.0, wmax = 0.0;
+  SOMA(0, tex0) SOMA(1, tex1) SOMA(2, tex2) SOMA(3, tex3)
+  if (soma <= 0.0) return corpo ? vec4(0.0, 0.0, 0.0, 1.0) : vec4(0.0);
+  vec4 mist = acc / soma;
+  if (corpo) return vec4(mist.rgb / max(mist.a, 1e-3), 1.0);  // a esfera é sólida
+  // elementos: na troca de vista, a forma é a união das vistas (sem fantasma semitransparente)
+  float troca = 1.0 - wmax / soma;
+  float alfa = mix(mist.a, max(mist.a, amax), clamp(troca * 2.0, 0.0, 1.0));
+  return vec4(mist.rgb / max(mist.a, 1e-3) * alfa, alfa);
 }
 
 void main() {
@@ -187,22 +192,13 @@ void main() {
   bool corpo = q2 < 1.0;
   float tCorpo = corpo ? Z - sqrt(1.0 - q2) : tB;
   tB = min(tB, tCorpo);
-  // o relevo só existe perto do plano z = 0 do planeta: anda só nessa faixa
-  float Zs = rhoMax * sin(min(espMax, 1.5));
-  if (abs(c) < 1e-4) {
-    if (abs(o.z) > Zs) tB = tA;
-  } else {
-    float t1 = (o.z - Zs) / c, t2 = (o.z + Zs) / c;
-    tA = max(tA, min(t1, t2));
-    tB = min(tB, max(t1, t2));
-  }
 
   vec4 acc = vec4(0.0);
   if (tB > tA) {
-    float dt = (tB - tA) / 64.0;
+    float dt = (tB - tA) / 72.0;
     float tAnt = tA;
     bool dentro = campo(o + tA * d) < 0.0;
-    for (int i = 1; i <= 64; i++) {
+    for (int i = 1; i <= 72; i++) {
       float t = tA + float(i) * dt;
       float f = campo(o + t * d);
       if (!dentro && f < 0.0) {
@@ -236,6 +232,34 @@ void main() {
   cor = vec4(acc.rgb * mix(1.0, Sh, luz) / ganho, acc.a);
 }`
 
+/** peso de cada vista no ângulo atual: só as duas vizinhas, com troca rápida no meio do caminho */
+function pesosVistas(angulos: number[], ang: number) {
+  const n = angulos.length
+  const p = [0, 0, 0, 0]
+  if (n === 1) {
+    p[0] = 1
+    return p
+  }
+  const norm = (a: number) => ((a % 360) + 360) % 360
+  const atual = norm((ang * 180) / Math.PI)
+  const ordem = angulos.map((a, i) => ({ a: norm(a), i })).sort((x, y) => x.a - y.a)
+  for (let k = 0; k < ordem.length; k++) {
+    const A = ordem[k]
+    const B = ordem[(k + 1) % ordem.length]
+    const vao = norm(B.a - A.a) || 360
+    const dentro = norm(atual - A.a)
+    if (dentro <= vao) {
+      const t = dentro / vao
+      const s = Math.min(1, Math.max(0, (t - 0.38) / 0.24)) // troca rápida, no meio do caminho
+      const suave = s * s * (3 - 2 * s)
+      p[A.i] = 1 - suave
+      p[B.i] = suave
+      break
+    }
+  }
+  return p
+}
+
 function carregar(src: string) {
   return new Promise<HTMLImageElement>((ok, falha) => {
     const img = new Image()
@@ -246,7 +270,7 @@ function carregar(src: string) {
   })
 }
 
-function criarGL(canvas: HTMLCanvasElement, planeta: PlanetaDados, imgs: { F: HTMLImageElement; B: HTMLImageElement; P: HTMLImageElement }) {
+function criarGL(canvas: HTMLCanvasElement, planeta: PlanetaDados, imgs: HTMLImageElement[], perfilImg: HTMLImageElement) {
   const gl = canvas.getContext('webgl2', { premultipliedAlpha: true, alpha: true, antialias: false })
   if (!gl) return null
   const sh = (tipo: number, src: string) => {
@@ -287,33 +311,34 @@ function criarGL(canvas: HTMLCanvasElement, planeta: PlanetaDados, imgs: { F: HT
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
   }
-  textura(0, imgs.F, false)
-  textura(1, imgs.B, false)
-  textura(2, imgs.P, true)
+  const vs = planeta.vistas.slice(0, 4)
+  for (let i = 0; i < 4; i++) textura(i, imgs[Math.min(i, imgs.length - 1)], false)
+  textura(4, perfilImg, true)
 
   const U = (n: string) => gl.getUniformLocation(prog, n)
-  gl.uniform1i(U('texF'), 0)
-  gl.uniform1i(U('texB'), 1)
-  gl.uniform1i(U('perfil'), 2)
-  const { frente: f, costas: b } = planeta
-  gl.uniform3f(U('F'), f.u, f.v, f.r)
-  gl.uniform3f(U('B'), b.u, b.v, b.r)
+  for (let i = 0; i < 4; i++) gl.uniform1i(U(`tex${i}`), i)
+  gl.uniform1i(U('perfil'), 4)
+  gl.uniform1i(U('nVistas'), vs.length)
+  const V = new Float32Array(16)
+  vs.forEach((v, i) => V.set([v.u, v.v, v.r, (v.angulo * Math.PI) / 180], i * 4))
+  gl.uniform4fv(U('V'), V)
   gl.uniform1f(U('rhoMax'), planeta.raioQuadro)
   gl.uniform1f(U('alturaMax'), planeta.alturaMax)
   gl.uniform1f(U('ganho'), planeta.ganho ?? 1)
   const coef = planeta.luz ?? [1]
   gl.uniform1fv(U('C'), new Float32Array([0, 1, 2, 3, 4, 5, 6].map((i) => coef[i] ?? (i === 0 ? 1 : 0))))
-  // maior meia espessura do relevo (para limitar a faixa do ray marching)
+  // maior meia espessura do relevo (para pular cedo as vistas longe de um ponto)
   const cv = document.createElement('canvas')
-  cv.width = imgs.P.width
-  cv.height = 1
+  cv.width = perfilImg.width
+  cv.height = perfilImg.height
   const cx2 = cv.getContext('2d')!
-  cx2.drawImage(imgs.P, 0, 0)
-  const px = cx2.getImageData(0, 0, cv.width, 1).data
+  cx2.drawImage(perfilImg, 0, 0)
+  const px = cx2.getImageData(0, 0, cv.width, cv.height).data
   let esp = 0
-  for (let i = 0; i < cv.width; i++) esp = Math.max(esp, px[i * 4 + 1])
+  for (let i = 0; i < px.length; i += 4) esp = Math.max(esp, px[i + 1])
   gl.uniform1f(U('espMax'), (esp / 255) * (Math.PI / 2) + 0.01)
-  const u = { ang: U('ang'), luz: U('luz'), borda: U('borda'), lodF: U('lodF'), lodB: U('lodB') }
+  const u = { ang: U('ang'), luz: U('luz'), borda: U('borda'), lod: U('lod'), peso: U('peso') }
+  const angulos = vs.map((v) => v.angulo)
   gl.clearColor(0, 0, 0, 0)
 
   return {
@@ -325,8 +350,8 @@ function criarGL(canvas: HTMLCanvasElement, planeta: PlanetaDados, imgs: { F: HT
       gl.uniform1f(u.ang, ang)
       gl.uniform1f(u.luz, luz)
       gl.uniform1f(u.borda, Math.min(0.1, 1.6 / Math.max(pxPorRaio, 1)))
-      gl.uniform1f(u.lodF, Math.max(0, Math.log2((f.r * imgs.F.width) / pxPorRaio)))
-      gl.uniform1f(u.lodB, Math.max(0, Math.log2((b.r * imgs.B.width) / pxPorRaio)))
+      gl.uniform1fv(u.lod, new Float32Array([0, 1, 2, 3].map((i) => (vs[i] ? Math.max(0, Math.log2((vs[i].r * imgs[i].width) / pxPorRaio)) : 0))))
+      gl.uniform4fv(u.peso, new Float32Array(pesosVistas(angulos, ang)))
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
     },
     liberar() {
@@ -395,6 +420,8 @@ export function PlanetaGirando({
     let quadro = 0
     let visivel = true
     let t0 = 0
+    let qualidade = 1 // reduz a resolução sozinho se os quadros ficarem lentos
+    let lentos = 0
     const g = giro.current
 
     const medir = () => {
@@ -406,7 +433,7 @@ export function PlanetaGirando({
       const escala = B / W
       g.escalaR = R * escala
       st.style.transform = `translate(${B / 2 - escala * cx}px, ${B / 2 - escala * cy}px) scale(${escala})`
-      const dpr = Math.min(window.devicePixelRatio || 1, DPR_MAX)
+      const dpr = Math.min(window.devicePixelRatio || 1, DPR_MAX) * qualidade
       const lado = Math.max(2, Math.round(2 * RQ * escala * dpr))
       if (cv.width !== lado) {
         cv.width = lado
@@ -415,8 +442,17 @@ export function PlanetaGirando({
     }
 
     const passo = (t: number) => {
-      const dt = t0 ? Math.min(0.1, (t - t0) / 1000) : 0
+      // o limite só evita um salto ao voltar de outra aba; até 4 quadros/s a velocidade é exata
+      const dt = t0 ? Math.min(0.25, (t - t0) / 1000) : 0
       t0 = t
+      // aparelho lento: mais de 30 ms por quadro por um tempo → desenha com menos pixels
+      if (dt > 0.03) lentos++
+      else lentos = Math.max(0, lentos - 1)
+      if (lentos > 20 && qualidade > 0.6) {
+        qualidade = Math.max(0.6, qualidade - 0.15)
+        lentos = 0
+        medir()
+      }
       const p = props.current
       if (!g.arrastando) {
         const alvo = p.pausado || reduz ? 0 : g.dir * VEL_AUTO
@@ -447,11 +483,12 @@ export function PlanetaGirando({
     if (caixa.current) io.observe(caixa.current)
 
     const pasta = (arq: string) => juntar(base, planeta.pasta, arq)
-    Promise.all([carregar(pasta(planeta.frente.src)), carregar(pasta(planeta.costas.src)), carregar(pasta(planeta.perfil))])
-      .then(([F, B, P]) => {
+    Promise.all([...planeta.vistas.slice(0, 4).map((v) => carregar(pasta(v.src))), carregar(pasta(planeta.perfil))])
+      .then((imgs) => {
         if (!vivo || !canvas.current) return
+        const perfilImg = imgs.pop()!
         try {
-          gl = criarGL(canvas.current, planeta, { F, B, P })
+          gl = criarGL(canvas.current, planeta, imgs, perfilImg)
         } catch {
           gl = null
         }
@@ -511,7 +548,7 @@ export function PlanetaGirando({
     g.ang += dx / Math.max(g.escalaR, 1)
     const a = amostras.current
     a.push({ t: e.timeStamp, x: e.clientX })
-    while (a.length > 2 && e.timeStamp - a[0].t > 90) a.shift()
+    while (a.length > 2 && e.timeStamp - a[0].t > 120) a.shift()
   }
   const aoSoltar = (e: PointerEvent<HTMLDivElement>) => {
     const g = giro.current
@@ -522,8 +559,9 @@ export function PlanetaGirando({
     const ini = a[0]
     const fim = a[a.length - 1]
     const dt = (fim.t - ini.t) / 1000
-    // parado antes de soltar (sem amostras recentes) = sem arremesso
-    const recente = e.timeStamp - fim.t < 60
+    // parado antes de soltar (sem movimento recente) = sem arremesso. A folga é grande porque em
+    // aparelhos lentos os eventos de movimento chegam espaçados
+    const recente = e.timeStamp - fim.t < 150
     const vel = dt > 0.012 && recente ? (fim.x - ini.x) / dt / Math.max(g.escalaR, 1) : 0
     g.vel = reduz ? 0 : Math.max(-VEL_MAX, Math.min(VEL_MAX, vel))
     g.tau = 1.1 // desacelera devagar, como um globo de verdade
