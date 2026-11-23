@@ -108,7 +108,7 @@ export default function Planetas({ startScreen }: PrototypeProps) {
           <h1>Giro 360°</h1>
           <p>
             O planeta inteiro gira como um objeto 3D, no eixo vertical, com uma volta a cada {SEGUNDOS_POR_VOLTA} s: a superfície, a casa, o
-            rochedo, o polvo e a ilha dão a volta juntos e nunca mudam de forma: é um modelo único, montado a partir do storyboard. Dá para girar com a mão.
+            vulcão, o polvo e a ilha dão a volta juntos e nunca mudam de forma: é um modelo único, montado com as peças do kit. Dá para girar com a mão.
           </p>
         </header>
 
@@ -290,8 +290,8 @@ function Handoff() {
           <strong>Use onde o planeta aparece.</strong> O componente já começa com <code>'use client'</code> e não tem dependências.
         </li>
         <li>
-          <strong>Planeta novo?</strong> Gere o storyboard do giro e rode <code>scripts/planetas/preparar-planeta.py</code>. Ele
-          separa e amplia os quadros, mede os ângulos e monta um planeta único (textura e relevo 360°) — metodologia no README da branch.
+          <strong>Planeta novo?</strong> Separe as peças (a bola e cada elemento em PNG), diga onde cada uma fica e rode{' '}
+          <code>scripts/planetas/preparar-planeta.py</code>. Ele monta o planeta (textura e relevo 360°). Metodologia no README da branch.
         </li>
       </ol>
 

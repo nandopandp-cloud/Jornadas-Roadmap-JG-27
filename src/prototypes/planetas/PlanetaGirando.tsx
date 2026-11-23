@@ -50,6 +50,8 @@ export type PlanetaDados = {
   luz?: number[]
   /** a textura guarda cor × ganho (margem contra estouro); o shader desfaz */
   ganho?: number
+  /** true: a textura é só cor (planeta montado com peças) e a luz entra inteira, não só a horizontal */
+  luzCompleta?: boolean
 }
 
 export type Sentido = 'direita' | 'esquerda'
@@ -107,6 +109,7 @@ uniform float borda;        // largura do antisserrilhado da esfera, em raios
 uniform float luz;
 uniform float ganho;
 uniform float C[7];
+uniform float luzCompleta;
 in vec2 v;
 out vec4 cor;
 const float PI = 3.14159265359;
@@ -184,8 +187,8 @@ void main() {
   vec2 u = q / max(1.0, length(q));
   float y2 = u.y * u.y, r2 = dot(u, u);
   float S = C[0] + C[1] * u.x + C[2] * u.y + C[3] * u.x * u.x + C[4] * y2 + C[5] * u.x * u.y + C[6] * r2 * r2;
-  float S0 = C[0] + C[2] * u.y + C[4] * y2 + C[6] * y2 * y2;
-  float Sh = clamp(S / max(S0, 0.001), 0.5, 1.5);
+  float S0 = mix(C[0] + C[2] * u.y + C[4] * y2 + C[6] * y2 * y2, C[0], luzCompleta);
+  float Sh = clamp(S / max(S0, 0.001), 0.45, 1.5);
   rgb = rgb * mix(1.0, Sh * sombra, luz) / ganho;
   cor = vec4(rgb * alfa, alfa);
 }`
@@ -244,6 +247,7 @@ function criarGL(canvas: HTMLCanvasElement, planeta: PlanetaDados, texImg: HTMLI
   gl.uniform1f(U('rhoMax'), planeta.raioQuadro)
   gl.uniform1f(U('alturaMax'), planeta.alturaMax)
   gl.uniform1f(U('ganho'), planeta.ganho ?? 1)
+  gl.uniform1f(U('luzCompleta'), planeta.luzCompleta ? 1 : 0)
   const coef = planeta.luz ?? [1]
   gl.uniform1fv(U('C'), new Float32Array([0, 1, 2, 3, 4, 5, 6].map((i) => coef[i] ?? (i === 0 ? 1 : 0))))
   const u = { ang: U('ang'), luz: U('luz'), borda: U('borda'), lodT: U('lodT') }
