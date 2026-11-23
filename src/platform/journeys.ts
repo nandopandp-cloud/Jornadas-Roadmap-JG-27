@@ -530,13 +530,14 @@ export const journeys: Journey[] = [
     audience: 'Estudantes do Fundamental I',
     description:
       'Os planetas de massinha dos Exploradores viram modelos 3D de verdade: o planeta gira no eixo vertical com uma volta a cada 40 s, com casa, floresta, cachoeira, barco, polvo e praia em volume real de todos os lados. O estudante pode girar com a mão (arrastando ou com as setas). Modelo gerado no Tripo e otimizado no Blender (de 64 MB para 2,4 MB); componente pronto para o Next.js com three.js.',
-    icon: './planetas/planeta-01.png',
+    icon: './planetas/planeta-01/poster.webp',
     accent: '#2a1260',
     status: 'navegavel',
     dispositivo: 'desktop',
     dominio: 'exploradores.jovensgenios.com',
     flows: [
-      { id: 'giro', label: 'Giro 360°', icon: './planetas/planeta-01.png' },
+      { id: 'giro', label: 'Giro 360°', icon: './planetas/planeta-01/poster.webp' },
+      { id: 'planeta-02', label: 'Planeta 02', icon: './planetas/planeta-02/poster.webp' },
       { id: 'claro', label: 'Giro em fundo claro', icon: './3d/sparkles.png' },
       { id: 'tamanhos', label: 'Tamanhos de uso', icon: './3d/planet.png' },
       { id: 'nextjs', label: 'Handoff Next.js', icon: './3d/clipboard.png' },
