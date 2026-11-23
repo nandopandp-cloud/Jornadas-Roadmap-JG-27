@@ -7,7 +7,7 @@ import type { PlanetaDados } from './PlanetaGirando'
    ===================================================================== */
 export const PLANETAS = {
   'planeta-01': { id: 'planeta-01', nome: 'Planeta 01', pasta: 'planetas/planeta-01', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.347, inicio: 305, elevacao: 12, fov: 30 },
-  'planeta-02': { id: 'planeta-02', nome: 'Planeta 02', pasta: 'planetas/planeta-02', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.449, inicio: 0, elevacao: 12, fov: 30 },
+  'planeta-02': { id: 'planeta-02', nome: 'Planeta 02', pasta: 'planetas/planeta-02', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.446, inicio: 0, elevacao: 12, fov: 30 },
 } satisfies Record<string, PlanetaDados & { nome: string }>
 
 export type IdPlaneta = keyof typeof PLANETAS
