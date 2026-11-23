@@ -529,7 +529,7 @@ export const journeys: Journey[] = [
     product: 'Exploradores · Plataforma do Estudante',
     audience: 'Estudantes do Fundamental I',
     description:
-      'Os novos planetas de massinha dos Exploradores ganham vida: giram como um globo, no eixo vertical, com uma volta a cada 40 s. A casa, a caverna, o polvo e a ilha ficam parados, com as proporções da arte, e só a superfície corre por baixo, com a luz da arte no lugar. O estudante pode girar com a mão (arrastando ou com as setas) para qualquer lado. Componente pronto para o Next.js.',
+      'Os novos planetas de massinha dos Exploradores ganham vida: o planeta inteiro gira como um objeto 3D, no eixo vertical, com uma volta a cada 40 s. A superfície, a casa, o rochedo, o polvo e a ilha dão a volta juntos, montados a partir de 4 artes (frente, laterais e costas), com a luz no lugar. O estudante pode girar com a mão (arrastando ou com as setas). Componente pronto para o Next.js.',
     icon: './planetas/planeta-01.png',
     accent: '#2a1260',
     status: 'navegavel',

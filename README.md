@@ -1,8 +1,8 @@
 # Planetas · Exploradores
 
-Iniciativa **Planetas** na plataforma do estudante Exploradores (Fundamental I). Os novos planetas de massinha que entraram na plataforma em Next.js ganham um **giro 360° em 3D**: giram como um globo, no eixo vertical, sem alterar a arte. O estudante também pode girar o planeta com a mão.
+Iniciativa **Planetas** na plataforma do estudante Exploradores (Fundamental I). Os planetas de massinha da plataforma em Next.js ganham um **giro 360° em 3D**: o planeta inteiro (esfera e elementos) gira como um objeto só, no eixo vertical, montado a partir de **4 artes**. O estudante também pode girar com a mão.
 
-> Esta branch guarda a iniciativa Planetas. A plataforma completa e a lista de todas as jornadas ficam no README da `main`.
+> Esta branch guarda a iniciativa Planetas e a **metodologia para criar novos planetas**. A plataforma completa e a lista de todas as jornadas ficam no README da `main`.
 
 ## Links
 
@@ -17,49 +17,152 @@ Iniciativa **Planetas** na plataforma do estudante Exploradores (Fundamental I).
 | Data | Decisão |
 | --- | --- |
 | 23/11/2026 | O giro é 3D, **no eixo vertical**, como um globo. Rotação no plano (como uma roda) foi descartada. |
-| 23/11/2026 | Os elementos que saem da esfera (casa, caverna, polvo, ilha) ficam **parados**, com as proporções da arte. Só a esfera gira. Com uma arte só de frente, fazer esses elementos darem a volta distorce as proporções. |
 | 23/11/2026 | **Uma velocidade só:** uma volta a cada 40 s. Não há opção de acelerar. |
-| 23/11/2026 | O estudante pode **girar com a mão** para qualquer lado. |
+| 23/11/2026 | O estudante pode **girar com a mão**. |
+| 23/11/2026 | Duas abordagens foram descartadas: elementos girando como recortes soltos (voavam e mudavam de proporção) e elementos parados com a esfera girando por baixo (incoerente). O planeta inteiro gira junto. |
+| 23/11/2026 | Cada planeta é feito a partir de **4 vistas**: frente (0°), lateral direita (90°), costas (180°) e lateral esquerda (270°). Com só frente e costas, as laterais ficavam borradas. |
 
-## Como o giro funciona
+---
 
-1. **Esfera em WebGL2.** A arte de frente vira uma textura 360° (mapa equiretangular). Um shader projeta essa textura numa esfera que gira no eixo vertical.
-   - No ângulo 0 o planeta fica **igual à arte**: a faixa central (±45°) é a arte exata, e só perto da borda o mapeamento aperta.
-2. **A luz da arte fica no lugar.** A foto já vem iluminada: alto à esquerda claro, borda direita escura.
-   - O script mede essa luz no oceano, que é da mesma massinha em toda parte, e tira da textura a parte que mudaria de lugar com o giro.
-   - O shader devolve essa luz parada na tela. Girando, a superfície passa por baixo de uma luz fixa, como num globo de verdade, sem faixas escuras rodando junto.
-3. **Elementos parados.** Casa, caverna, polvo e ilha ficam numa camada por cima (`elementos.png`), recortada da arte na posição original, com borda macia.
-4. **Lugar dos elementos na esfera.** O lugar que eles ocupavam na esfera foi preenchido para passar despercebido quando gira:
-   - na água, com o azul em volta;
-   - embaixo da casa, com relevo de árvores clonado do mato vizinho, com emenda Poisson.
-5. **Flutuação, halo e sombra de contato**, como antes.
+## Metodologia: como criar um planeta novo
+
+São cinco etapas. As etapas 1 e 2 são do time de arte, e as etapas 3 a 5 levam alguns minutos no código.
+
+```
+1. Gerar as 4 vistas  →  2. Recortar  →  3. Configurar  →  4. Medir e gerar  →  5. Conferir
+   (arte)                 (fundo)         (1 bloco)          (script)             (vitrine)
+```
+
+### 1. Gerar as 4 vistas
+
+O mesmo planeta, girando **no próprio eixo vertical**, visto de 4 lados:
+
+| Vista | Ângulo | O que aparece de frente (no Planeta 01) |
+| --- | --- | --- |
+| Frente | 0° | Rosto principal (barco, pterossauros, rio) |
+| Lateral direita | 90° | O lado que estava à **esquerda** na frente (casa, floresta, cachoeira) |
+| Costas | 180° | O lado oposto à frente |
+| Lateral esquerda | 270° | O lado que estava à **direita** na frente (polvo, ilha) |
+
+O nome segue o giro, e não a posição na frente: a lateral direita (90°) mostra o lado que, na frente, aparece à esquerda.
+
+**Regras para as artes, pela ordem de importância:**
+
+1. **Câmera na altura do equador e de frente para o planeta**, sem inclinar para cima ou para baixo. O polo de cima fica sempre no topo.
+2. **Mesmo planeta, mesmos elementos e mesmas posições.** Cada elemento tem que estar no mesmo lugar do planeta em todas as vistas. Por exemplo, o barco que está um pouco à direita do centro na frente tem que estar perto da borda esquerda na lateral esquerda (270°).
+3. **Giro de 90° de verdade.** Na lateral, o que estava no centro da frente fica exatamente na borda. Este é o ponto em que as artes geradas por IA mais erram (ver o Planeta 01 abaixo).
+4. **Esfera inteira no quadro**, centralizada, com margem para os elementos que saem dela.
+5. **Mesma luz em todas:** de cima, à esquerda da câmera, igual à da frente.
+6. **Fundo transparente** (o ideal) ou **liso e escuro**, sem sombra no chão.
+7. **Resolução de pelo menos 1024 px.** A frente do Planeta 01 tem só 320 px e é a vista menos nítida.
+
+### 2. Recortar
+
+As vistas com fundo transparente entram como estão. Para fundo liso (como o preto das laterais do Planeta 01), o recorte separa o fundo, que é a área escura ligada às bordas da imagem. Depois tira 1 px de franja e suaviza a borda. As imagens ficam em `public/planetas/<id>-<vista>.png`.
+
+### 3. Configurar
+
+Um bloco em `PLANETAS`, no início de [`scripts/planetas/preparar-planeta.py`](scripts/planetas/preparar-planeta.py):
+
+```python
+'planeta-02': {
+    'vistas': [
+        ('frente',   'public/planetas/planeta-02.png',          0,   None),
+        ('direita',  'public/planetas/planeta-02-direita.png',  90,  None),
+        ('costas',   'public/planetas/planeta-02-costas.png',   180, None),
+        ('esquerda', 'public/planetas/planeta-02-esquerda.png', 270, None),
+    ],
+    'tamanho_max': 1024,
+},
+```
+
+O último campo de cada vista é a esfera (centro e raio, em px). Com `None`, o script mede sozinho.
+
+### 4. Medir e gerar
+
+```bash
+python scripts/planetas/preparar-planeta.py planeta-02 --medir-angulos   # confere os ângulos
+python scripts/planetas/preparar-planeta.py planeta-02                   # gera tudo
+```
+
+**`--medir-angulos`** projeta cada lateral sobre a esfera em vários ângulos e mostra onde ela coincide melhor com a frente e com as costas. Se der perto de 90° e 270°, as artes estão boas. Se der bem menos (no Planeta 01 deu 25° e −75°), a lateral foi gerada "pouco girada", e vale pedir a arte de novo. Se não for possível, mantenha 90° e 270°: nos testes, isso deixa a volta mais nítida do que usar o ângulo medido.
+
+**O que o script faz, nesta ordem:**
+
+1. **Mede a esfera** de cada vista: o círculo que melhor encosta na parte lisa da silhueta. Os elementos que saem dela são ignorados.
+2. **Separa a luz pintada.** Usa o oceano (a mesma massinha em toda parte) para medir como a luz varia na imagem. Tira dela só a parte horizontal, que mudaria de lugar ao girar. A parte vertical fica, porque no giro vertical cada ponto continua sempre na mesma altura.
+3. **Equilibra o brilho** do oceano de cada vista com o da frente. Ajusta só o brilho, sem mexer no tom de cor.
+4. **Mede o relevo:** a silhueta de cada vista diz o quanto os elementos saem da esfera em cada direção. Ela vira um "relevo inflado" no plano perpendicular àquela vista, com espessura arredondada.
+5. **Grava** as vistas em WebP, o `perfil.png` (uma linha de relevo por vista) e o JSON do planeta.
+
+### 5. Conferir
+
+Inclua o planeta em `PLANETAS` (`src/prototypes/planetas/index.tsx`) e gire na vitrine, com atenção a três pontos:
+
+- **0°, 90°, 180° e 270°** têm que ser exatamente as 4 artes;
+- **os ângulos intermediários** (45°, 135°…) são onde uma vista dá lugar à outra; elementos que "pulam" de lugar indicam vistas desalinhadas (regra 2 ou 3 acima);
+- **cores e brilho** têm que ser parecidos nas 4 artes.
+
+---
+
+## Como o componente desenha o planeta
+
+O planeta é um objeto 3D único, desenhado em WebGL2.
+
+1. **Geometria:** uma esfera, mais o relevo inflado de cada vista.
+   - Para cada pixel, o shader procura onde o raio da câmera encosta nesse objeto (*ray marching*, 72 passos e refinamento).
+2. **Cor:** cada ponto pega a cor das **duas vistas vizinhas** do ângulo atual, só as que enxergam aquele ponto.
+   - No ângulo de cada vista, o planeta é exatamente aquela arte. A 0°, a diferença média para a arte da frente é de 4,9 em 255, só nas bordas.
+   - A troca de uma vista para a outra é rápida, no meio do caminho (24% do intervalo).
+   - Nos elementos, a troca usa a união das formas, sem fantasma semitransparente.
+3. **Luz:** a parte horizontal da luz volta, parada na tela, para a superfície passar por baixo de uma luz fixa.
+4. **Onde a arte viu de raspão** (perto da borda dela), o shader usa uma versão mais suave da textura, em vez de listras.
+5. **Desempenho:**
+   - resolução até 1,75×;
+   - o giro para fora da tela;
+   - se os quadros passarem de 30 ms, a resolução cai sozinha até 0,6×;
+   - a velocidade não depende da taxa de quadros.
 
 ### Girar com a mão
 
 - **Arrastar** (mouse ou dedo) na horizontal gira o planeta: a superfície acompanha o dedo.
-- **Ao soltar**, o planeta segue com o embalo, desacelera como um globo e volta ao giro normal **no sentido em que foi jogado**. Soltar parado não dá embalo.
+- **Ao soltar**, o planeta segue com o embalo e volta ao giro normal **no sentido em que foi jogado**. Soltar parado não dá embalo.
 - **Teclado:** Tab até o planeta e setas ← →. O planeta tem rótulo de acessibilidade com a instrução.
-- **Celular:** deslizar na vertical continua rolando a página, mesmo começando em cima do planeta (`touch-action: pan-y`).
+- **Celular:** deslizar na vertical continua rolando a página.
 - **Pausado:** o giro automático para, mas a mão continua funcionando.
 
 ### Acessibilidade e fallback
 
-- Com **“reduzir movimento”** ligado, o planeta não gira sozinho, mas dá para girar com a mão, porque é um movimento iniciado pela pessoa.
-- **Sem WebGL2**, aparece a arte original parada.
-- A arte original também aparece enquanto a textura carrega e troca sem salto pelo 3D, que começa idêntico a ela.
+- Com **“reduzir movimento”** ligado, o planeta não gira sozinho, mas gira com a mão.
+- **Sem WebGL2**, aparece a arte da frente parada.
+- A arte da frente também aparece enquanto as imagens carregam e troca sem salto pelo 3D.
 
-### O lado de trás
+## O Planeta 01
 
-A arte recebida mostra só a frente. O lado de trás é o **espelho da frente**, o que deixa a emenda invisível. O barco foi tirado da metade espelhada, para não aparecerem dois barcos frente a frente. A água do lado de trás teve as manchas de claro e escuro uniformizadas, mantendo o granulado da massinha.
+| Vista | Arquivo de origem | Tamanho | Ângulo usado | Ângulo medido |
+| --- | --- | --- | --- | --- |
+| Frente | `Planeta=Mitologia.png` | 320 px | 0° | — |
+| Lateral direita | `Planeta Mágico em Perfil.png` | 1254 px (fundo preto, recortado) | 90° | ≈ 25° |
+| Costas | `Planeta de Argila com Floresta e Oceano.png` | 1254 px | 180° | — |
+| Lateral esquerda | `Planeta Miniatura Fantástico em Estilo Clay.png` | 1254 px (fundo preto, recortado) | 270° | ≈ −75° |
 
-Se o time de arte tiver uma **vista de trás**, o script já aceita (`costas`) e o lado de trás passa a ser único.
+**Limites que vêm das artes:**
+
+- As laterais estão menos giradas do que deveriam. Na lateral esquerda há árvores do lado direito que as costas não mostram.
+- Por isso, nas trocas entre vistas (perto de 45°, 135°, 225° e 315°) alguns elementos mudam um pouco de forma ou de lugar.
+- Laterais refeitas com as regras 2 e 3 deixam essas trocas quase imperceptíveis.
+- A frente em 1024 px deixa o 0° tão nítido quanto as outras vistas.
+
+**A pasta “🪐 Planetas”** (os elementos isolados) não foi usada. Ela é uma versão "kit" do mesmo planeta: as posições mudam em relação às 4 vistas e não há a luz da esfera.
+
+Ela abriria outra metodologia: **montar o planeta** com uma bola lisa e os elementos posicionados nela, como adesivos com relevo. As vantagens seriam um giro sempre coerente e nítido em todos os ângulos, sem depender de 4 artes alinhadas. A desvantagem: os elementos que saem da esfera (casa, polvo) ficariam mais "achatados" de perfil. Vale testar se a geração de vistas alinhadas for difícil.
 
 ## Vitrine
 
 | Aba | Atalho (`?screen=`) | O que mostra |
 | --- | --- | --- |
-| Giro | `giro` / `claro` | Planeta no palco espacial ou em fundo claro. Instrução de giro com a mão, sentido (superfície para a direita ou para a esquerda, que se atualiza quando o planeta é jogado para o outro lado), luz fixa, flutuar, halo e sombra, e pausa. |
-| Tamanhos | `tamanhos` | O mesmo planeta em 96, 160 e 260 px, cada um começando num ângulo diferente. Todos giram com a mão. |
+| Giro | `giro` / `claro` | Planeta no palco espacial ou em fundo claro, com instrução de giro com a mão, sentido do giro, luz fixa, flutuar, halo e sombra, e pausa. |
+| Tamanhos | `tamanhos` | O mesmo planeta em 96, 160 e 260 px, começando a 270°, 90° e 0° (três das artes). |
 | Next.js | `nextjs` | Passo a passo, código para copiar e tabela de props. |
 
 ## Como levar para o Next.js
@@ -68,9 +171,9 @@ Se o time de arte tiver uma **vista de trás**, o script já aceita (`costas`) e
    - [`PlanetaGirando.tsx`](src/prototypes/planetas/PlanetaGirando.tsx), que já começa com `'use client'` e não tem dependências;
    - [`planeta-girando.module.css`](src/prototypes/planetas/planeta-girando.module.css);
    - [`planeta-01.json`](src/prototypes/planetas/planeta-01.json).
-2. Copie a arte e a pasta gerada para `public/planetas/`:
-   - `planeta-01.png`;
-   - `planeta-01/`, com `textura.jpg` e `elementos.png`.
+2. Copie para `public/planetas/`:
+   - `planeta-01.png` (arte da frente, de reserva);
+   - `planeta-01/`, com `frente.webp`, `direita.webp`, `costas.webp`, `esquerda.webp` e `perfil.png` (cerca de 300 KB no total).
 3. Use:
 
 ```tsx
@@ -90,41 +193,11 @@ import planeta01 from '@/components/planetas/planeta-01.json'
 | `onSentidoChange` | — | Avisa quando a pessoa joga o planeta para o outro lado |
 | `pausado` | `false` | Para o giro automático, freando suave (a mão continua) |
 | `arrastavel` | `true` | Girar com a mão e com as setas |
-| `inicio` | `0` | Ângulo inicial (graus); 0 é igual à arte |
+| `inicio` | `0` | Ângulo inicial (graus): 0, 90, 180 e 270 são as 4 artes |
 | `luz` · `flutuar` · `sombra` | `true` | Liga e desliga cada camada |
 | `halo` | `'92, 196, 255'` | Cor do brilho atrás (r, g, b) ou `false` |
 
 A velocidade é fixa: uma volta a cada 40 s (`SEGUNDOS_POR_VOLTA`, exportada pelo componente).
-
-**Desempenho:**
-
-- 1 desenho de WebGL por quadro;
-- os elementos são uma imagem parada;
-- o giro para sozinho quando o planeta sai da tela;
-- a textura tem cerca de 80 KB e a camada de elementos, cerca de 135 KB.
-
-## Planeta novo
-
-[`scripts/planetas/preparar-planeta.py`](scripts/planetas/preparar-planeta.py) gera tudo a partir da arte de frente. Ele precisa de `opencv-python-headless` e `numpy`.
-
-```bash
-python scripts/planetas/preparar-planeta.py planeta-01
-```
-
-No bloco do planeta, informe:
-
-| Campo | O que é |
-| --- | --- |
-| `centro` e `raio` | Centro e raio da esfera, em px da arte. O centro da esfera não é o centro do PNG, por causa dos elementos que saem da silhueta. No Planeta 01: centro (155, 167) e raio 128,5 numa arte de 320 px. |
-| `elementos` | Caixa de cada elemento que sai da esfera, tipo de recorte e como preencher o lugar dele (`'agua'` ou `('clonar', dx, dy)`) |
-| `so_na_frente` | Elipses de objetos que não devem se repetir no espelho de trás (opcional) |
-| `costas` | Vista de trás do planeta (opcional) |
-
-O script gera:
-
-- a textura 360°;
-- a camada de elementos;
-- o JSON com a luz medida na arte.
 
 ## Arquivos
 
@@ -135,37 +208,36 @@ O script gera:
 | `src/prototypes/planetas/planeta-01.json` | Dados do Planeta 01 (gerado) |
 | `src/prototypes/planetas/index.tsx` | Vitrine na plataforma (abas, controles, handoff) |
 | `src/prototypes/planetas/vitrine.css` | Visual da vitrine (Yunara · tema Seafoam) |
-| `public/planetas/planeta-01.png` | Arte original (320 × 320, fundo transparente) |
-| `public/planetas/planeta-01/` | Textura 360° e camada de elementos (gerados) |
-| `scripts/planetas/preparar-planeta.py` | Gerador da textura, da camada de elementos e do JSON |
+| `public/planetas/planeta-01*.png` | As 4 artes de origem (frente, direita, costas, esquerda) |
+| `public/planetas/planeta-01/` | Vistas preparadas e perfil do relevo (gerados) |
+| `scripts/planetas/preparar-planeta.py` | Gerador: mede esfera e ângulos, prepara vistas, relevo e JSON |
 
 ## Verificação
 
-Teste automatizado em Chromium (WebGL2 por SwiftShader), com 18 verificações, todas OK em duas rodadas.
+Teste automatizado em Chromium (WebGL2 por SwiftShader), com 18 verificações, todas OK em três rodadas seguidas.
 
 - **Giro:**
-  - gira sozinho para a direita, a uma volta a cada 40 s;
+  - uma volta a cada 40 s;
   - não há opções de velocidade;
   - o mouse em cima não acelera;
-  - os elementos ficam parados.
+  - o planeta inteiro fica no 3D.
 - **Mão:**
-  - arrastar acompanha o mouse (dx ÷ raio);
+  - arrastar acompanha o mouse;
   - soltar parado não dá embalo;
   - pausado, a mão continua funcionando;
-  - um arremesso para a esquerda inverte o sentido (o controle da vitrine acompanha), desacelera e segue no giro normal.
-- **Teclado:** as setas giram, e o rótulo do planeta tem a instrução.
+  - um arremesso inverte o sentido e segue no giro normal.
+- **Teclado:** as setas giram.
 - **Vitrine:** os 3 tamanhos, o código sem corte e nenhum erro no console.
-- **Acessibilidade e fallback:** com “reduzir movimento”, o planeta não gira sozinho, mas gira com a mão; sem WebGL2, aparece a arte original.
+- **Acessibilidade e fallback:** “reduzir movimento” e o navegador sem WebGL2.
 
-**Toque (celular, 390 px):**
+**Toque (celular):** a horizontal gira, a vertical rola a página e não há rolagem lateral.
 
-- deslizar na horizontal gira;
-- deslizar na vertical rola a página, também a partir do planeta;
-- não há rolagem horizontal.
+**Comparação a 0°:** o 3D foi comparado pixel a pixel com a arte da frente (diferença de 4,9 em 255). Também foram conferidos 12 ângulos, de 30° em 30°, comparando três posições para as laterais (35°/−80°, 60°/−85° e 90°/270°).
 
-Também foram conferidas as capturas do giro em 8 ângulos (de 45° em 45°, arrastando).
+**Desempenho:** a velocidade continua exata mesmo com quadros lentos (testado com o renderizador sem GPU, a 83 ms por quadro).
 
 ## Próximos passos
 
-- **Arte em 2× e vista de trás:** a arte recebida tem 320 × 320. Uma versão de 640 px ou mais deixa a textura mais nítida em telas retina. Uma vista de trás deixa o lado oculto único.
-- **Demais planetas:** rodar o script para cada arte nova e incluir em `PLANETAS` (`index.tsx`).
+- **Refazer as laterais** com as regras 2 e 3 e conferir com `--medir-angulos` (≈ 90° e 270°).
+- **Frente em 1024 px.**
+- **Demais planetas**, seguindo a metodologia.

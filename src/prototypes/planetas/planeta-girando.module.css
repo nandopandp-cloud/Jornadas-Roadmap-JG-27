@@ -3,7 +3,7 @@
    Variáveis (preenchidas pelo componente):
      --pl-tam   tamanho do planeta
      --pl-r     raio da esfera, em % da largura da arte (sem unidade)
-   Esfera (WebGL) gira; a camada .elementos fica parada por cima.
+   O canvas (WebGL) desenha o planeta inteiro girando: esfera e elementos.
      --pl-dx/dy deslocamento da arte: centro da esfera → centro do quadro
      --pl-halo  cor do halo (r, g, b)
    ===================================================================== */
@@ -67,16 +67,6 @@
   position: absolute;
   z-index: 2;
   display: block;
-}
-.elementos {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  width: 100%;
-  height: 100%;
-  display: block;
-  user-select: none;
-  -webkit-user-drag: none;
 }
 .oculta {
   opacity: 0;

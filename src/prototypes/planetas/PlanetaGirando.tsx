@@ -6,43 +6,52 @@ import s from './planeta-girando.module.css'
 /* =====================================================================
    PlanetaGirando · Exploradores — giro 3D no eixo vertical
    ---------------------------------------------------------------------
-   O planeta gira como um globo: a superfície corre na horizontal e o
-   que está na frente vai para trás e volta pelo outro lado.
+   O planeta inteiro (esfera + casa, polvo, ilha, rochedo…) gira como um
+   objeto 3D só, a partir de VÁRIAS artes (até 4): frente, laterais, costas.
 
-   Como funciona:
-   1. ESFERA (WebGL2). A arte de frente vira uma textura 360° (gerada
-      por scripts/planetas/preparar-planeta.py) só com a cor da massinha.
-      A luz que vinha pintada na arte é medida pelo script; a parte que
-      mudaria de lugar com o giro (a horizontal) é devolvida aqui, parada:
-      no ângulo 0 o planeta fica igual à arte e, girando, a luz fica no
-      lugar, como num globo de verdade.
-   2. ELEMENTOS. O que sai da silhueta (casa, caverna, polvo, ilha) fica
-      PARADO por cima, exatamente com as proporções da arte. Só a esfera
-      gira por baixo.
-   3. MÃO. Arrastar na horizontal gira o planeta; ao soltar, ele segue
-      com inércia e volta ao giro normal no sentido em que foi jogado.
+   Como funciona (WebGL2):
+   1. GEOMETRIA. Uma esfera + um relevo "inflado" a partir da silhueta
+      de cada vista, no plano perpendicular a ela (perfil.png, gerado
+      por scripts/planetas/preparar-planeta.py). O shader acha, para
+      cada pixel, onde o raio encosta nesse objeto (ray marching).
+   2. COR. Cada ponto pega a cor das duas vistas vizinhas do ângulo
+      atual que o enxergam. No ângulo de cada vista, o planeta é
+      exatamente aquela arte; entre duas vistas, a troca é rápida e
+      acontece no próprio 3D.
+   3. LUZ. A parte horizontal da luz pintada nas artes foi tirada pelo
+      script e volta aqui, parada na tela: girando, a luz fica no lugar.
+   4. MÃO. Arrastar na horizontal gira o planeta; ao soltar, ele segue
+      com embalo e volta ao giro normal no sentido em que foi jogado.
       As setas do teclado fazem o mesmo.
-   4. Com “reduzir movimento”, o planeta não gira sozinho (mas dá para
-      girar com a mão). Sem WebGL2, mostra a arte original parada.
+   5. Com “reduzir movimento”, não gira sozinho (a mão continua). Sem
+      WebGL2, mostra a arte original parada.
 
    Next.js: componente cliente ('use client'), sem dependências.
    ===================================================================== */
 
+type Vista = { nome: string; src: string; angulo: number; u: number; v: number; r: number }
+
 export type PlanetaDados = {
   id: string
-  /** arte original (fallback e primeiro quadro) */
+  /** arte original de frente (fallback e primeiro quadro) */
   arte: string
-  /** pasta da textura e dos elementos */
+  /** pasta com as vistas e o perfil */
   pasta: string
   tamanhoArte: number
+  /** centro e raio da esfera na arte de frente (px) */
   centro: number[]
   raio: number
-  textura: string
-  /** camada estática com os elementos que saem da esfera */
-  elementos: string
+  /** raio do quadro que cabe o relevo, em raios da esfera */
+  raioQuadro: number
+  /** até 4 vistas: imagem, ângulo (graus; 0 = frente) e enquadramento da esfera
+      (centro u, v e raio r, em fração da imagem). A primeira é a frente. */
+  vistas: Vista[]
+  /** altura (R) e espessura (G) do relevo por ângulo, uma linha por vista */
+  perfil: string
+  alturaMax: number
   /** luz pintada na arte, medida pelo script: S(x, y) = c0 + c1·x + c2·y + c3·x² + c4·y² + c5·x·y + c6·r⁴ */
   luz?: number[]
-  /** a textura guarda cor × ganho (margem contra estouro); o shader desfaz */
+  /** as vistas guardam cor × ganho (margem contra estouro); o shader desfaz */
   ganho?: number
 }
 
@@ -63,9 +72,9 @@ export type PlanetaGirandoProps = {
   pausado?: boolean
   /** deixa girar com a mão e com as setas. Padrão: true */
   arrastavel?: boolean
-  /** ângulo inicial (graus); 0 = a arte original */
+  /** ângulo inicial (graus); 0 = a arte de frente; no ângulo de cada vista, aquela arte */
   inicio?: number
-  /** luz da arte, parada sobre a esfera (false = só a cor). Padrão: true */
+  /** luz das artes parada sobre o planeta (false = só a cor). Padrão: true */
   luz?: boolean
   /** sobe e desce devagar. Padrão: true */
   flutuar?: boolean
@@ -82,6 +91,7 @@ export const SEGUNDOS_POR_VOLTA = 40
 const VEL_AUTO = (2 * Math.PI) / SEGUNDOS_POR_VOLTA
 const VEL_MAX = 7 // rad/s, teto do arremesso
 const IMPULSO_TECLA = 1.2 // rad/s por toque na seta (≈ 75° com o embalo)
+const DPR_MAX = 1.75 // o ray marching custa por pixel; acima disso não se nota diferença
 
 const VERT = `#version 300 es
 in vec2 p;
@@ -90,45 +100,177 @@ void main() { v = p; gl_Position = vec4(p, 0.0, 1.0); }`
 
 const FRAG = `#version 300 es
 precision highp float;
-uniform sampler2D tex;
-uniform float ang;
+uniform sampler2D tex0, tex1, tex2, tex3;  // vistas (cor × ganho, alfa pré-multiplicado)
+uniform sampler2D perfil;  // uma linha por vista. R: altura do relevo, G: meia espessura
+uniform vec4 V[4];         // por vista: centro (u, v) e raio, em uv; ângulo (rad)
+uniform vec4 peso;         // peso de cada vista no ângulo atual (as duas vizinhas)
+uniform float lod[4];
+uniform int nVistas;
+uniform float ang;         // ângulo do giro
+uniform float rhoMax;      // raio do quadro, em raios da esfera
+uniform float alturaMax;
+uniform float espMax;      // maior meia espessura (rad)
+uniform float borda;       // largura do antisserrilhado da esfera, em raios
 uniform float luz;
-uniform float borda;
-uniform float C[7];
 uniform float ganho;
+uniform float C[7];
 in vec2 v;
 out vec4 cor;
 const float PI = 3.14159265359;
+
+// relevo: a silhueta de cada vista, inflada no plano perpendicular a ela
+float altura(vec3 d) {
+  float h = 0.0;
+  for (int i = 0; i < 4; i++) {
+    if (i >= nVistas) break;
+    float al = V[i].w;
+    float dz = abs(-d.x * sin(al) + d.z * cos(al));     // distância ao plano da silhueta
+    if (dz > sin(espMax)) continue;
+    float fi = atan(d.y, d.x * cos(al) + d.z * sin(al));
+    vec2 hd = textureLod(perfil, vec2(fi / (2.0 * PI) + 0.5, (float(i) + 0.5) / float(nVistas)), 0.0).rg;
+    float t = asin(dz) / max(hd.g * 1.5707963, 0.001);
+    if (t < 1.0) h = max(h, hd.r * alturaMax * sqrt(1.0 - t * t));
+  }
+  return h;
+}
+
+float campo(vec3 P) {
+  float r = length(P);
+  return r - (1.0 + altura(P / r));
+}
+
+// esticamento: quanto o ponto está mais de frente para a câmera agora do que estava na arte.
+// Onde a arte só viu o ponto "de raspão", usa uma versão mais suave da textura (evita listras).
+float suavizar(float agora, float naArte) {
+  return clamp(log2(max(agora, 0.0) / max(naArte, 0.04)) - 0.6, 0.0, 4.0);
+}
+
+vec4 vista(sampler2D t, vec4 Vi, vec3 P, float l) {
+  float x = P.x * cos(Vi.w) + P.z * sin(Vi.w);
+  return textureLod(t, vec2(Vi.x + x * Vi.z, Vi.y - P.y * Vi.z), l);
+}
+
+// soma a contribuição da vista i (macro: samplers não podem ser indexados por variável)
+#define SOMA(i, T) { \
+  float zi = -n.x * sin(V[i].w) + n.z * cos(V[i].w); \
+  float w = smoothstep(-0.1, 0.1, zi) * (peso[i] + 0.003); \
+  if (i < nVistas && w > 1e-4) { \
+    vec4 c = vista(T, V[i], P, lod[i] + suavizar(agora, zi)); \
+    if (corpo && c.a < 0.98) c = mix(vista(T, V[i], P * 0.95, lod[i] + 1.0), c, c.a); \
+    acc += c * w; soma += w; \
+    if (peso[i] > 0.1) amax = max(amax, c.a); \
+    wmax = max(wmax, w); \
+  } }
+
+// cor de um ponto do objeto: as vistas que o enxergam, pesadas pela proximidade do ângulo atual
+vec4 amostra(vec3 P, bool corpo) {
+  vec3 n = normalize(P);
+  float agora = -n.x * sin(ang) + n.z * cos(ang);  // de frente para a câmera atual
+  vec4 acc = vec4(0.0);
+  float soma = 0.0, amax = 0.0, wmax = 0.0;
+  SOMA(0, tex0) SOMA(1, tex1) SOMA(2, tex2) SOMA(3, tex3)
+  if (soma <= 0.0) return corpo ? vec4(0.0, 0.0, 0.0, 1.0) : vec4(0.0);
+  vec4 mist = acc / soma;
+  if (corpo) return vec4(mist.rgb / max(mist.a, 1e-3), 1.0);  // a esfera é sólida
+  // elementos: na troca de vista, a forma é a união das vistas (sem fantasma semitransparente)
+  float troca = 1.0 - wmax / soma;
+  float alfa = mix(mist.a, max(mist.a, amax), clamp(troca * 2.0, 0.0, 1.0));
+  return vec4(mist.rgb / max(mist.a, 1e-3) * alfa, alfa);
+}
+
 void main() {
-  float r2 = dot(v, v);
-  if (r2 > 1.0) { cor = vec4(0.0); return; }
-  float z = sqrt(1.0 - r2);
-  vec3 n = vec3(v, z);
+  vec2 q = v * rhoMax;                      // ponto da tela, em raios da esfera
+  float q2 = dot(q, q);
+  if (q2 > rhoMax * rhoMax) { cor = vec4(0.0); return; }
   float c = cos(ang), s = sin(ang);
-  float x0 = n.x * c - n.z * s;
-  float z0 = n.x * s + n.z * c;
-  float lon = atan(x0, z0);
-  float lat = asin(clamp(n.y, -1.0, 1.0));
-  vec2 uv = vec2(lon / (2.0 * PI) + 0.5, 0.5 - lat / PI);
-  // derivadas sem o salto da emenda (lon = ±180°), para o mipmap não riscar
-  vec2 dx = dFdx(uv), dy = dFdy(uv);
-  vec2 uv2 = vec2(fract(uv.x + 0.5), uv.y);
-  vec2 dx2 = dFdx(uv2), dy2 = dFdy(uv2);
-  if (abs(dx2.x) < abs(dx.x)) dx.x = dx2.x;
-  if (abs(dy2.x) < abs(dy.x)) dy.x = dy2.x;
-  vec3 c3 = textureGrad(tex, uv, dx, dy).rgb;
-  // a textura não tem a variação horizontal da luz da arte; ela volta aqui, parada na tela
-  // (a de cima para baixo continua pintada: no giro vertical ela nunca se move)
-  float y2 = v.y * v.y;
-  float S = C[0] + C[1] * v.x + C[2] * v.y + C[3] * v.x * v.x + C[4] * y2 + C[5] * v.x * v.y + C[6] * r2 * r2;
-  float S0 = C[0] + C[2] * v.y + C[4] * y2 + C[6] * y2 * y2;
+  float Z = rhoMax + 0.01;
+  // raio da câmera (ortográfica) no referencial do planeta
+  vec3 o = vec3(q.x * c - Z * s, q.y, q.x * s + Z * c);
+  vec3 d = vec3(s, 0.0, -c);
+  float meio = sqrt(rhoMax * rhoMax - q2);
+  float tA = Z - meio, tB = Z + meio;
+  bool corpo = q2 < 1.0;
+  float tCorpo = corpo ? Z - sqrt(1.0 - q2) : tB;
+  tB = min(tB, tCorpo);
+
+  vec4 acc = vec4(0.0);
+  if (tB > tA) {
+    float dt = (tB - tA) / 72.0;
+    float tAnt = tA;
+    bool dentro = campo(o + tA * d) < 0.0;
+    for (int i = 1; i <= 72; i++) {
+      float t = tA + float(i) * dt;
+      float f = campo(o + t * d);
+      if (!dentro && f < 0.0) {
+        float a = tAnt, b = t;
+        for (int k = 0; k < 5; k++) {
+          float m = 0.5 * (a + b);
+          if (campo(o + m * d) < 0.0) b = m; else a = m;
+        }
+        vec4 sm = amostra(o + b * d, false);
+        acc += (1.0 - acc.a) * sm;
+        dentro = true;
+        if (acc.a > 0.995) break;
+      } else if (dentro && f >= 0.0) {
+        dentro = false;
+      }
+      tAnt = t;
+    }
+  }
+  if (corpo && acc.a < 0.995) {
+    vec4 sm = amostra(o + tCorpo * d, true);
+    sm *= 1.0 - smoothstep(1.0 - borda, 1.0, sqrt(q2));
+    acc += (1.0 - acc.a) * sm;
+  }
+
+  // luz: só a parte horizontal, parada na tela (a vertical já está nas artes)
+  vec2 u = q / max(1.0, length(q));
+  float y2 = u.y * u.y, r2 = dot(u, u);
+  float S = C[0] + C[1] * u.x + C[2] * u.y + C[3] * u.x * u.x + C[4] * y2 + C[5] * u.x * u.y + C[6] * r2 * r2;
+  float S0 = C[0] + C[2] * u.y + C[4] * y2 + C[6] * y2 * y2;
   float Sh = clamp(S / max(S0, 0.001), 0.5, 1.5);
-  c3 *= mix(1.0, Sh, luz) / ganho;
-  float a = 1.0 - smoothstep(1.0 - borda, 1.0, sqrt(r2));
-  cor = vec4(c3 * a, a);
+  cor = vec4(acc.rgb * mix(1.0, Sh, luz) / ganho, acc.a);
 }`
 
-function criarGL(canvas: HTMLCanvasElement, img: HTMLImageElement, coef: number[], ganho: number) {
+/** peso de cada vista no ângulo atual: só as duas vizinhas, com troca rápida no meio do caminho */
+function pesosVistas(angulos: number[], ang: number) {
+  const n = angulos.length
+  const p = [0, 0, 0, 0]
+  if (n === 1) {
+    p[0] = 1
+    return p
+  }
+  const norm = (a: number) => ((a % 360) + 360) % 360
+  const atual = norm((ang * 180) / Math.PI)
+  const ordem = angulos.map((a, i) => ({ a: norm(a), i })).sort((x, y) => x.a - y.a)
+  for (let k = 0; k < ordem.length; k++) {
+    const A = ordem[k]
+    const B = ordem[(k + 1) % ordem.length]
+    const vao = norm(B.a - A.a) || 360
+    const dentro = norm(atual - A.a)
+    if (dentro <= vao) {
+      const t = dentro / vao
+      const s = Math.min(1, Math.max(0, (t - 0.38) / 0.24)) // troca rápida, no meio do caminho
+      const suave = s * s * (3 - 2 * s)
+      p[A.i] = 1 - suave
+      p[B.i] = suave
+      break
+    }
+  }
+  return p
+}
+
+function carregar(src: string) {
+  return new Promise<HTMLImageElement>((ok, falha) => {
+    const img = new Image()
+    img.decoding = 'async'
+    img.onload = () => ok(img)
+    img.onerror = falha
+    img.src = src
+  })
+}
+
+function criarGL(canvas: HTMLCanvasElement, planeta: PlanetaDados, imgs: HTMLImageElement[], perfilImg: HTMLImageElement) {
   const gl = canvas.getContext('webgl2', { premultipliedAlpha: true, alpha: true, antialias: false })
   if (!gl) return null
   const sh = (tipo: number, src: string) => {
@@ -150,31 +292,66 @@ function criarGL(canvas: HTMLCanvasElement, img: HTMLImageElement, coef: number[
   const loc = gl.getAttribLocation(prog, 'p')
   gl.enableVertexAttribArray(loc)
   gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0)
-  const t = gl.createTexture()
-  gl.bindTexture(gl.TEXTURE_2D, t)
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img)
-  gl.generateMipmap(gl.TEXTURE_2D)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-  const u = {
-    ang: gl.getUniformLocation(prog, 'ang'),
-    luz: gl.getUniformLocation(prog, 'luz'),
-    borda: gl.getUniformLocation(prog, 'borda'),
-    C: gl.getUniformLocation(prog, 'C'),
-    ganho: gl.getUniformLocation(prog, 'ganho'),
+
+  gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE)
+  const textura = (unidade: number, img: HTMLImageElement, dados: boolean) => {
+    const t = gl.createTexture()
+    gl.activeTexture(gl.TEXTURE0 + unidade)
+    gl.bindTexture(gl.TEXTURE_2D, t)
+    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, !dados)
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img)
+    if (dados) {
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
+    } else {
+      gl.generateMipmap(gl.TEXTURE_2D)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+    }
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
   }
-  gl.uniform1f(u.ganho, ganho)
-  gl.uniform1fv(u.C, new Float32Array([0, 1, 2, 3, 4, 5, 6].map((i) => coef[i] ?? (i === 0 ? 1 : 0))))
+  const vs = planeta.vistas.slice(0, 4)
+  for (let i = 0; i < 4; i++) textura(i, imgs[Math.min(i, imgs.length - 1)], false)
+  textura(4, perfilImg, true)
+
+  const U = (n: string) => gl.getUniformLocation(prog, n)
+  for (let i = 0; i < 4; i++) gl.uniform1i(U(`tex${i}`), i)
+  gl.uniform1i(U('perfil'), 4)
+  gl.uniform1i(U('nVistas'), vs.length)
+  const V = new Float32Array(16)
+  vs.forEach((v, i) => V.set([v.u, v.v, v.r, (v.angulo * Math.PI) / 180], i * 4))
+  gl.uniform4fv(U('V'), V)
+  gl.uniform1f(U('rhoMax'), planeta.raioQuadro)
+  gl.uniform1f(U('alturaMax'), planeta.alturaMax)
+  gl.uniform1f(U('ganho'), planeta.ganho ?? 1)
+  const coef = planeta.luz ?? [1]
+  gl.uniform1fv(U('C'), new Float32Array([0, 1, 2, 3, 4, 5, 6].map((i) => coef[i] ?? (i === 0 ? 1 : 0))))
+  // maior meia espessura do relevo (para pular cedo as vistas longe de um ponto)
+  const cv = document.createElement('canvas')
+  cv.width = perfilImg.width
+  cv.height = perfilImg.height
+  const cx2 = cv.getContext('2d')!
+  cx2.drawImage(perfilImg, 0, 0)
+  const px = cx2.getImageData(0, 0, cv.width, cv.height).data
+  let esp = 0
+  for (let i = 0; i < px.length; i += 4) esp = Math.max(esp, px[i + 1])
+  gl.uniform1f(U('espMax'), (esp / 255) * (Math.PI / 2) + 0.01)
+  const u = { ang: U('ang'), luz: U('luz'), borda: U('borda'), lod: U('lod'), peso: U('peso') }
+  const angulos = vs.map((v) => v.angulo)
   gl.clearColor(0, 0, 0, 0)
+
   return {
-    desenhar(ang: number, luz: number, w: number) {
-      gl.viewport(0, 0, canvas.width, canvas.height)
+    desenhar(ang: number, luz: number) {
+      const lado = canvas.width
+      const pxPorRaio = lado / (2 * planeta.raioQuadro)
+      gl.viewport(0, 0, lado, canvas.height)
       gl.clear(gl.COLOR_BUFFER_BIT)
       gl.uniform1f(u.ang, ang)
       gl.uniform1f(u.luz, luz)
-      gl.uniform1f(u.borda, Math.min(0.2, 2.2 / Math.max(w, 1)))
+      gl.uniform1f(u.borda, Math.min(0.1, 1.6 / Math.max(pxPorRaio, 1)))
+      gl.uniform1fv(u.lod, new Float32Array([0, 1, 2, 3].map((i) => (vs[i] ? Math.max(0, Math.log2((vs[i].r * imgs[i].width) / pxPorRaio)) : 0))))
+      gl.uniform4fv(u.peso, new Float32Array(pesosVistas(angulos, ang)))
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
     },
     liberar() {
@@ -235,6 +412,7 @@ export function PlanetaGirando({
   const W = planeta.tamanhoArte
   const [cx, cy] = planeta.centro
   const R = planeta.raio
+  const RQ = planeta.raioQuadro * R // meio lado do quadro do canvas, em px da arte
 
   useEffect(() => {
     let vivo = true
@@ -242,6 +420,8 @@ export function PlanetaGirando({
     let quadro = 0
     let visivel = true
     let t0 = 0
+    let qualidade = 1 // reduz a resolução sozinho se os quadros ficarem lentos
+    let lentos = 0
     const g = giro.current
 
     const medir = () => {
@@ -253,8 +433,8 @@ export function PlanetaGirando({
       const escala = B / W
       g.escalaR = R * escala
       st.style.transform = `translate(${B / 2 - escala * cx}px, ${B / 2 - escala * cy}px) scale(${escala})`
-      const dpr = Math.min(window.devicePixelRatio || 1, 2)
-      const lado = Math.max(2, Math.round(2 * R * escala * dpr))
+      const dpr = Math.min(window.devicePixelRatio || 1, DPR_MAX) * qualidade
+      const lado = Math.max(2, Math.round(2 * RQ * escala * dpr))
       if (cv.width !== lado) {
         cv.width = lado
         cv.height = lado
@@ -262,8 +442,17 @@ export function PlanetaGirando({
     }
 
     const passo = (t: number) => {
-      const dt = t0 ? Math.min(0.1, (t - t0) / 1000) : 0
+      // o limite só evita um salto ao voltar de outra aba; até 4 quadros/s a velocidade é exata
+      const dt = t0 ? Math.min(0.25, (t - t0) / 1000) : 0
       t0 = t
+      // aparelho lento: mais de 30 ms por quadro por um tempo → desenha com menos pixels
+      if (dt > 0.03) lentos++
+      else lentos = Math.max(0, lentos - 1)
+      if (lentos > 20 && qualidade > 0.6) {
+        qualidade = Math.max(0.6, qualidade - 0.15)
+        lentos = 0
+        medir()
+      }
       const p = props.current
       if (!g.arrastando) {
         const alvo = p.pausado || reduz ? 0 : g.dir * VEL_AUTO
@@ -275,7 +464,7 @@ export function PlanetaGirando({
         g.ang += g.vel * dt
       }
       g.luz += ((p.luz ? 1 : 0) - g.luz) * (1 - Math.exp(-dt / 0.2))
-      gl?.desenhar(g.ang, g.luz, canvas.current?.width ?? 1)
+      gl?.desenhar(g.ang, g.luz)
     }
 
     const laco = (t: number) => {
@@ -293,25 +482,25 @@ export function PlanetaGirando({
     const io = new IntersectionObserver(([e]) => (visivel = e.isIntersecting))
     if (caixa.current) io.observe(caixa.current)
 
-    const img = new Image()
-    img.decoding = 'async'
-    img.onload = () => {
-      if (!vivo || !canvas.current) return
-      try {
-        gl = criarGL(canvas.current, img, planeta.luz ?? [1], planeta.ganho ?? 1)
-      } catch {
-        gl = null
-      }
-      if (!gl) {
-        setSemGL(true)
-        return
-      }
-      medir()
-      setPronto(true)
-      quadro = requestAnimationFrame(laco)
-    }
-    img.onerror = () => setSemGL(true)
-    img.src = juntar(base, planeta.pasta, planeta.textura)
+    const pasta = (arq: string) => juntar(base, planeta.pasta, arq)
+    Promise.all([...planeta.vistas.slice(0, 4).map((v) => carregar(pasta(v.src))), carregar(pasta(planeta.perfil))])
+      .then((imgs) => {
+        if (!vivo || !canvas.current) return
+        const perfilImg = imgs.pop()!
+        try {
+          gl = criarGL(canvas.current, planeta, imgs, perfilImg)
+        } catch {
+          gl = null
+        }
+        if (!gl) {
+          setSemGL(true)
+          return
+        }
+        medir()
+        setPronto(true)
+        quadro = requestAnimationFrame(laco)
+      })
+      .catch(() => vivo && setSemGL(true))
 
     return () => {
       vivo = false
@@ -359,7 +548,7 @@ export function PlanetaGirando({
     g.ang += dx / Math.max(g.escalaR, 1)
     const a = amostras.current
     a.push({ t: e.timeStamp, x: e.clientX })
-    while (a.length > 2 && e.timeStamp - a[0].t > 90) a.shift()
+    while (a.length > 2 && e.timeStamp - a[0].t > 120) a.shift()
   }
   const aoSoltar = (e: PointerEvent<HTMLDivElement>) => {
     const g = giro.current
@@ -370,8 +559,9 @@ export function PlanetaGirando({
     const ini = a[0]
     const fim = a[a.length - 1]
     const dt = (fim.t - ini.t) / 1000
-    // parado antes de soltar (sem amostras recentes) = sem arremesso
-    const recente = e.timeStamp - fim.t < 60
+    // parado antes de soltar (sem movimento recente) = sem arremesso. A folga é grande porque em
+    // aparelhos lentos os eventos de movimento chegam espaçados
+    const recente = e.timeStamp - fim.t < 150
     const vel = dt > 0.012 && recente ? (fim.x - ini.x) / dt / Math.max(g.escalaR, 1) : 0
     g.vel = reduz ? 0 : Math.max(-VEL_MAX, Math.min(VEL_MAX, vel))
     g.tau = 1.1 // desacelera devagar, como um globo de verdade
@@ -421,12 +611,11 @@ export function PlanetaGirando({
       {sombra && <span className={s.sombra} aria-hidden />}
       <div className={s.flutua}>
         {halo && <span className={s.halo} aria-hidden />}
-        {/* arte original: primeiro quadro, enquanto carrega, e quando não há WebGL2 */}
+        {/* arte de frente: primeiro quadro, enquanto carrega, e quando não há WebGL2 */}
         <img className={`${s.arte} ${animado ? s.oculta : ''}`} src={juntar(base, planeta.arte)} alt="" draggable={false} />
         {!semGL && (
           <div ref={palco} className={`${s.palco} ${animado ? '' : s.oculta}`} style={{ width: W, height: W }}>
-            <canvas ref={canvas} className={s.esfera} style={{ left: cx - R, top: cy - R, width: 2 * R, height: 2 * R }} />
-            <img className={s.elementos} src={juntar(base, planeta.pasta, planeta.elementos)} alt="" draggable={false} />
+            <canvas ref={canvas} className={s.esfera} style={{ left: cx - RQ, top: cy - RQ, width: 2 * RQ, height: 2 * RQ }} />
           </div>
         )}
       </div>
