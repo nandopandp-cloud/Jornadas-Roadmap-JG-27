@@ -529,7 +529,7 @@ export const journeys: Journey[] = [
     product: 'Exploradores · Plataforma do Estudante',
     audience: 'Estudantes do Fundamental I',
     description:
-      'Os novos planetas de massinha dos Exploradores ganham vida: o planeta inteiro é um objeto 3D único, que gira no eixo vertical com uma volta a cada 40 s. Casa, vulcão, barco, polvo, ilha e floresta só giram, aparecem e somem, sem nunca mudar de forma, montados com as peças do kit (cada uma em PNG). O estudante pode girar com a mão (arrastando ou com as setas). Componente pronto para o Next.js.',
+      'Os planetas de massinha dos Exploradores viram modelos 3D de verdade: o planeta gira no eixo vertical com uma volta a cada 40 s, com casa, floresta, cachoeira, barco, polvo e praia em volume real de todos os lados. O estudante pode girar com a mão (arrastando ou com as setas). Modelo gerado no Tripo e otimizado no Blender (de 64 MB para 2,4 MB); componente pronto para o Next.js com three.js.',
     icon: './planetas/planeta-01.png',
     accent: '#2a1260',
     status: 'navegavel',

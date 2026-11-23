@@ -1,57 +1,63 @@
 'use client'
 
 import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent } from 'react'
+import {
+  ACESFilmicToneMapping,
+  AgXToneMapping,
+  DirectionalLight,
+  Group,
+  HemisphereLight,
+  Mesh,
+  PMREMGenerator,
+  PerspectiveCamera,
+  SRGBColorSpace,
+  Scene,
+  WebGLRenderer,
+  type Material,
+  type Texture,
+} from 'three'
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
+import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import s from './planeta-girando.module.css'
 
 /* =====================================================================
-   PlanetaGirando · Exploradores — giro 3D no eixo vertical
+   PlanetaGirando · Exploradores — planeta 3D (.glb) girando no eixo vertical
    ---------------------------------------------------------------------
-   O planeta inteiro (esfera + casa, polvo, ilha, rochedo…) é UM objeto
-   3D fixo que só gira: os elementos aparecem, passam e somem, sem nunca
-   mudar de tamanho, forma ou cor.
+   O planeta é um modelo 3D de verdade (gerado no Tripo e otimizado no
+   Blender por scripts/planetas/otimizar_glb.py): centro da esfera na
+   origem, raio 1, 160 mil triângulos, texturas PBR 2K em WebP e malha
+   comprimida por meshopt (~2,4 MB). O three.js desenha com luz de estúdio
+   (principal no alto à esquerda + ambiente) e o objeto só gira: os
+   elementos aparecem, passam e somem sem nunca mudar de forma.
 
-   Como funciona (WebGL2):
-   1. MODELO. Uma textura 360° (cor) e um relevo 360° (altura dos
-      elementos), montados uma vez pelo scripts/planetas/
-      preparar-planeta.py a partir dos quadros de um storyboard do giro.
-   2. DESENHO. Para cada pixel, o shader acha onde o raio da câmera
-      encosta na esfera com relevo (ray marching) e pega a cor da
-      textura naquele ponto. O relevo recebe sombra da luz fixa.
-   3. LUZ. A parte horizontal da luz pintada nas artes foi tirada pelo
-      script e volta aqui, parada na tela: girando, a luz fica no lugar.
-   4. MÃO. Arrastar na horizontal gira o planeta; ao soltar, ele segue
-      com embalo e volta ao giro normal no sentido em que foi jogado.
-      As setas do teclado fazem o mesmo.
-   5. Com “reduzir movimento”, não gira sozinho (a mão continua). Sem
-      WebGL2, mostra a arte original parada.
+   Comportamento (igual ao das versões anteriores):
+   • uma volta a cada 40 s, sem outras velocidades;
+   • mão: arrastar na horizontal gira; ao soltar segue com embalo e volta
+     ao giro normal no sentido em que foi jogado. Setas ← → fazem o mesmo;
+   • “reduzir movimento”: não gira sozinho (a mão continua);
+   • sem WebGL, ou enquanto carrega: o pôster (render do mesmo ângulo);
+   • fora da tela: para de desenhar. Aparelho lento: baixa a resolução.
 
-   Next.js: componente cliente ('use client'), sem dependências.
+   Next.js: componente cliente ('use client'); depende só de `three`.
    ===================================================================== */
 
 export type PlanetaDados = {
   id: string
-  /** imagem de reserva (sem WebGL2) e primeira imagem na tela */
-  arte: string
-  /** pasta com a textura e o relevo */
+  /** pasta dos arquivos em public/ */
   pasta: string
-  /** lado da arte de reserva (px); a esfera fica no centro */
-  tamanhoArte: number
-  centro: number[]
-  /** raio da esfera na arte de reserva (px) */
-  raio: number
-  /** raio do quadro que cabe o relevo, em raios da esfera */
+  /** modelo 3D (.glb) */
+  modelo: string
+  /** imagem de reserva no ângulo inicial (mesmo enquadramento) */
+  poster: string
+  /** maior distância do centro até a borda do modelo, em raios da esfera (enquadramento) */
   raioQuadro: number
-  /** textura 360° (equiretangular; cor × ganho) */
-  textura: string
-  /** relevo 360° (equiretangular; altura / alturaMax, em raios) */
-  relevo: string
-  alturaMax: number
-  /** luz pintada nas artes, medida pelo script: S(x, y) = c0 + c1·x + c2·y + c3·x² + c4·y² + c5·x·y + c6·r⁴ */
-  luz?: number[]
-  /** a textura guarda cor × ganho (margem contra estouro); o shader desfaz */
-  ganho?: number
-  /** true: a textura é só cor (planeta montado com peças) e a luz entra inteira, não só a horizontal */
-  luzCompleta?: boolean
+  /** ângulo inicial (graus) — o mesmo do pôster */
+  inicio: number
+  /** câmera acima do equador (graus) */
+  elevacao: number
+  /** abertura da câmera (graus) */
+  fov: number
 }
 
 export type Sentido = 'direita' | 'esquerda'
@@ -71,9 +77,9 @@ export type PlanetaGirandoProps = {
   pausado?: boolean
   /** deixa girar com a mão e com as setas. Padrão: true */
   arrastavel?: boolean
-  /** ângulo inicial (graus); 0 = a frente */
+  /** ângulo inicial (graus) somado ao do modelo; 0 = o mesmo do pôster */
   inicio?: number
-  /** luz das artes parada sobre o planeta (false = só a cor). Padrão: true */
+  /** luz de estúdio (false = só a luz ambiente, mais chapada). Padrão: true */
   luz?: boolean
   /** sobe e desce devagar. Padrão: true */
   flutuar?: boolean
@@ -89,193 +95,28 @@ export type PlanetaGirandoProps = {
 export const SEGUNDOS_POR_VOLTA = 40
 const VEL_AUTO = (2 * Math.PI) / SEGUNDOS_POR_VOLTA
 const VEL_MAX = 7 // rad/s, teto do arremesso
-const IMPULSO_TECLA = 1.2 // rad/s por toque na seta (≈ 75° com o embalo)
-const DPR_MAX = 1.75 // o ray marching custa por pixel; acima disso não se nota diferença
-
-const VERT = `#version 300 es
-in vec2 p;
-out vec2 v;
-void main() { v = p; gl_Position = vec4(p, 0.0, 1.0); }`
-
-const FRAG = `#version 300 es
-precision highp float;
-uniform sampler2D tex;      // textura 360° (cor × ganho)
-uniform sampler2D relevo;   // relevo 360° (R: altura / alturaMax)
-uniform float lodT;
-uniform float ang;          // ângulo do giro
-uniform float rhoMax;       // raio do quadro, em raios da esfera
-uniform float alturaMax;
-uniform float borda;        // largura do antisserrilhado da esfera, em raios
-uniform float luz;
-uniform float ganho;
-uniform float C[7];
-uniform float luzCompleta;
-in vec2 v;
-out vec4 cor;
-const float PI = 3.14159265359;
-const vec3 L = vec3(-0.45, 0.55, 0.70) / 1.0;   // luz fixa (tela), normalizada abaixo
-
-vec2 uvDe(vec3 d) {
-  return vec2(atan(d.x, d.z) / (2.0 * PI) + 0.5, 0.5 - asin(clamp(d.y, -1.0, 1.0)) / PI);
-}
-float altura(vec3 d) {
-  return textureLod(relevo, uvDe(d), 0.0).r * alturaMax;
-}
-float campo(vec3 P) {
-  float r = length(P);
-  return r - (1.0 + altura(P / r));
-}
-
-void main() {
-  vec2 q = v * rhoMax;                      // ponto da tela, em raios da esfera
-  float q2 = dot(q, q);
-  if (q2 > rhoMax * rhoMax) { cor = vec4(0.0); return; }
-  float c = cos(ang), s = sin(ang);
-  float Z = rhoMax + 0.01;
-  // raio da câmera (ortográfica) no referencial do planeta
-  vec3 o = vec3(q.x * c - Z * s, q.y, q.x * s + Z * c);
-  vec3 d = vec3(s, 0.0, -c);
-  float meio = sqrt(rhoMax * rhoMax - q2);
-  float tA = Z - meio, tB = Z + meio;
-  bool corpo = q2 < 1.0;
-  float tCorpo = corpo ? Z - sqrt(1.0 - q2) : tB;
-
-  // procura o primeiro ponto do objeto (esfera + relevo) no caminho do raio
-  float tHit = -1.0;
-  float tFim = min(tB, tCorpo);
-  if (tFim > tA) {
-    float dt = (tFim - tA) / 56.0;
-    float tAnt = tA;
-    for (int i = 1; i <= 56; i++) {
-      float t = tA + float(i) * dt;
-      if (campo(o + t * d) < 0.0) {
-        float a = tAnt, b = t;
-        for (int k = 0; k < 6; k++) {
-          float m = 0.5 * (a + b);
-          if (campo(o + m * d) < 0.0) b = m; else a = m;
-        }
-        tHit = b;
-        break;
-      }
-      tAnt = t;
-    }
-  }
-  float alfa = 1.0;
-  if (tHit < 0.0) {
-    if (!corpo) { cor = vec4(0.0); return; }
-    tHit = tCorpo;
-    alfa = 1.0 - smoothstep(1.0 - borda, 1.0, sqrt(q2));
-  }
-  vec3 P = o + tHit * d;
-  vec3 n0 = normalize(P);
-  vec3 rgb = textureLod(tex, uvDe(n0), lodT).rgb;
-
-  // volume do relevo: normal pela variação da altura, sombreada pela luz fixa
-  float e = 0.012;
-  vec3 tLon = normalize(vec3(n0.z, 0.0, -n0.x) + 1e-5);
-  vec3 tLat = normalize(cross(n0, tLon));
-  float h0 = altura(n0);
-  float hL = altura(normalize(n0 + tLon * e));
-  float hT = altura(normalize(n0 + tLat * e));
-  vec3 nr = normalize(n0 - (tLon * (hL - h0) + tLat * (hT - h0)) / e * 0.6);
-  // luz fixa na tela → referencial do planeta
-  vec3 Lc = normalize(L);
-  vec3 Lp = vec3(Lc.x * c - Lc.z * s, Lc.y, Lc.x * s + Lc.z * c);
-  float sombra = clamp(1.0 + 0.45 * (dot(nr, Lp) - dot(n0, Lp)), 0.75, 1.2);
-
-  // luz pintada: só a parte horizontal, parada na tela (a vertical já está na textura)
-  vec2 u = q / max(1.0, length(q));
-  float y2 = u.y * u.y, r2 = dot(u, u);
-  float S = C[0] + C[1] * u.x + C[2] * u.y + C[3] * u.x * u.x + C[4] * y2 + C[5] * u.x * u.y + C[6] * r2 * r2;
-  float S0 = mix(C[0] + C[2] * u.y + C[4] * y2 + C[6] * y2 * y2, C[0], luzCompleta);
-  float Sh = clamp(S / max(S0, 0.001), 0.45, 1.5);
-  rgb = rgb * mix(1.0, Sh * sombra, luz) / ganho;
-  cor = vec4(rgb * alfa, alfa);
-}`
-
-function carregar(src: string) {
-  return new Promise<HTMLImageElement>((ok, falha) => {
-    const img = new Image()
-    img.decoding = 'async'
-    img.onload = () => ok(img)
-    img.onerror = falha
-    img.src = src
-  })
-}
-
-function criarGL(canvas: HTMLCanvasElement, planeta: PlanetaDados, texImg: HTMLImageElement, relevoImg: HTMLImageElement) {
-  const gl = canvas.getContext('webgl2', { premultipliedAlpha: true, alpha: true, antialias: false })
-  if (!gl) return null
-  const sh = (tipo: number, src: string) => {
-    const o = gl.createShader(tipo)!
-    gl.shaderSource(o, src)
-    gl.compileShader(o)
-    if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(o) || 'shader')
-    return o
-  }
-  const prog = gl.createProgram()!
-  gl.attachShader(prog, sh(gl.VERTEX_SHADER, VERT))
-  gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FRAG))
-  gl.linkProgram(prog)
-  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog) || 'programa')
-  gl.useProgram(prog)
-  const buf = gl.createBuffer()
-  gl.bindBuffer(gl.ARRAY_BUFFER, buf)
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW)
-  const loc = gl.getAttribLocation(prog, 'p')
-  gl.enableVertexAttribArray(loc)
-  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0)
-
-  gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE)
-  gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false)
-  const textura = (unidade: number, img: HTMLImageElement, mip: boolean) => {
-    gl.activeTexture(gl.TEXTURE0 + unidade)
-    gl.bindTexture(gl.TEXTURE_2D, gl.createTexture())
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img)
-    if (mip) gl.generateMipmap(gl.TEXTURE_2D)
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, mip ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR)
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-  }
-  textura(0, texImg, true)
-  textura(1, relevoImg, false)
-
-  const U = (nome: string) => gl.getUniformLocation(prog, nome)
-  gl.uniform1i(U('tex'), 0)
-  gl.uniform1i(U('relevo'), 1)
-  gl.uniform1f(U('rhoMax'), planeta.raioQuadro)
-  gl.uniform1f(U('alturaMax'), planeta.alturaMax)
-  gl.uniform1f(U('ganho'), planeta.ganho ?? 1)
-  gl.uniform1f(U('luzCompleta'), planeta.luzCompleta ? 1 : 0)
-  const coef = planeta.luz ?? [1]
-  gl.uniform1fv(U('C'), new Float32Array([0, 1, 2, 3, 4, 5, 6].map((i) => coef[i] ?? (i === 0 ? 1 : 0))))
-  const u = { ang: U('ang'), luz: U('luz'), borda: U('borda'), lodT: U('lodT') }
-  gl.clearColor(0, 0, 0, 0)
-
-  return {
-    desenhar(ang: number, luz: number) {
-      const lado = canvas.width
-      const pxPorRaio = lado / (2 * planeta.raioQuadro)
-      gl.viewport(0, 0, lado, canvas.height)
-      gl.clear(gl.COLOR_BUFFER_BIT)
-      gl.uniform1f(u.ang, ang)
-      gl.uniform1f(u.luz, luz)
-      gl.uniform1f(u.borda, Math.min(0.1, 1.6 / Math.max(pxPorRaio, 1)))
-      // texels da textura por pixel de tela no centro da esfera
-      gl.uniform1f(u.lodT, Math.max(0, Math.log2(texImg.width / (2 * Math.PI) / pxPorRaio)))
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
-    },
-    liberar() {
-      gl.getExtension('WEBGL_lose_context')?.loseContext()
-    },
-  }
-}
+const IMPULSO_TECLA = 1.2 // rad/s por toque na seta
+const DPR_MAX = 2
 
 const juntar = (base: string, ...partes: string[]) => (base.endsWith('/') ? base : base + '/') + partes.join('/')
+const rad = (g: number) => (g * Math.PI) / 180
 
 function reduzMovimento() {
   return typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+}
+
+function temWebGL() {
+  try {
+    const c = document.createElement('canvas')
+    return !!(c.getContext('webgl2') || c.getContext('webgl'))
+  } catch {
+    return false
+  }
+}
+
+/** distância da câmera para o modelo inteiro caber no quadro (com 4% de folga) */
+function distancia(p: PlanetaDados) {
+  return (p.raioQuadro / Math.sin(rad(p.fov / 2))) * 1.04
 }
 
 export function PlanetaGirando({
@@ -296,7 +137,6 @@ export function PlanetaGirando({
   style,
 }: PlanetaGirandoProps) {
   const caixa = useRef<HTMLDivElement>(null)
-  const palco = useRef<HTMLDivElement>(null)
   const canvas = useRef<HTMLCanvasElement>(null)
   const [pronto, setPronto] = useState(false)
   const [semGL, setSemGL] = useState(false)
@@ -304,7 +144,7 @@ export function PlanetaGirando({
 
   // estado do giro, lido pelo laço a cada quadro (sem re-render)
   const giro = useRef({
-    ang: (inicio * Math.PI) / 180,
+    ang: rad(planeta.inicio + inicio),
     vel: 0,
     dir: sentido === 'direita' ? 1 : -1,
     tau: 0.6,
@@ -315,49 +155,78 @@ export function PlanetaGirando({
   const props = useRef({ pausado, luz, onSentidoChange })
   props.current = { pausado, luz, onSentidoChange }
 
-  // trocar o sentido por fora (ex.: um botão) vira o giro com suavidade
   useEffect(() => {
     giro.current.dir = sentido === 'direita' ? 1 : -1
     giro.current.tau = 0.6
   }, [sentido])
 
-  const W = planeta.tamanhoArte
-  const [cx, cy] = planeta.centro
-  const R = planeta.raio
-  const RQ = planeta.raioQuadro * R // meio lado do quadro do canvas, em px da arte
+  // raio aparente da esfera, em fração da largura (halo, sombra, anel de foco)
+  const fracR = 0.5 / (distancia(planeta) * Math.tan(rad(planeta.fov / 2)))
 
   useEffect(() => {
+    const el = caixa.current
+    const cv = canvas.current
+    if (!el || !cv) return
+    if (!temWebGL()) {
+      setSemGL(true)
+      return
+    }
     let vivo = true
-    let gl: ReturnType<typeof criarGL> = null
     let quadro = 0
     let visivel = true
     let t0 = 0
-    let qualidade = 1 // reduz a resolução sozinho se os quadros ficarem lentos
+    let qualidade = 1
     let lentos = 0
     const g = giro.current
+    ;(el as HTMLDivElement & { __giro?: typeof g }).__giro = g // estado visível para testes automatizados
+
+    let renderer: WebGLRenderer
+    try {
+      renderer = new WebGLRenderer({ canvas: cv, alpha: true, antialias: true, powerPreference: 'high-performance' })
+    } catch {
+      setSemGL(true)
+      return
+    }
+    renderer.outputColorSpace = SRGBColorSpace
+    renderer.toneMapping = AgXToneMapping ?? ACESFilmicToneMapping
+    renderer.toneMappingExposure = 1.05
+    renderer.setClearColor(0x000000, 0)
+
+    const cena = new Scene()
+    const pmrem = new PMREMGenerator(renderer)
+    const ambiente = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
+    cena.environment = ambiente
+    cena.environmentIntensity = 0.55
+    // luz de estúdio: principal grande no alto à esquerda, preenchimento à direita, céu/chão suaves
+    const principal = new DirectionalLight(0xfff4e8, 2.6)
+    principal.position.set(-1.0, 1.3, 1.1)
+    const preench = new DirectionalLight(0xe8f0ff, 0.7)
+    preench.position.set(1.2, 0.1, 0.7)
+    const ceu = new HemisphereLight(0xdfe9ff, 0x2c2440, 0.35)
+    cena.add(principal, preench, ceu)
+
+    const d = distancia(planeta)
+    const e = rad(planeta.elevacao)
+    const cam = new PerspectiveCamera(planeta.fov, 1, d * 0.3, d * 3)
+    cam.position.set(0, d * Math.sin(e), d * Math.cos(e))
+    cam.lookAt(0, 0, 0)
+
+    const pivo = new Group()
+    cena.add(pivo)
 
     const medir = () => {
-      const el = caixa.current
-      const st = palco.current
-      const cv = canvas.current
-      if (!el || !st || !cv) return
       const B = el.clientWidth
-      const escala = B / W
-      g.escalaR = R * escala
-      st.style.transform = `translate(${B / 2 - escala * cx}px, ${B / 2 - escala * cy}px) scale(${escala})`
+      if (!B) return
       const dpr = Math.min(window.devicePixelRatio || 1, DPR_MAX) * qualidade
-      const lado = Math.max(2, Math.round(2 * RQ * escala * dpr))
-      if (cv.width !== lado) {
-        cv.width = lado
-        cv.height = lado
-      }
+      renderer.setPixelRatio(dpr)
+      renderer.setSize(B, B, false)
+      g.escalaR = B * fracR
     }
 
     const passo = (t: number) => {
-      // o limite só evita um salto ao voltar de outra aba; até 4 quadros/s a velocidade é exata
+      // limite só evita salto ao voltar de outra aba; até 4 quadros/s a velocidade é exata
       const dt = t0 ? Math.min(0.25, (t - t0) / 1000) : 0
       t0 = t
-      // aparelho lento: mais de 30 ms por quadro por um tempo → desenha com menos pixels
       if (dt > 0.03) lentos++
       else lentos = Math.max(0, lentos - 1)
       if (lentos > 20 && qualidade > 0.6) {
@@ -376,7 +245,11 @@ export function PlanetaGirando({
         g.ang += g.vel * dt
       }
       g.luz += ((p.luz ? 1 : 0) - g.luz) * (1 - Math.exp(-dt / 0.2))
-      gl?.desenhar(g.ang, g.luz)
+      principal.intensity = 2.6 * g.luz
+      preench.intensity = 0.7 * g.luz
+      cena.environmentIntensity = 0.55 + 0.6 * (1 - g.luz)
+      pivo.rotation.y = g.ang
+      renderer.render(cena, cam)
     }
 
     const laco = (t: number) => {
@@ -386,39 +259,45 @@ export function PlanetaGirando({
       quadro = requestAnimationFrame(laco)
     }
 
-    // estado do giro visível para testes automatizados (propriedade JS, não toca o DOM)
-    if (caixa.current) (caixa.current as HTMLDivElement & { __giro?: typeof g }).__giro = g
-
     const ro = new ResizeObserver(medir)
-    if (caixa.current) ro.observe(caixa.current)
-    const io = new IntersectionObserver(([e]) => (visivel = e.isIntersecting))
-    if (caixa.current) io.observe(caixa.current)
+    ro.observe(el)
+    const io = new IntersectionObserver(([en]) => (visivel = en.isIntersecting))
+    io.observe(el)
 
-    const pasta = (arq: string) => juntar(base, planeta.pasta, arq)
-    Promise.all([carregar(pasta(planeta.textura)), carregar(pasta(planeta.relevo))])
-      .then(([texImg, relevoImg]) => {
-        if (!vivo || !canvas.current) return
-        try {
-          gl = criarGL(canvas.current, planeta, texImg, relevoImg)
-        } catch {
-          gl = null
-        }
-        if (!gl) {
-          setSemGL(true)
-          return
-        }
+    const loader = new GLTFLoader()
+    loader.setMeshoptDecoder(MeshoptDecoder)
+    loader.load(
+      juntar(base, planeta.pasta, planeta.modelo),
+      (gltf) => {
+        if (!vivo) return
+        pivo.add(gltf.scene)
         medir()
+        passo(performance.now())
         setPronto(true)
         quadro = requestAnimationFrame(laco)
-      })
-      .catch(() => vivo && setSemGL(true))
+      },
+      undefined,
+      () => vivo && setSemGL(true),
+    )
 
     return () => {
       vivo = false
       cancelAnimationFrame(quadro)
       ro.disconnect()
       io.disconnect()
-      gl?.liberar()
+      pivo.traverse((o) => {
+        if (o instanceof Mesh) {
+          o.geometry.dispose()
+          const mats = (Array.isArray(o.material) ? o.material : [o.material]) as Material[]
+          for (const m of mats) {
+            for (const v of Object.values(m)) if (v && (v as Texture).isTexture) (v as Texture).dispose()
+            m.dispose()
+          }
+        }
+      })
+      ambiente.dispose()
+      pmrem.dispose()
+      renderer.dispose()
     }
     // o laço lê o resto por ref; só reinicia se trocar o planeta
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -455,8 +334,7 @@ export function PlanetaGirando({
     if (!g.arrastando) return
     const dx = e.clientX - ultimoX.current
     ultimoX.current = e.clientX
-    // a superfície no centro acompanha o dedo: dx px = dx / raio radianos
-    g.ang += dx / Math.max(g.escalaR, 1)
+    g.ang += dx / Math.max(g.escalaR, 1) // a superfície no centro acompanha o dedo
     const a = amostras.current
     a.push({ t: e.timeStamp, x: e.clientX })
     while (a.length > 2 && e.timeStamp - a[0].t > 120) a.shift()
@@ -470,8 +348,7 @@ export function PlanetaGirando({
     const ini = a[0]
     const fim = a[a.length - 1]
     const dt = (fim.t - ini.t) / 1000
-    // parado antes de soltar (sem movimento recente) = sem arremesso. A folga é grande porque em
-    // aparelhos lentos os eventos de movimento chegam espaçados
+    // parado antes de soltar = sem arremesso (folga grande: em aparelho lento os eventos chegam espaçados)
     const recente = e.timeStamp - fim.t < 150
     const vel = dt > 0.012 && recente ? (fim.x - ini.x) / dt / Math.max(g.escalaR, 1) : 0
     g.vel = reduz ? 0 : Math.max(-VEL_MAX, Math.min(VEL_MAX, vel))
@@ -494,9 +371,7 @@ export function PlanetaGirando({
 
   const vars = {
     '--pl-tam': typeof tamanho === 'number' ? `${tamanho}px` : tamanho,
-    '--pl-r': (R / W) * 100,
-    '--pl-dx': `${(0.5 - cx / W) * 100}%`,
-    '--pl-dy': `${(0.5 - cy / W) * 100}%`,
+    '--pl-r': fracR * 100,
     '--pl-halo': halo || '0, 0, 0',
     ...style,
   } as CSSProperties
@@ -522,11 +397,11 @@ export function PlanetaGirando({
       {sombra && <span className={s.sombra} aria-hidden />}
       <div className={s.flutua}>
         {halo && <span className={s.halo} aria-hidden />}
-        {/* arte de frente: primeiro quadro, enquanto carrega, e quando não há WebGL2 */}
-        <img className={`${s.arte} ${animado ? s.oculta : ''}`} src={juntar(base, planeta.arte)} alt="" draggable={false} />
+        {/* pôster: primeiro quadro, enquanto carrega, e quando não há WebGL */}
+        <img className={`${s.arte} ${animado ? s.oculta : ''}`} src={juntar(base, planeta.pasta, planeta.poster)} alt="" draggable={false} />
         {!semGL && (
-          <div ref={palco} className={`${s.palco} ${animado ? '' : s.oculta}`} style={{ width: W, height: W }}>
-            <canvas ref={canvas} className={s.esfera} style={{ left: cx - RQ, top: cy - RQ, width: 2 * RQ, height: 2 * RQ }} />
+          <div className={`${s.palco} ${animado ? '' : s.oculta}`}>
+            <canvas ref={canvas} className={s.esfera} />
           </div>
         )}
       </div>

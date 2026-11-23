@@ -1,26 +1,10 @@
 {
   "id": "planeta-01",
-  "arte": "planetas/planeta-01/frente.webp",
   "pasta": "planetas/planeta-01",
-  "tamanhoArte": 640,
-  "centro": [
-    320.0,
-    320.0
-  ],
-  "raio": 213,
-  "raioQuadro": 1.22,
-  "textura": "textura.webp",
-  "relevo": "relevo.png",
-  "alturaMax": 0.75,
-  "luz": [
-    1.0,
-    0.08944,
-    0.33849,
-    -0.13612,
-    -0.05216,
-    -0.03161,
-    -0.18859
-  ],
-  "luzCompleta": true,
-  "ganho": 1.0
+  "modelo": "planeta.glb",
+  "poster": "poster.webp",
+  "raioQuadro": 1.347,
+  "inicio": 305.0,
+  "elevacao": 12.0,
+  "fov": 30.0
 }
