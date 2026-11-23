@@ -1,8 +1,8 @@
-import { ArrowLeft, ArrowRight, Check, CircleDot, Code, Copy, Hand, Info, Moon, MoveHorizontal, MoveVertical, Orbit, Pause, Play, Ruler, Sun, type LucideIcon } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, CircleDot, Code, Copy, Globe, Hand, Info, Moon, MoveHorizontal, MoveVertical, Orbit, Pause, Play, Ruler, Sun, type LucideIcon } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
 import type { PrototypeProps } from '../../platform/journeys'
-import { PlanetaGirando, SEGUNDOS_POR_VOLTA, type PlanetaDados, type Sentido } from './PlanetaGirando'
-import planeta01 from './planeta-01.json'
+import { PlanetaGirando, SEGUNDOS_POR_VOLTA, type Sentido } from './PlanetaGirando'
+import { LISTA_PLANETAS, PLANETAS, type IdPlaneta } from './planetas'
 import './vitrine.css'
 
 /* =====================================================================
@@ -10,16 +10,14 @@ import './vitrine.css'
    Abas: giro (palco), tamanhos (3 usos lado a lado), nextjs (handoff)
    ===================================================================== */
 
-/** planetas que já entraram na plataforma (modelo 3D otimizado por scripts/planetas/otimizar_glb.py) */
-const PLANETAS: { nome: string; dados: PlanetaDados }[] = [{ nome: 'Planeta 01', dados: planeta01 }]
 const BASE = './'
 
 type Aba = 'giro' | 'tamanhos' | 'nextjs'
 
 const TAMANHOS = [
-  // cada um começa de um lado: polvo e ilha, casa e floresta, e a frente
-  { px: 130, label: 'Ícone', uso: 'listas e conquistas', inicio: 200 },
-  { px: 210, label: 'Card', uso: 'escolha do planeta', inicio: 110 },
+  // cada um começa de um lado (graus somados ao ângulo inicial do planeta)
+  { px: 130, label: 'Ícone', uso: 'listas e conquistas', inicio: 255 },
+  { px: 210, label: 'Card', uso: 'escolha do planeta', inicio: 165 },
   { px: 330, label: 'Destaque', uso: 'abertura da trilha', inicio: 0 },
 ]
 
@@ -36,6 +34,8 @@ function useReduzMovimento() {
 
 export default function Planetas({ startScreen }: PrototypeProps) {
   const inicial = startScreen === 'tamanhos' || startScreen === 'nextjs' ? startScreen : 'giro'
+  // ?screen=planeta-02 abre direto num planeta
+  const [idPlaneta, setIdPlaneta] = useState<IdPlaneta>(startScreen && startScreen in PLANETAS ? (startScreen as IdPlaneta) : LISTA_PLANETAS[0].id)
   const [aba, setAba] = useState<Aba>(inicial)
   const [fundo, setFundo] = useState<'espaco' | 'claro'>(startScreen === 'claro' ? 'claro' : 'espaco')
   const [sentido, setSentido] = useState<Sentido>('direita')
@@ -45,9 +45,9 @@ export default function Planetas({ startScreen }: PrototypeProps) {
   const [sombra, setSombra] = useState(true)
   const reduz = useReduzMovimento()
 
-  const planeta = PLANETAS[0]
+  const planeta = PLANETAS[idPlaneta]
   const comuns = {
-    planeta: planeta.dados,
+    planeta,
     base: BASE,
     sentido,
     pausado,
@@ -74,7 +74,7 @@ export default function Planetas({ startScreen }: PrototypeProps) {
             {TAMANHOS.map((t) => (
               <figure key={t.px} className="pv-tamanho">
                 <div className="pv-tamanho__caixa" style={{ height: t.px }}>
-                  <PlanetaGirando {...comuns} tamanho={t.px} inicio={t.inicio} alt={`${planeta.nome} em tamanho ${t.label}`} />
+                  <PlanetaGirando key={`${planeta.id}-${t.px}`} {...comuns} tamanho={t.px} inicio={t.inicio} alt={`${planeta.nome} em tamanho ${t.label}`} />
                 </div>
                 <figcaption>
                   <strong>
@@ -87,7 +87,7 @@ export default function Planetas({ startScreen }: PrototypeProps) {
           </div>
         ) : (
           <div className="pv-centro">
-            <PlanetaGirando {...comuns} onSentidoChange={setSentido} tamanho="var(--pv-tam)" alt={planeta.nome} />
+            <PlanetaGirando key={planeta.id} {...comuns} onSentidoChange={setSentido} tamanho="var(--pv-tam)" alt={planeta.nome} />
           </div>
         )}
 
@@ -107,8 +107,8 @@ export default function Planetas({ startScreen }: PrototypeProps) {
           <span className="pv-sobre">Planetas · Exploradores</span>
           <h1>Giro 360°</h1>
           <p>
-            O planeta é um modelo 3D de verdade e gira no eixo vertical, com uma volta a cada {SEGUNDOS_POR_VOLTA} s. A casa, a floresta, a
-            cachoeira, o barco, o polvo e a praia dão a volta juntos, com volume real de todos os lados. Dá para girar com a mão.
+            Cada planeta é um modelo 3D de verdade e gira no eixo vertical, com uma volta a cada {SEGUNDOS_POR_VOLTA} s. Todos os elementos dão a
+            volta juntos, com volume real de todos os lados. Dá para girar com a mão.
           </p>
         </header>
 
@@ -149,6 +149,12 @@ export default function Planetas({ startScreen }: PrototypeProps) {
                 </small>
               </span>
             </p>
+
+            {LISTA_PLANETAS.length > 1 && (
+              <Campo titulo="Planeta" icone={Globe}>
+                <Segmentos valor={idPlaneta} opcoes={LISTA_PLANETAS.map((p) => ({ id: p.id, label: p.nome }))} onChange={(v) => setIdPlaneta(v as IdPlaneta)} />
+              </Campo>
+            )}
 
             <Campo titulo="Sentido do giro" icone={MoveHorizontal}>
               <Segmentos
@@ -242,15 +248,13 @@ function Chave({ icone: Icone, label, desc, on, set }: { icone: LucideIcon; labe
   )
 }
 
-const CODIGO = `import { PlanetaGirando }
-  from '@/components/planetas/PlanetaGirando'
-import planeta01
-  from '@/components/planetas/planeta-01.json'
+const CODIGO = `import { Planeta }
+  from '@/components/planetas'
 
 export function PlanetaDaTrilha() {
   return (
-    <PlanetaGirando
-      planeta={planeta01}
+    <Planeta
+      id="planeta-01"
       tamanho={240}
       alt="Planeta da trilha"
     />
@@ -258,7 +262,7 @@ export function PlanetaDaTrilha() {
 }`
 
 const PROPS: [string, string, string][] = [
-  ['planeta', '—', 'dados do planeta (JSON gerado pelo script: modelo, pôster, enquadramento)'],
+  ['id', '—', "planeta do catálogo ('planeta-01', 'planeta-02', …)"],
   ['base', "'/'", 'prefixo dos arquivos em public/'],
   ['tamanho', '240', 'px ou medida CSS'],
   ['sentido', "'direita'", "ou 'esquerda' (para onde a frente corre)"],
@@ -282,17 +286,16 @@ function Handoff() {
     <div className="pv-handoff">
       <ol className="pv-passos">
         <li>
-          <strong>Copie 3 arquivos</strong> para <code>components/planetas/</code>: <code>PlanetaGirando.tsx</code>,{' '}
-          <code>planeta-girando.module.css</code> e <code>planeta-01.json</code>. O modelo e o pôster (<code>planeta.glb</code>, 2,4 MB, e{' '}
-          <code>poster.webp</code>) vão para <code>public/planetas/planeta-01/</code>.
+          <strong>Baixe o kit</strong> (<code>kit-planetas</code> no repositório, com o guia em PDF) e copie duas pastas:{' '}
+          <code>components/planetas</code> e <code>public/planetas</code>.
         </li>
         <li>
-          <strong>Instale o three.js</strong> (<code>npm i three</code>; testado com a 0.170) e use onde o planeta aparece. O componente já começa com{' '}
-          <code>'use client'</code>.
+          <strong>Instale o three.js</strong> (<code>npm i three</code>) e use <code>&lt;Planeta id="…" /&gt;</code> onde o planeta aparece.
+          Funciona em Server Components.
         </li>
         <li>
-          <strong>Planeta novo?</strong> Gere o modelo 3D (ex.: Tripo, .glb) e rode <code>scripts/planetas/otimizar_glb.py</code> no Blender.
-          Ele centraliza a esfera, reduz para a web e gera o pôster e o JSON. Metodologia no README da branch.
+          <strong>Planeta novo?</strong> Chega uma pasta em <code>public/planetas/&lt;id&gt;/</code> e uma linha no catálogo{' '}
+          <code>planetas.ts</code>. O componente não muda.
         </li>
       </ol>
 
@@ -333,8 +336,8 @@ function Handoff() {
       </table>
 
       <p className="pv-nota">
-        <Info size={16} aria-hidden /> Uma volta a cada {SEGUNDOS_POR_VOLTA} s, sem outras velocidades. Modelo de 160 mil triângulos com
-        texturas 2K (2,4 MB), pausa sozinho fora da tela. Com “reduzir movimento” não gira sozinho; sem WebGL mostra o pôster.
+        <Info size={16} aria-hidden /> Uma volta a cada {SEGUNDOS_POR_VOLTA} s, sem outras velocidades. Cada planeta tem de 2,5 a 3,5 MB
+        (malha comprimida e texturas 2K), pausa sozinho fora da tela. Com “reduzir movimento” não gira sozinho; sem WebGL mostra o pôster.
       </p>
     </div>
   )
