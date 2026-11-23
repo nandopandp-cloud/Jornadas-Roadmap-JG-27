@@ -1,8 +1,8 @@
 # Planetas · Exploradores
 
-Iniciativa **Planetas** na plataforma do estudante Exploradores (Fundamental I). Os planetas de massinha da plataforma em Next.js ganham um **giro 360° em 3D**: o planeta inteiro (esfera e elementos) é um objeto só, que gira no eixo vertical sem nunca mudar de forma. Ele é **montado com as peças do kit**: a bola e cada elemento em PNG. O estudante também pode girar com a mão.
+Iniciativa **Planetas** na plataforma do estudante Exploradores (Fundamental I). Os planetas de massinha da plataforma em Next.js viram **modelos 3D de verdade**. O planeta gira no eixo vertical, com volume real de todos os lados, e o estudante também pode girar com a mão.
 
-> Esta branch guarda a iniciativa Planetas e a **metodologia para criar novos planetas**. A plataforma completa e a lista de todas as jornadas ficam no README da `main`.
+> Esta branch guarda a iniciativa Planetas e a **metodologia para novos planetas**. A plataforma completa e a lista de todas as jornadas ficam no README da `main`.
 
 ## Links
 
@@ -16,139 +16,97 @@ Iniciativa **Planetas** na plataforma do estudante Exploradores (Fundamental I).
 
 | Data | Decisão |
 | --- | --- |
-| 23/11/2026 | O giro é 3D, **no eixo vertical**, como um globo. Rotação no plano (como uma roda) foi descartada. |
-| 23/11/2026 | **Uma velocidade só:** uma volta a cada 40 s. Não há opção de acelerar. |
-| 23/11/2026 | O estudante pode **girar com a mão**. |
-| 23/11/2026 | Recortes soltos (voavam) e elementos parados com a esfera girando (incoerente) foram descartados. O planeta inteiro gira junto. |
-| 23/11/2026 | **Os elementos nunca mudam de tamanho, forma ou proporção durante o giro.** Eles só giram, aparecem e somem. Trocar de imagem a cada ângulo (4 vistas ou quadros do storyboard) foi descartado, porque cada imagem gerada desenha os elementos um pouco diferente e o planeta parecia "vivo". |
-| 23/11/2026 | O planeta é um **modelo único** (textura 360° e relevo 360°). Primeiro ele foi montado a partir de um storyboard gerado por IA; os quadros se contradiziam (elementos duplicados e menos nítidos). |
-| 23/11/2026 | **Metodologia atual: montar o planeta com as peças do kit** (a bola e cada elemento isolado em PNG). Cada peça aparece uma vez, nítida, no lugar que escolhemos. Peças em 3D de verdade ficam para depois. |
+| 23/11/2026 | O giro é 3D, **no eixo vertical**, como um globo. |
+| 23/11/2026 | **Uma velocidade só:** uma volta a cada 40 s. |
+| 23/11/2026 | O estudante pode **girar com a mão** (arrastar com embalo e setas). |
+| 23/11/2026 | **Os elementos nunca mudam de forma durante o giro**: só giram, aparecem e somem. |
+| 23/11/2026 | **O planeta é um modelo 3D (.glb)** gerado no Tripo a partir das artes. As abordagens a partir de imagens (vistas, storyboard, kit de peças, modelagem procedural no Blender) foram descartadas por não serem fiéis o bastante. Elas ficam no histórico da branch. |
 
 ---
 
 ## Metodologia: como criar um planeta novo
 
 ```
-1. Kit de peças  →  2. Onde fica cada peça  →  3. Gerar  →  4. Conferir
-   (arte, PNG)      (1 lista no script)         (script)     (vitrine)
+1. Modelo 3D (Tripo)  →  2. Otimizar (Blender)  →  3. Registrar  →  4. Conferir
+   .glb, ~60 MB            .glb ~2,4 MB + pôster      1 linha         vitrine
 ```
 
-### 1. Kit de peças
+### 1. Modelo 3D
 
-Uma pasta em `arte/planetas/<id>/pecas/` com:
+Gere o planeta no **Tripo** (ou outro gerador de imagem para 3D) a partir da arte de frente e exporte em **.glb**, com texturas PBR (cor, normal e rugosidade/metal).
 
-- **a bola:** o planeta liso, sem nada em cima (no Planeta 01, `01-base-azul.png`). Dela saem a cor e o granulado do oceano e a luz do planeta;
-- **cada elemento em um PNG:** casa, vulcão, polvo, barco, ilha, floresta, rio, cachoeira, aves. Fundo transparente, todos na **mesma escala** da bola (como camadas de um mesmo arquivo) e com a mesma luz (de cima, à esquerda).
+O que pedir ao gerador:
 
-Cada elemento deve estar desenhado **de frente**: é assim que ele vai aparecer quando passar de frente para a câmera. Peças longas e finas (como a floresta do Planeta 01) podem ser usadas várias vezes, giradas e espelhadas.
+- uma esfera com elementos em cima;
+- polo para cima;
+- a arte de frente como referência principal.
 
-### 2. Onde fica cada peça
+O modelo bruto do Planeta 01 tem 1,96 milhão de triângulos e texturas 4K (64 MB). Ele fica em `~/Downloads/PLANETAS 3D/NOVOS-PLANETAS/` e não entra no repositório.
 
-Um bloco em `PLANETAS`, no início de [`scripts/planetas/preparar-planeta.py`](scripts/planetas/preparar-planeta.py):
+### 2. Otimizar
 
-```python
-'planeta-02': {
-    'pecas_dir': 'arte/planetas/planeta-02/pecas',
-    'base': '01-base.png',
-    'pecas': [
-        {'arq': '04-casa.png', 'lon': -84, 'lat': 34, 'giro': 16, 'escala': 1.0, 'altura': 0.2},
-        ...
-    ],
-},
-```
-
-| Campo | O que é |
-| --- | --- |
-| `lon`, `lat` | Centro da peça no globo, em graus. lon 0 = frente; −90 = lado que aparece quando o planeta gira para a direita; 180 = costas. Fique entre −60° e 60° de latitude: perto dos polos a peça some. |
-| `giro` | Gira a peça no próprio plano (graus, anti-horário), por exemplo para deixar de pé uma peça desenhada inclinada |
-| `escala` | Tamanho em relação ao kit (0,5 = metade) |
-| `altura` | Quanto ela sai da esfera, em raios: casa e vulcão ≈ 0,2; polvo e ilha ≈ 0,1; rio e floresta ≈ 0,03–0,06 |
-| `espelhar` | Vira a peça na horizontal |
-
-A ordem da lista é a ordem das camadas: as primeiras ficam embaixo.
-
-**Dicas de composição:**
-
-- distribua os elementos pelos 4 lados (frente, os dois lados e as costas), para sempre haver algo aparecendo;
-- deixe espaço entre as peças, para nenhuma encostar na outra;
-- peças a mais de 76° do próprio centro somem suavemente; por isso peças grandes devem ser divididas em cópias menores.
-
-### 3. Gerar
+[`scripts/planetas/otimizar_glb.py`](scripts/planetas/otimizar_glb.py) roda no Blender 5.3, em modo sem janela:
 
 ```bash
-python scripts/planetas/preparar-planeta.py planeta-02
+blender -b --factory-startup -P scripts/planetas/otimizar_glb.py -- \
+  --entrada "planeta-02.glb" --saida public/planetas/planeta-02 --tris 160000 --inicio 305
 ```
 
-Leva cerca de 2 segundos. O script:
+| Etapa | O que faz |
+| --- | --- |
+| Centro da esfera | Ajuste robusto de esfera (mínimos quadrados, descartando os vértices dos elementos que saem dela). O centro da esfera vai para a origem, com raio 1. **Sem isso o planeta bambolearia:** no Planeta 01, o centro real estava a 6 cm do centro da caixa. |
+| Triângulos | Decimate (colapso de arestas, preserva UV) até `--tris` (160 mil). |
+| Texturas | 4K → 2K, em WebP (qualidade 86). |
+| Compressão | Malha comprimida com **meshopt**; o decodificador já vem no three.js, sem arquivos extras. |
+| Pôster | Render Cycles no mesmo enquadramento e no mesmo ângulo inicial do site. É a imagem de reserva e o primeiro quadro, para a troca para o 3D não dar salto. |
 
-1. **mede a bola** (centro e raio) e a **luz** dela (o oceano é a bola inteira);
-2. faz o **oceano 360°**: a cor da bola sem a luz, mais o granulado da massinha repetido sem emenda;
-3. **cola cada peça** no globo. O mapeamento usa a altura na tela, porque a câmera fica sempre no equador: assim a peça aparece exatamente como desenhada quando está de frente. Ela vale numa calota em volta do centro, medida pela superfície da esfera, sem cortes retos;
-4. faz o **relevo**: o contorno de cada peça vira uma cúpula arredondada com a altura pedida;
-5. grava `textura.webp`, `relevo.png` e `frente.webp` (o planeta visto de frente, como reserva) em `public/planetas/<id>/`, e o JSON em `src/prototypes/planetas/<id>.json`.
+Resultado no Planeta 01: **64 MB → 2,4 MB**, com 160 mil triângulos, e um pôster de 62 KB. O script também grava `info.json` (centro e raio medidos, triângulos, tamanhos).
+
+**Ângulo inicial (`--inicio`):** escolha o lado que melhor apresenta o planeta. No Planeta 01, 305° mostra a floresta à esquerda, os pterossauros no meio e o barco, o polvo e a praia à direita, como na arte original.
+
+### 3. Registrar
+
+Crie o JSON do planeta (`src/prototypes/planetas/planeta-02.json`) com os valores do `info.json`:
+
+```json
+{ "id": "planeta-02", "pasta": "planetas/planeta-02", "modelo": "planeta.glb", "poster": "poster.webp",
+  "raioQuadro": 1.347, "inicio": 305, "elevacao": 12, "fov": 30 }
+```
 
 ### 4. Conferir
 
-Inclua o planeta em `PLANETAS` (`src/prototypes/planetas/index.tsx`) e gire na vitrine, com atenção a três pontos:
+Gire na vitrine e confira:
 
-- nenhuma peça encostando em outra;
-- todos os lados com algo interessante;
-- peças de pé quando passam de frente.
-
-Para ajustar, mude `lon`, `lat`, `giro` ou `escala` e gere de novo.
-
-> A metodologia anterior (storyboard do giro) continua no script, como `planeta-01-storyboard`, para comparação. Ela só dá bom resultado com quadros coerentes, renderizados de um modelo 3D.
+- o planeta gira em volta do próprio centro, sem bambolear;
+- o pôster e o primeiro quadro do 3D coincidem;
+- o tamanho fica bom no ícone, no card e no destaque.
 
 ---
 
-## Como o componente desenha o planeta
+## Como o componente funciona
 
-1. **Modelo fixo:** uma textura 360° e um relevo 360°. O planeta é sempre o mesmo objeto, só que girado.
-2. **Desenho:** para cada pixel, o shader (WebGL2) procura onde o raio da câmera encosta na esfera com relevo (*ray marching*, 56 passos e refinamento) e pega a cor da textura naquele ponto.
-3. **Volume:** o relevo recebe sombra da luz fixa, e a luz da bola é aplicada parada na tela (o planeta é redondo e iluminado do alto à esquerda o tempo todo).
-4. **Desempenho:** um desenho por quadro, com duas imagens (cerca de 250 KB no total).
-   - No renderizador sem placa de vídeo do teste, cada quadro leva 17 ms.
-   - Se o aparelho ficar lento, a resolução cai sozinha.
-   - A velocidade não depende da taxa de quadros.
+`PlanetaGirando.tsx` usa o three.js (0.170):
 
-### Girar com a mão
-
-- **Arrastar** (mouse ou dedo) na horizontal gira o planeta. Ao soltar, ele segue com o embalo e volta ao giro normal no sentido em que foi jogado. Soltar parado não dá embalo.
-- **Teclado:** Tab até o planeta e setas ← →.
-- **Celular:** deslizar na vertical continua rolando a página.
-- **Pausado:** a mão continua funcionando.
-- **“Reduzir movimento”:** o planeta não gira sozinho, mas gira com a mão.
-- **Sem WebGL2:** aparece o primeiro quadro parado.
-
-## O Planeta 01
-
-- **Kit:** a pasta "🪐 Planetas" (10 PNGs de 640 px), copiada para `arte/planetas/planeta-01/pecas/`.
-- **Composição:**
-  - frente: barco, pterossauros e rio;
-  - lado da casa (−90°): cinturão de floresta (a peça usada 4 vezes), casa e cachoeira;
-  - topo: vulcão com as pedras;
-  - lado do polvo (+90°): polvo e ilha;
-  - costas: oceano e um segundo rio.
-- **Resultado:** 13 peças coladas. Cada elemento aparece uma vez, nítido, e só gira.
-- **Abordagens anteriores** (4 vistas, troca de quadros, storyboard) ficam no histórico da branch, e o storyboard está em `arte/planetas/planeta-01/storyboard.png`.
-
-## Vitrine
-
-| Aba | Atalho (`?screen=`) | O que mostra |
-| --- | --- | --- |
-| Giro | `giro` / `claro` | Planeta no palco espacial ou em fundo claro, com instrução de giro com a mão, sentido do giro, luz fixa, flutuar, halo e sombra, e pausa. |
-| Tamanhos | `tamanhos` | O mesmo planeta em 96, 160 e 260 px, começando de lados diferentes (polvo, casa e frente). |
-| Next.js | `nextjs` | Passo a passo, código para copiar e tabela de props. |
+- **Cena:** câmera em perspectiva (30°) levemente acima do equador (12°), enquadrada pelo `raioQuadro` (a casa e a montanha saem da esfera).
+- **Luz:** luz de estúdio (principal no alto à esquerda e preenchimento à direita), ambiente de estúdio (`RoomEnvironment`) para os reflexos PBR, e tom AgX, como no Blender.
+- **Giro:** o modelo gira em volta do eixo Y, com uma volta a cada 40 s. Trocar sentido, pausar ou soltar depois de arrastar acelera e freia suave.
+- **Mão:** arrastar (mouse ou dedo) gira, com a superfície acompanhando o dedo. Ao soltar, o planeta segue com embalo e volta ao giro normal no sentido em que foi jogado. Também gira pelas setas do teclado, e deslizar na vertical continua rolando a página no celular.
+- **Carregamento:** o pôster aparece na hora; quando o modelo chega, há uma troca suave para o 3D.
+- **Acessibilidade e fallback:**
+  - **“reduzir movimento”:** não gira sozinho, mas a mão continua funcionando;
+  - **sem WebGL:** fica o pôster.
+- **Desempenho:**
+  - uma malha e um desenho por quadro;
+  - para de desenhar fora da tela;
+  - a resolução cai sozinha em aparelho lento;
+  - a velocidade não depende da taxa de quadros.
 
 ## Como levar para o Next.js
 
-1. Copie para `components/planetas/`:
-   - [`PlanetaGirando.tsx`](src/prototypes/planetas/PlanetaGirando.tsx), que já começa com `'use client'` e não tem dependências;
-   - [`planeta-girando.module.css`](src/prototypes/planetas/planeta-girando.module.css);
-   - [`planeta-01.json`](src/prototypes/planetas/planeta-01.json).
-2. Copie para `public/planetas/`:
-   - `planeta-01/`, com `textura.webp`, `relevo.png` e `frente.webp` (cerca de 290 KB no total).
-3. Use:
+1. `npm i three` (testado com a 0.170).
+2. Copie para `components/planetas/`: `PlanetaGirando.tsx`, `planeta-girando.module.css` e `planeta-01.json`.
+3. Copie para `public/planetas/planeta-01/`: `planeta.glb` e `poster.webp`.
+4. Use:
 
 ```tsx
 import { PlanetaGirando } from '@/components/planetas/PlanetaGirando'
@@ -159,43 +117,41 @@ import planeta01 from '@/components/planetas/planeta-01.json'
 
 | Prop | Padrão | O que faz |
 | --- | --- | --- |
-| `planeta` | — | Dados do planeta (JSON gerado pelo script) |
+| `planeta` | — | Dados do planeta (JSON: modelo, pôster, enquadramento, ângulo inicial) |
 | `base` | `'/'` | Prefixo dos arquivos em `public/` |
 | `alt` | `''` | Texto alternativo; com ele, o rótulo inclui “Arraste ou use as setas para girar” |
 | `tamanho` | `240` | Largura e altura (px ou medida CSS) |
-| `sentido` | `'direita'` | Para onde a superfície da frente corre (`'direita'` ou `'esquerda'`) |
+| `sentido` | `'direita'` | Para onde a superfície da frente corre |
 | `onSentidoChange` | — | Avisa quando a pessoa joga o planeta para o outro lado |
-| `pausado` | `false` | Para o giro automático, freando suave (a mão continua) |
+| `pausado` | `false` | Para o giro automático (a mão continua) |
 | `arrastavel` | `true` | Girar com a mão e com as setas |
-| `inicio` | `0` | Ângulo inicial (graus); 0 = a frente |
+| `inicio` | `0` | Graus somados ao ângulo inicial do modelo (0 = igual ao pôster) |
 | `luz` · `flutuar` · `sombra` | `true` | Liga e desliga cada camada |
 | `halo` | `'92, 196, 255'` | Cor do brilho atrás (r, g, b) ou `false` |
 
-A velocidade é fixa: uma volta a cada 40 s (`SEGUNDOS_POR_VOLTA`, exportada pelo componente).
+O componente começa com `'use client'`. Ele tem cerca de 157 KB comprimido com o three.js, e o modelo, 2,4 MB, só é baixado quando o planeta aparece.
 
 ## Arquivos
 
 | Arquivo | O que é |
 | --- | --- |
 | `src/prototypes/planetas/PlanetaGirando.tsx` | Componente (vai para o Next.js) |
-| `src/prototypes/planetas/planeta-girando.module.css` | Camadas do componente (flutuação, halo, sombra, foco, cursor) |
-| `src/prototypes/planetas/planeta-01.json` | Dados do Planeta 01 (gerado) |
-| `src/prototypes/planetas/index.tsx` | Vitrine na plataforma (abas, controles, handoff) |
-| `src/prototypes/planetas/vitrine.css` | Visual da vitrine (Yunara · tema Seafoam) |
-| `arte/planetas/planeta-01/pecas/` | Kit de peças (a bola e cada elemento em PNG) |
-| `arte/planetas/planeta-01/storyboard.png` | Storyboard da abordagem anterior |
-| `public/planetas/planeta-01/` | Textura 360°, relevo 360° e vista de frente (gerados) |
-| `scripts/planetas/preparar-planeta.py` | Gerador: monta o planeta com as peças (ou a partir de um storyboard) |
+| `src/prototypes/planetas/planeta-girando.module.css` | Camadas (flutuação, halo, sombra, foco, cursor) |
+| `src/prototypes/planetas/planeta-01.json` | Dados do Planeta 01 |
+| `src/prototypes/planetas/index.tsx` · `vitrine.css` | Vitrine na plataforma |
+| `public/planetas/planeta-01/` | `planeta.glb` (2,4 MB) e `poster.webp` (62 KB) |
+| `scripts/planetas/otimizar_glb.py` | Otimização do modelo para a web (Blender) |
+| `scripts/planetas/preparar-planeta.py` · `arte/planetas/` | Abordagens anteriores (kit de peças e storyboard), só como histórico |
 
 ## Verificação
 
-Teste automatizado em Chromium (WebGL2 por SwiftShader), com 18 verificações, todas OK.
+Teste automatizado em Chromium (WebGL por SwiftShader), com 18 verificações, todas OK em duas rodadas.
 
 - **Giro:**
   - uma volta a cada 40 s;
   - não há opções de velocidade;
   - o mouse em cima não acelera;
-  - o planeta inteiro fica no 3D.
+  - o planeta 3D substitui o pôster.
 - **Mão:**
   - arrastar acompanha o mouse;
   - soltar parado não dá embalo;
@@ -203,13 +159,17 @@ Teste automatizado em Chromium (WebGL2 por SwiftShader), com 18 verificações, 
   - um arremesso inverte o sentido e segue no giro normal.
 - **Teclado:** as setas giram.
 - **Vitrine:** os 3 tamanhos, o código sem corte e nenhum erro no console.
-- **Acessibilidade e fallback:** “reduzir movimento” e o navegador sem WebGL2.
+- **Acessibilidade e fallback:** “reduzir movimento” e o navegador sem WebGL (fica o pôster).
 
 **Toque (celular):** a horizontal gira, a vertical rola a página e não há rolagem lateral.
 
-**Giro completo:** conferido em 12 ângulos, de 30° em 30°.
+**Também conferidos:**
+
+- 8 ângulos, de 45° em 45°;
+- o pôster comparado com o primeiro quadro do 3D;
+- desktop e celular.
 
 ## Próximos passos
 
-- **Demais planetas**, seguindo a metodologia (kit de peças).
-- **Peças em 3D de verdade** (nível 2): cada PNG do kit vira um modelo 3D, e o planeta passa a ter volume completo de qualquer ângulo.
+- **Demais planetas**, seguindo a metodologia (Tripo → otimizar → registrar).
+- **Versão leve para listas** com muitos planetas na mesma tela, se for o caso: menos triângulos (`--tris 60000`) e texturas de 1K.

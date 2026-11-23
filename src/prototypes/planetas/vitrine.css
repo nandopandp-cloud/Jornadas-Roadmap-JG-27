@@ -11,7 +11,7 @@
   --linha: #e0e0e0;
   --linha-2: #f0f0f0;
   --sup: #faf9f9;
-  --pv-tam: min(340px, 52vmin);
+  --pv-tam: min(600px, 84vmin);
   position: fixed;
   inset: 0;
   display: grid;
@@ -530,7 +530,7 @@
     overflow-x: hidden;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    --pv-tam: min(260px, 64vw);
+    --pv-tam: min(380px, calc(100vw - 64px));
   }
   .pv-palco {
     margin: 16px 16px 0;
@@ -554,6 +554,9 @@
   }
   .pv-dica {
     font-size: 12px;
+  }
+  .pv-centro {
+    padding: 56px 0 72px;
   }
 }
 

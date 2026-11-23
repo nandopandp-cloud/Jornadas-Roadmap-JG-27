@@ -10,7 +10,7 @@ import './vitrine.css'
    Abas: giro (palco), tamanhos (3 usos lado a lado), nextjs (handoff)
    ===================================================================== */
 
-/** planetas que já entraram na plataforma (gerados por scripts/planetas/preparar-planeta.py) */
+/** planetas que já entraram na plataforma (modelo 3D otimizado por scripts/planetas/otimizar_glb.py) */
 const PLANETAS: { nome: string; dados: PlanetaDados }[] = [{ nome: 'Planeta 01', dados: planeta01 }]
 const BASE = './'
 
@@ -18,9 +18,9 @@ type Aba = 'giro' | 'tamanhos' | 'nextjs'
 
 const TAMANHOS = [
   // cada um começa de um lado: polvo e ilha, casa e floresta, e a frente
-  { px: 96, label: 'Ícone', uso: 'listas e conquistas', inicio: 280 },
-  { px: 160, label: 'Card', uso: 'escolha do planeta', inicio: 80 },
-  { px: 260, label: 'Destaque', uso: 'abertura da trilha', inicio: 0 },
+  { px: 130, label: 'Ícone', uso: 'listas e conquistas', inicio: 200 },
+  { px: 210, label: 'Card', uso: 'escolha do planeta', inicio: 110 },
+  { px: 330, label: 'Destaque', uso: 'abertura da trilha', inicio: 0 },
 ]
 
 function useReduzMovimento() {
@@ -73,7 +73,7 @@ export default function Planetas({ startScreen }: PrototypeProps) {
           <div className="pv-tamanhos">
             {TAMANHOS.map((t) => (
               <figure key={t.px} className="pv-tamanho">
-                <div className="pv-tamanho__caixa" style={{ height: Math.max(t.px, 96) + 40 }}>
+                <div className="pv-tamanho__caixa" style={{ height: t.px }}>
                   <PlanetaGirando {...comuns} tamanho={t.px} inicio={t.inicio} alt={`${planeta.nome} em tamanho ${t.label}`} />
                 </div>
                 <figcaption>
@@ -107,8 +107,8 @@ export default function Planetas({ startScreen }: PrototypeProps) {
           <span className="pv-sobre">Planetas · Exploradores</span>
           <h1>Giro 360°</h1>
           <p>
-            O planeta inteiro gira como um objeto 3D, no eixo vertical, com uma volta a cada {SEGUNDOS_POR_VOLTA} s: a superfície, a casa, o
-            vulcão, o polvo e a ilha dão a volta juntos e nunca mudam de forma: é um modelo único, montado com as peças do kit. Dá para girar com a mão.
+            O planeta é um modelo 3D de verdade e gira no eixo vertical, com uma volta a cada {SEGUNDOS_POR_VOLTA} s. A casa, a floresta, a
+            cachoeira, o barco, o polvo e a praia dão a volta juntos, com volume real de todos os lados. Dá para girar com a mão.
           </p>
         </header>
 
@@ -173,7 +173,7 @@ export default function Planetas({ startScreen }: PrototypeProps) {
             </Campo>
 
             <div className="pv-chaves">
-              <Chave icone={Sun} label="Luz fixa" desc="A luz da arte fica parada enquanto a esfera gira" on={luz} set={setLuz} />
+              <Chave icone={Sun} label="Luz de estúdio" desc="Luz principal no alto à esquerda e preenchimento" on={luz} set={setLuz} />
               <Chave icone={MoveVertical} label="Flutuar" desc="Sobe e desce devagar, a cada 7 s" on={flutuar} set={setFlutuar} />
               <Chave icone={CircleDot} label="Halo e sombra" desc="Brilho atrás e sombra de contato" on={sombra} set={setSombra} />
             </div>
@@ -258,14 +258,14 @@ export function PlanetaDaTrilha() {
 }`
 
 const PROPS: [string, string, string][] = [
-  ['planeta', '—', 'dados do planeta (JSON gerado pelo script)'],
+  ['planeta', '—', 'dados do planeta (JSON gerado pelo script: modelo, pôster, enquadramento)'],
   ['base', "'/'", 'prefixo dos arquivos em public/'],
   ['tamanho', '240', 'px ou medida CSS'],
   ['sentido', "'direita'", "ou 'esquerda' (para onde a frente corre)"],
   ['onSentidoChange', '—', 'avisa quando a pessoa joga o planeta para o outro lado'],
   ['pausado', 'false', 'para o giro automático (a mão continua)'],
   ['arrastavel', 'true', 'girar com a mão e com as setas'],
-  ['inicio', '0', 'ângulo inicial (graus); 0 = a frente'],
+  ['inicio', '0', 'graus somados ao ângulo inicial do modelo (0 = igual ao pôster)'],
   ['luz · flutuar · sombra', 'true', 'liga e desliga cada camada'],
   ['halo', "'92, 196, 255'", 'cor do brilho (r, g, b) ou false'],
 ]
@@ -283,15 +283,16 @@ function Handoff() {
       <ol className="pv-passos">
         <li>
           <strong>Copie 3 arquivos</strong> para <code>components/planetas/</code>: <code>PlanetaGirando.tsx</code>,{' '}
-          <code>planeta-girando.module.css</code> e <code>planeta-01.json</code>. A textura 360°, o relevo e a imagem de reserva (<code>textura.webp</code>, <code>relevo.png</code> e <code>frente.webp</code>) vão para{' '}
-          <code>public/planetas/planeta-01/</code>.
+          <code>planeta-girando.module.css</code> e <code>planeta-01.json</code>. O modelo e o pôster (<code>planeta.glb</code>, 2,4 MB, e{' '}
+          <code>poster.webp</code>) vão para <code>public/planetas/planeta-01/</code>.
         </li>
         <li>
-          <strong>Use onde o planeta aparece.</strong> O componente já começa com <code>'use client'</code> e não tem dependências.
+          <strong>Instale o three.js</strong> (<code>npm i three</code>; testado com a 0.170) e use onde o planeta aparece. O componente já começa com{' '}
+          <code>'use client'</code>.
         </li>
         <li>
-          <strong>Planeta novo?</strong> Separe as peças (a bola e cada elemento em PNG), diga onde cada uma fica e rode{' '}
-          <code>scripts/planetas/preparar-planeta.py</code>. Ele monta o planeta (textura e relevo 360°). Metodologia no README da branch.
+          <strong>Planeta novo?</strong> Gere o modelo 3D (ex.: Tripo, .glb) e rode <code>scripts/planetas/otimizar_glb.py</code> no Blender.
+          Ele centraliza a esfera, reduz para a web e gera o pôster e o JSON. Metodologia no README da branch.
         </li>
       </ol>
 
@@ -332,8 +333,8 @@ function Handoff() {
       </table>
 
       <p className="pv-nota">
-        <Info size={16} aria-hidden /> Uma volta a cada {SEGUNDOS_POR_VOLTA} s, sem outras velocidades. Planeta em WebGL2 (1 desenho por
-        quadro), pausa sozinho fora da tela. Com “reduzir movimento” não gira sozinho; sem WebGL2 mostra a arte original.
+        <Info size={16} aria-hidden /> Uma volta a cada {SEGUNDOS_POR_VOLTA} s, sem outras velocidades. Modelo de 160 mil triângulos com
+        texturas 2K (2,4 MB), pausa sozinho fora da tela. Com “reduzir movimento” não gira sozinho; sem WebGL mostra o pôster.
       </p>
     </div>
   )
