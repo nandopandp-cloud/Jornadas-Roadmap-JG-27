@@ -1,58 +1,46 @@
 {
   "id": "planeta-01",
-  "arte": "planetas/planeta-01.png",
+  "arte": "planetas/planeta-01/frente.webp",
   "pasta": "planetas/planeta-01",
-  "tamanhoArte": 320,
+  "tamanhoArte": 640,
   "centro": [
-    155.0,
-    167.0
+    320.0,
+    320.0
   ],
-  "raio": 128.5,
-  "raioQuadro": 1.4237,
-  "vistas": [
-    {
-      "nome": "frente",
-      "src": "frente.webp",
-      "angulo": 0,
-      "u": 0.48438,
-      "v": 0.52187,
-      "r": 0.40156
-    },
-    {
-      "nome": "direita",
-      "src": "direita.webp",
-      "angulo": 90,
-      "u": 0.468,
-      "v": 0.523,
-      "r": 0.375
-    },
-    {
-      "nome": "costas",
-      "src": "costas.webp",
-      "angulo": 180,
-      "u": 0.518,
-      "v": 0.518,
-      "r": 0.39062
-    },
-    {
-      "nome": "esquerda",
-      "src": "esquerda.webp",
-      "angulo": 270,
-      "u": 0.513,
-      "v": 0.5405,
-      "r": 0.36094
-    }
-  ],
-  "perfil": "perfil.png",
+  "raio": 213,
+  "raioQuadro": 1.3492,
+  "textura": "textura.webp",
+  "relevo": "relevo.png",
   "alturaMax": 0.75,
+  "fontes": {
+    "q00": 0.0,
+    "q01": 13.1,
+    "q02": 32.2,
+    "q03": 50.3,
+    "q04": 54.3,
+    "q05": 66.4,
+    "q06": 85.5,
+    "q14": 132.7,
+    "q13": 146.8,
+    "q12": 160.9,
+    "q11": 185.0,
+    "q09": 208.2,
+    "q08": 240.3,
+    "q07": 263.5,
+    "q16": 282.6,
+    "q17": 294.6,
+    "q18": 326.8,
+    "q19": 341.9,
+    "q20": 348.9
+  },
   "luz": [
-    132.77929,
-    5.97422,
-    70.02179,
-    -17.06879,
-    2.60799,
-    5.53393,
-    -20.17348
+    138.4997,
+    -1.69962,
+    68.78715,
+    -2.7189,
+    -21.48338,
+    10.46577,
+    10.21474
   ],
-  "ganho": 0.52293
+  "ganho": 0.91242
 }
