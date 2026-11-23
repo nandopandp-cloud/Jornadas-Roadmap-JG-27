@@ -147,7 +147,7 @@ Em Relatórios › Atividades › Campeonatos, o educador acompanha cada campeon
 
 **Exploradores · Plataforma do Estudante** · Estudantes do Fundamental I
 
-Os novos planetas de massinha dos Exploradores ganham vida: giram como um globo, no eixo vertical, com uma volta a cada 40 s. A casa, a caverna, o polvo e a ilha ficam parados, com as proporções da arte, e só a superfície corre por baixo, com a luz da arte no lugar. O estudante pode girar com a mão (arrastando ou com as setas) para qualquer lado. Componente pronto para o Next.js.
+Os novos planetas de massinha dos Exploradores ganham vida: o planeta inteiro gira como um objeto 3D, no eixo vertical, com uma volta a cada 40 s. A superfície, a casa, o rochedo, o polvo e a ilha dão a volta juntos, montados a partir da arte de frente e da de trás, com a luz no lugar. O estudante pode girar com a mão (arrastando ou com as setas). Componente pronto para o Next.js.
 
 [Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/planetas) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/planetas) · [Branch `exploradores-planetas-360`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/exploradores-planetas-360)
 
