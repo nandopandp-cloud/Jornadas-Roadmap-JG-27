@@ -14,7 +14,7 @@ export const PLANETAS = {
   'planeta-fantasia': { id: 'planeta-fantasia', nome: 'Fantasia', pasta: 'planetas/planeta-fantasia', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.612, inicio: 0, elevacao: 12, fov: 30 },
   'planeta-musica': { id: 'planeta-musica', nome: 'Música', pasta: 'planetas/planeta-musica', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.067, inicio: 315, elevacao: 35, fov: 30 },
   'planeta-terra': { id: 'planeta-terra', nome: 'Terra', pasta: 'planetas/planeta-terra', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.574, inicio: 0, elevacao: 12, fov: 30 },
-  'planeta-alfabetizacao': { id: 'planeta-alfabetizacao', nome: 'Alfabetização', pasta: 'planetas/planeta-alfabetizacao', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.451, inicio: 0, elevacao: 40, fov: 30 },
+  'planeta-alfabetizacao': { id: 'planeta-alfabetizacao', nome: 'Alfabetização', pasta: 'planetas/planeta-alfabetizacao', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.629, inicio: 0, elevacao: 12, fov: 30 },
   'planeta-transito': { id: 'planeta-transito', nome: 'Trânsito', pasta: 'planetas/planeta-transito', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.259, inicio: 0, elevacao: 40, fov: 30 },
   'planeta-esportes': { id: 'planeta-esportes', nome: 'Esportes', pasta: 'planetas/planeta-esportes', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.368, inicio: 0, elevacao: 12, fov: 30 },
   'planeta-profissoes': { id: 'planeta-profissoes', nome: 'Profissões', pasta: 'planetas/planeta-profissoes', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.242, inicio: 0, elevacao: 12, fov: 30 },
