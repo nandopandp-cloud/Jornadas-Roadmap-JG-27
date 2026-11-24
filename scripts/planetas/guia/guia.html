@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Planetas 3D · Guia para a Engenharia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+{{CSS}}
+  /* ---------- novo ---------- */
+  .lados { display: grid; grid-template-columns: 1.2fr 1fr; gap: 5mm; margin-bottom: 7mm; }
+  .lado { border-radius: 5mm; padding: 5.5mm 6mm; }
+  .lado.web { background: var(--teal-claro); border: 1.5px solid #9fe5df; }
+  .lado.local { background: var(--fundo); border: 1.5px dashed #cfc8dc; }
+  .lado .quem { font-size: 7.8pt; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+  .lado.web .quem { color: var(--teal2); }
+  .lado.local .quem { color: var(--suave); }
+  .lado h3 { margin: 1mm 0 3mm; }
+  .lado ul { list-style: none; margin: 0; padding: 0; }
+  .lado li { font-size: 9pt; line-height: 1.4; padding: 2mm 0; border-top: 1px solid rgba(0,0,0,.07); }
+  .lado li:first-child { border-top: 0; padding-top: 0; }
+  .lado li b { display: block; color: var(--tinta); font-size: 9.6pt; }
+  .lado li a { color: var(--teal2); font-weight: 700; text-decoration: none; font-size: 8.2pt; word-break: break-all; }
+  .lado.local li span { color: var(--suave); }
+  .lado .nota { font-size: 8.8pt; margin: 3mm 0 0; color: var(--texto); line-height: 1.45; }
+  .links { display: grid; grid-template-columns: 1fr 1fr; gap: 3.5mm; background: var(--teal-claro); border: 1.5px solid #9fe5df; border-radius: 5mm; padding: 5.5mm 6mm; margin-bottom: 4mm; }
+  .links div { font-size: 8.8pt; line-height: 1.4; color: var(--texto); }
+  .links b { display: block; color: var(--tinta); font-size: 9.8pt; margin-bottom: .6mm; }
+  .links a { color: var(--teal2); font-weight: 700; text-decoration: none; font-size: 8pt; word-break: break-all; }
+  .nota2 { font-size: 9.2pt; margin: 0 0 8mm; color: var(--texto); }
+  .planetas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.5mm; }
+  .pl { border-radius: 4mm; background: radial-gradient(ellipse at 50% 40%, #4b22a0, var(--roxo) 75%); padding: 2.2mm 2mm 2.4mm; text-align: center; color: #fff; }
+  .pl img { width: {{IMG}}mm; height: {{IMG}}mm; display: block; margin: 0 auto 1.5mm; }
+  .pl b { display: block; font-size: 9.6pt; }
+  .pl code { font-size: {{FONTE_ID}}pt; color: #7ee0d9; white-space: nowrap; }
+  .ok ul { margin: 1.5mm 0 0; padding-left: 4.5mm; }
+  .ok li { font-size: 9.4pt; color: #0b4f4b; line-height: 1.5; }
+  .nao { display: flex; gap: 3mm; align-items: center; justify-content: center; margin-top: 5mm; font-size: 9.4pt; color: var(--suave); font-weight: 700; }
+  .nao span { background: var(--fundo); border: 1px solid var(--linha); padding: 1.6mm 3.5mm; border-radius: 99px; text-decoration: line-through; text-decoration-color: #d0637a; }
+  .passo > div { min-width: 0; }
+  code { font-variant-ligatures: none; }
+  p code, .etapa code { white-space: nowrap; }
+  p code, li code { font-size: .88em; }
+  th:nth-child(1) { width: 40mm; } th:nth-child(2) { width: 30mm; }
+  td code { white-space: nowrap; }
+  .fluxo { grid-template-columns: repeat(3, 1fr); gap: 6mm; }
+  .etapa:not(:last-child)::after { right: -3.2mm; }
+</style>
+</head>
+<body>
+
+<!-- 1 · capa -->
+<section class="pagina capa">
+  <div class="estrelas"></div>
+  <div class="capa-topo"><span class="marca">Jovens Gênios · Exploradores</span><span class="data">Guia de integração · novembro de 2026</span></div>
+  <div class="halo"></div>
+  <img class="planeta-capa" src="data:image/webp;base64,{{CAPA}}" alt="">
+  <div class="capa-texto">
+    <h1>Planetas <span>3D</span></h1>
+    <p class="sub">Os planetas girando na plataforma: baixar, instalar e usar</p>
+    <div class="pilulas"><span class="pilula">Instala uma vez</span><span class="pilula">Planetas lidos da web</span><span class="pilula">Planeta novo = id novo</span></div>
+  </div>
+  <div class="capa-rodape">
+    <div><b>Baixar o kit (.zip)</b><a href="{{ZIP}}">{{ZIP_CURTO}}</a></div>
+    <div><b>Ver funcionando</b><a href="https://jornadas-roadmap-jg-27.vercel.app/#/p/planetas">jornadas-roadmap-jg-27.vercel.app/#/p/planetas</a></div>
+  </div>
+</section>
+
+<!-- 2 · onde fica cada coisa + planetas -->
+<section class="pagina">
+  <div class="cabeca"><span class="marca">Planetas 3D</span><span>Onde fica cada coisa</span></div>
+  <p class="sobre">Onde fica cada coisa</p>
+  <h2>Tudo de que a engenharia precisa está na web</h2>
+  <p class="lead">A engenharia instala o componente uma vez. Os modelos 3D e os pôsteres ficam publicados na web, prontos para uso.</p>
+
+  <div class="links">
+    <div><b>Baixar o kit (.zip)</b>O componente, para instalar uma vez.<br><a href="{{ZIP}}">github.com/…/releases/download/kit-planetas/kit-planetas.zip</a></div>
+    <div><b>Este guia (PDF)</b>Sempre a versão mais nova.<br><a href="{{PDF}}">github.com/…/releases/download/kit-planetas/GUIA-ENGENHARIA.pdf</a></div>
+    <div><b>Catálogo ao vivo</b>Os planetas publicados, com id e nome.<br><a href="https://jornadas-roadmap-jg-27.vercel.app/planetas/catalogo.json">jornadas-roadmap-jg-27.vercel.app/planetas/catalogo.json</a></div>
+    <div><b>Ver funcionando</b>Todos os planetas girando.<br><a href="https://jornadas-roadmap-jg-27.vercel.app/#/p/planetas">jornadas-roadmap-jg-27.vercel.app/#/p/planetas</a></div>
+  </div>
+  <p class="nota2"><b>Os links não mudam.</b> O Design publica os planetas na web, e o componente busca cada um pelo id.</p>
+
+  <h3>Os planetas</h3>
+  <p>Escolha o planeta pelo <b>id</b>, sempre <code>planeta-&lt;nome&gt;</code>, sem acentos. O nome também vem no catálogo.</p>
+  <div class="planetas" style="grid-template-columns: repeat({{COLUNAS}}, 1fr)">{{PLANETAS}}</div>
+  <span class="num">2</span>
+</section>
+
+<!-- 3 · instalar -->
+<section class="pagina">
+  <div class="cabeca"><span class="marca">Planetas 3D</span><span>Instalar</span></div>
+  <p class="sobre">Instalar</p>
+  <h2>Instale uma vez, use pelo id</h2>
+  <p class="lead">Funciona em qualquer projeto Next.js da Jovens Gênios. Não precisa configurar nada no Next.</p>
+
+  <div class="passo"><div class="bola">1</div><div>
+    <h3>Baixe o kit e descompacte na raiz do projeto</h3>
+    <p>Pelo link da página 2, ou pelo terminal. O .zip cria só <code>components/planetas</code>: os planetas não vêm nele, são lidos da web.</p>
+    <pre class="codigo">REPO=https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27
+curl -LO $REPO/releases/download/kit-planetas/kit-planetas.zip
+unzip -o kit-planetas.zip -x LEIA-ME.txt &amp;&amp; rm kit-planetas.zip</pre>
+  </div></div>
+
+  <div class="passo"><div class="bola">2</div><div>
+    <h3>Instale o three.js</h3>
+    <pre class="codigo">npm i three
+npm i -D @types/three</pre>
+  </div></div>
+
+  <div class="passo"><div class="bola">3</div><div>
+    <h3>Use onde o planeta aparece</h3>
+    <p>Funciona dentro de Server Components (o componente já é <code>'use client'</code>):</p>
+    <pre class="codigo"><span class="k">import</span> { Planeta } <span class="k">from</span> <span class="s">'@/components/planetas'</span>
+
+&lt;Planeta id=<span class="s">"planeta-emocoes"</span> tamanho={<span class="s">240</span>} alt=<span class="s">"Planeta Emoções"</span> /&gt;</pre>
+  </div></div>
+
+  <div class="ok"><div class="ic">✓</div><div><p><b>Pronto.</b> Sem configurar nada, o componente busca o planeta na web pelo id, e ele:</p>
+    <ul>
+      <li>gira sozinho, uma volta a cada 40 s, e pode ser girado com a mão e com as setas;</li>
+      <li>mostra o pôster na hora e troca pelo 3D quando carrega;</li>
+      <li>respeita “reduzir movimento” e fica só no pôster se não houver WebGL.</li>
+    </ul>
+    <p style="margin-top:2mm">Se o projeto usa <code>src/</code>, mova <code>components/planetas</code> para <code>src/components/planetas</code>.</p></div></div>
+  <div class="nao"><span>Blender</span><span>scripts</span><span>config. do Next</span><span>copiar arquivos de planeta</span></div>
+  <span class="num">3</span>
+</section>
+
+<!-- 4 · uso e props -->
+<section class="pagina">
+  <div class="cabeca"><span class="marca">Planetas 3D</span><span>Uso no produto</span></div>
+  <p class="sobre">Uso no produto</p>
+  <h2>Um componente, vários jeitos de usar</h2>
+  <p class="lead">Só o <b>id</b> é obrigatório; as outras props são opcionais.</p>
+  <div class="exemplos">
+    <div class="exemplo"><b>Abertura da trilha (destaque)</b><code>&lt;Planeta id="planeta-mitologia"
+  tamanho={320} alt="Planeta Mitologia" /&gt;</code></div>
+    <div class="exemplo"><b>Card de escolha do planeta</b><code>&lt;Planeta id="planeta-computacao"
+  tamanho={160} /&gt;</code></div>
+    <div class="exemplo"><b>Parado, só decorativo</b><code>&lt;Planeta id="planeta-terra" tamanho={96}
+  pausado arrastavel={false} /&gt;</code></div>
+    <div class="exemplo"><b>Todos os planetas, com o nome</b><code>const planetas = await carregarPlanetas()
+planetas.map((p) =&gt; &lt;Planeta key={p.id}
+  id={p.id} alt={p.nome} /&gt;)</code></div>
+  </div>
+  <table>
+    <thead><tr><th>Prop</th><th>Padrão</th><th>O que faz</th></tr></thead>
+    <tbody>
+      <tr><td><code>id</code></td><td>—</td><td>Planeta do catálogo, ex.: <code>planeta-emocoes</code> (lista na página 2)</td></tr>
+      <tr><td><code>tamanho</code></td><td><code>240</code></td><td>Largura e altura, em px ou qualquer medida CSS (<code>"30vw"</code>)</td></tr>
+      <tr><td><code>alt</code></td><td><code>''</code></td><td>Texto alternativo. Vazio deixa o planeta decorativo para leitores de tela</td></tr>
+      <tr><td><code>sentido</code></td><td><code>'direita'</code></td><td>Para onde a superfície da frente corre: <code>'direita'</code> ou <code>'esquerda'</code></td></tr>
+      <tr><td><code>pausado</code></td><td><code>false</code></td><td>Para o giro automático, freando suave. Girar com a mão continua funcionando</td></tr>
+      <tr><td><code>arrastavel</code></td><td><code>true</code></td><td>Permite girar com mouse, dedo e setas do teclado</td></tr>
+      <tr><td><code>inicio</code></td><td><code>0</code></td><td>Graus somados ao ângulo inicial (0 = igual ao pôster)</td></tr>
+      <tr><td><code>luz · flutuar · sombra</code></td><td><code>true</code></td><td>Luz de estúdio, sobe-e-desce suave e sombra de contato</td></tr>
+      <tr><td><code>halo</code></td><td><code>'92, 196, 255'</code></td><td>Cor do brilho atrás (r, g, b) ou <code>false</code></td></tr>
+      <tr><td><code>base</code></td><td>endereço dos planetas</td><td>De onde os arquivos são lidos. Padrão: <code>ENDERECO_PLANETAS</code>, em <code>planetas.ts</code></td></tr>
+      <tr><td><code>onSentidoChange</code></td><td>—</td><td>Avisa quando a pessoa joga o planeta para o outro lado (exige componente cliente)</td></tr>
+    </tbody>
+  </table>
+  <span class="num">4</span>
+</section>
+
+<!-- 5 · planeta novo + FAQ -->
+<section class="pagina">
+  <div class="cabeca"><span class="marca">Planetas 3D</span><span>Planetas novos</span></div>
+  <p class="sobre">Planetas novos</p>
+  <h2>Planeta novo? É só usar o id novo</h2>
+  <p class="lead">O Design cria e publica o planeta na web. A engenharia não baixa nada nem atualiza o kit: o componente encontra o planeta novo pelo id.</p>
+  <div class="fluxo">
+    <div class="etapa"><span class="quem">Design</span><b>Cria e prepara</b><p>Gera o planeta, reduz o tamanho, gera o pôster e põe no catálogo.</p></div>
+    <div class="etapa"><span class="quem">Design</span><b>Publica</b><p>Põe o planeta no ar e no catálogo, e avisa o id novo.</p></div>
+    <div class="etapa"><span class="quem">Engenharia</span><b>Usa o id</b><p><code>&lt;Planeta id="planeta-&lt;nome&gt;" /&gt;</code>, e pronto.</p></div>
+  </div>
+  <h3 style="margin-top:8mm">Perguntas frequentes</h3>
+  <div class="faq">
+    <div><b>Usamos a pasta src/</b><p>Mova para <code>src/components/planetas</code>. Se o alias apontar para <code>src/</code>, o import <code>@/components/planetas</code> não muda.</p></div>
+    <div><b>Id que não existe</b><p>Fica só o espaço do planeta, e o console avisa com a lista dos ids publicados.</p></div>
+    <div><b>Onde os arquivos ficam</b><p>Em <code>jornadas-roadmap-jg-27.vercel.app/planetas/</code>, com CORS liberado. Para usar outro endereço (ex.: CDN da JG), troque <code>ENDERECO_PLANETAS</code> em <code>planetas.ts</code>.</p></div>
+    <div><b>Política de segurança (CSP)</b><p>Libere esse endereço em <code>img-src</code> e <code>connect-src</code>, e inclua <code>'wasm-unsafe-eval'</code> em <code>script-src</code> (a malha usa WebAssembly).</p></div>
+    <div><b>Muitos planetas na mesma tela</b><p>Cada planeta 3D usa um contexto WebGL, e os navegadores aceitam ~16. Em listas longas, mostre o pôster como imagem e use o 3D só no destaque.</p></div>
+    <div><b>SSR</b><p>O servidor entrega o pôster em HTML comum, e o navegador troca pelo 3D. Não há layout shift: o tamanho é fixo pela prop.</p></div>
+    <div><b>Peso</b><p>~2,5 MB por planeta, baixados só quando ele aparece na tela. O pôster tem ~80 KB. Sem rede ou sem WebGL, fica o pôster.</p></div>
+    <div><b>Versões testadas</b><p>Next.js 15.5, React 19.1 e three 0.170 (a única dependência). Também funciona com Next 13+ e React 18+.</p></div>
+  </div>
+  <span class="num">5</span>
+</section>
+</body>
+</html>

@@ -6,7 +6,7 @@ import { ENDERECO_PLANETAS, carregarPlanetas } from './planetas'
 
 /**
  * O planeta pelo id:
- *   <Planeta id="planeta-03" tamanho={240} alt="Planeta Emoções" />
+ *   <Planeta id="planeta-emocoes" tamanho={240} alt="Planeta Emoções" />
  *
  * Os arquivos vêm de ENDERECO_PLANETAS (planetas.ts). Planeta novo publicado pelo Design
  * já funciona: basta usar o id novo. O pôster aparece na hora (inclusive no HTML do servidor);

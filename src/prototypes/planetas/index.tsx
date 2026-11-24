@@ -34,7 +34,7 @@ function useReduzMovimento() {
 
 export default function Planetas({ startScreen }: PrototypeProps) {
   const inicial = startScreen === 'tamanhos' || startScreen === 'nextjs' ? startScreen : 'giro'
-  // ?screen=planeta-02 abre direto num planeta
+  // ?screen=planeta-empreendedorismo abre direto num planeta
   const [idPlaneta, setIdPlaneta] = useState<IdPlaneta>(startScreen && startScreen in PLANETAS ? (startScreen as IdPlaneta) : LISTA_PLANETAS[0].id)
   const [aba, setAba] = useState<Aba>(inicial)
   const [fundo, setFundo] = useState<'espaco' | 'claro'>(startScreen === 'claro' ? 'claro' : 'espaco')
@@ -257,7 +257,7 @@ const CODIGO = `import { Planeta }
 export function PlanetaDaTrilha() {
   return (
     <Planeta
-      id="planeta-01"
+      id="planeta-mitologia"
       tamanho={240}
       alt="Planeta da trilha"
     />
@@ -265,7 +265,7 @@ export function PlanetaDaTrilha() {
 }`
 
 const PROPS: [string, string, string][] = [
-  ['id', '—', "planeta do catálogo ('planeta-01', 'planeta-02', …)"],
+  ['id', '—', "planeta do catálogo ('planeta-mitologia', 'planeta-emocoes', …)"],
   ['base', "'/'", 'prefixo dos arquivos em public/'],
   ['tamanho', '240', 'px ou medida CSS'],
   ['sentido', "'direita'", "ou 'esquerda' (para onde a frente corre)"],

@@ -26,7 +26,7 @@ npm i -D @types/three
 // 3. use onde o planeta aparece (funciona em Server Components)
 import { Planeta } from '@/components/planetas'
 
-<Planeta id="planeta-03" tamanho={240} alt="Planeta Emoções" />
+<Planeta id="planeta-emocoes" tamanho={240} alt="Planeta Emoções" />
 ```
 
 Se o projeto usa `src/`, mova a pasta para `src/components/planetas`.
@@ -35,20 +35,21 @@ Se o projeto usa `src/`, mova a pasta para `src/components/planetas`.
 
 | id | Nome |
 | --- | --- |
-| `planeta-01` | Mitologia |
-| `planeta-02` | Empreendedorismo |
-| `planeta-03` | Emoções |
-| `planeta-04` | Artes |
-| `planeta-05` | Computação |
-| `planeta-06` | Fantasia |
-| `planeta-07` | Música |
-| `planeta-08` | Terra |
+| `planeta-mitologia` | Mitologia |
+| `planeta-empreendedorismo` | Empreendedorismo |
+| `planeta-emocoes` | Emoções |
+| `planeta-artes` | Artes |
+| `planeta-computacao` | Computação |
+| `planeta-fantasia` | Fantasia |
+| `planeta-musica` | Música |
+| `planeta-terra` | Terra |
+| `planeta-alfabetizacao` | Alfabetização |
 
 A lista sempre atualizada está no [catálogo ao vivo](https://jornadas-roadmap-jg-27.vercel.app/planetas/catalogo.json). No código, `await carregarPlanetas()` devolve todos os planetas (`id`, `nome`, …), no navegador ou em Server Components.
 
 ## Planeta novo
 
-Quando o Design publica um planeta, **basta usar o id novo**: `<Planeta id="planeta-09" />`. Não é preciso baixar nada nem mudar o kit.
+Quando o Design publica um planeta, **basta usar o id novo**, sempre no formato `planeta-<nome>`, sem acentos (ex.: `<Planeta id="planeta-alfabetizacao" />`). Não é preciso baixar nada nem mudar o kit.
 
 Se o id não existir, o console avisa e lista os ids publicados.
 

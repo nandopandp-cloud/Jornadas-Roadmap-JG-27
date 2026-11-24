@@ -1,0 +1,94 @@
+  @page { size: A4; margin: 0; }
+  :root {
+    --roxo: #2a1260; --roxo2: #43208f; --roxo3: #150836;
+    --teal: #00a19a; --teal2: #008c87; --teal-claro: #e7fbf9;
+    --tinta: #1d1a24; --texto: #3a3644; --suave: #6f6a7a; --linha: #e6e2ee; --fundo: #faf8fd;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: 'Nunito', system-ui, sans-serif; color: var(--texto); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .pagina { width: 210mm; height: 297mm; padding: 18mm 18mm 14mm; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+  .pagina:last-child { page-break-after: auto; }
+  code, pre { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+  /* ---------- capa ---------- */
+  .capa { padding: 0; color: #fff; background: radial-gradient(ellipse 80% 60% at 50% 42%, #5a2bb0 0%, var(--roxo) 52%, var(--roxo3) 100%); }
+  .estrelas { position: absolute; inset: 0; background-image:
+      radial-gradient(1.6px 1.6px at 12% 18%, #fff 50%, transparent 51%), radial-gradient(1.2px 1.2px at 28% 72%, #fff 50%, transparent 51%),
+      radial-gradient(2px 2px at 41% 9%, #ffe9a8 50%, transparent 51%), radial-gradient(1.2px 1.2px at 63% 84%, #fff 50%, transparent 51%),
+      radial-gradient(1.6px 1.6px at 82% 22%, #fff 50%, transparent 51%), radial-gradient(1.2px 1.2px at 90% 58%, #b9ecff 50%, transparent 51%),
+      radial-gradient(2px 2px at 7% 54%, #fff 50%, transparent 51%), radial-gradient(1.2px 1.2px at 55% 30%, #fff 50%, transparent 51%),
+      radial-gradient(1.6px 1.6px at 94% 90%, #ffe9a8 50%, transparent 51%), radial-gradient(1.2px 1.2px at 18% 92%, #fff 50%, transparent 51%),
+      radial-gradient(1.2px 1.2px at 72% 6%, #fff 50%, transparent 51%), radial-gradient(1.6px 1.6px at 35% 46%, #b9ecff 50%, transparent 51%); opacity: .8; }
+  .capa-topo { position: absolute; top: 18mm; left: 18mm; right: 18mm; display: flex; justify-content: space-between; align-items: center; }
+  .marca { font-weight: 800; letter-spacing: .14em; text-transform: uppercase; font-size: 9.5pt; color: #7ee0d9; }
+  .data { font-size: 9.5pt; color: rgba(255,255,255,.7); font-weight: 600; }
+  .halo { position: absolute; left: 50%; top: 40%; width: 128mm; height: 128mm; transform: translate(-50%, -50%); border-radius: 50%;
+          background: radial-gradient(circle, rgba(92,196,255,.55) 0%, rgba(92,196,255,.18) 45%, rgba(92,196,255,0) 70%); }
+  .planeta-capa { position: absolute; left: 50%; top: 40%; width: 118mm; transform: translate(-50%, -50%); filter: drop-shadow(0 6mm 8mm rgba(0,0,0,.35)); }
+  .capa-texto { position: absolute; left: 18mm; right: 18mm; bottom: 46mm; text-align: center; }
+  .capa h1 { font-size: 40pt; line-height: 1; margin: 0 0 3mm; font-weight: 900; letter-spacing: -.01em; }
+  .capa h1 span { color: #7ee0d9; }
+  .capa .sub { font-size: 14pt; margin: 0; color: rgba(255,255,255,.86); font-weight: 600; }
+  .pilulas { display: flex; gap: 3mm; justify-content: center; margin-top: 7mm; flex-wrap: wrap; }
+  .pilula { padding: 2mm 4.5mm; border-radius: 99px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.22); font-size: 9.5pt; font-weight: 700; }
+  .capa-rodape { position: absolute; left: 18mm; right: 18mm; bottom: 14mm; display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; font-size: 8.6pt; }
+  .capa-rodape div { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16); border-radius: 4mm; padding: 3.2mm 4mm; }
+  .capa-rodape b { display: block; color: #7ee0d9; font-size: 8pt; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 1mm; }
+  .capa-rodape a { color: #fff; text-decoration: none; word-break: break-all; font-weight: 600; }
+
+  /* ---------- páginas internas ---------- */
+  .cabeca { display: flex; justify-content: space-between; align-items: center; font-size: 8.5pt; color: var(--suave); font-weight: 700; padding-bottom: 4mm; border-bottom: 1px solid var(--linha); margin-bottom: 9mm; }
+  .cabeca .marca { color: var(--teal); }
+  .num { position: absolute; bottom: 9mm; right: 18mm; font-size: 8.5pt; color: var(--suave); font-weight: 700; }
+  .sobre { font-size: 9pt; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--teal); margin: 0 0 2mm; }
+  h2 { font-size: 24pt; line-height: 1.1; margin: 0 0 3mm; color: var(--tinta); font-weight: 900; letter-spacing: -.01em; }
+  .lead { font-size: 11.5pt; line-height: 1.55; margin: 0 0 8mm; color: var(--texto); max-width: 160mm; }
+  h3 { font-size: 13pt; margin: 0 0 2mm; color: var(--tinta); font-weight: 800; }
+  p { font-size: 10pt; line-height: 1.55; margin: 0 0 3mm; }
+
+  .passo { display: grid; grid-template-columns: 13mm 1fr; gap: 5mm; margin-bottom: 7mm; }
+  .bola { width: 13mm; height: 13mm; border-radius: 50%; background: linear-gradient(135deg, var(--teal), #26c2b7); color: #fff; font-weight: 900; font-size: 15pt; display: grid; place-items: center; box-shadow: 0 2mm 4mm rgba(0,161,154,.25); }
+  .codigo { background: #1c1433; color: #ece6ff; border-radius: 3.5mm; padding: 4mm 5mm; font-size: 8.2pt; line-height: 1.65; margin: 2mm 0 0; white-space: pre; overflow: hidden; }
+  .codigo .c { color: #8d84b0; }
+  .codigo .k { color: #7ee0d9; }
+  .codigo .s { color: #ffd38a; }
+  .ok { display: flex; gap: 4mm; align-items: center; background: var(--teal-claro); border-radius: 4mm; padding: 5mm 6mm; margin-top: 2mm; }
+  .ok .ic { width: 10mm; height: 10mm; border-radius: 50%; background: var(--teal); color: #fff; display: grid; place-items: center; font-weight: 900; font-size: 13pt; flex: none; }
+  .ok p { margin: 0; color: #0b4f4b; font-size: 10.5pt; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 9pt; }
+  th { text-align: left; font-size: 8pt; letter-spacing: .06em; text-transform: uppercase; color: var(--suave); padding: 0 3mm 2.5mm 0; border-bottom: 1.5px solid var(--linha); }
+  td { padding: 2.4mm 3mm 2.4mm 0; border-bottom: 1px solid var(--linha); vertical-align: top; line-height: 1.45; }
+  td:first-child code { background: #f1edf8; color: var(--roxo2); padding: .4mm 1.6mm; border-radius: 1.5mm; font-weight: 600; font-size: 8.6pt; }
+  td:nth-child(2) code { color: var(--suave); font-size: 8.4pt; }
+
+  .exemplos { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; margin-bottom: 8mm; }
+  .exemplo { border: 1px solid var(--linha); border-radius: 4mm; padding: 4mm; background: var(--fundo); }
+  .exemplo b { font-size: 9.5pt; color: var(--tinta); display: block; margin-bottom: 1.5mm; }
+  .exemplo code { font-size: 8.2pt; color: var(--roxo2); line-height: 1.5; display: block; white-space: pre-wrap; }
+
+  .faixa { display: flex; justify-content: space-between; align-items: center; background: radial-gradient(ellipse at 50% 50%, #4b22a0, var(--roxo) 70%); border-radius: 5mm; padding: 4mm 6mm; margin-bottom: 8mm; }
+  .faixa figure { margin: 0; text-align: center; color: rgba(255,255,255,.75); font-size: 8pt; font-weight: 700; }
+  .faixa img { height: 34mm; display: block; margin: 0 auto 1.5mm; }
+  .grade { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4mm; margin-bottom: 8mm; }
+  .card { border: 1px solid var(--linha); border-radius: 4mm; padding: 4.5mm; }
+  .card .ico { width: 9mm; height: 9mm; border-radius: 2.5mm; background: var(--teal-claro); color: var(--teal2); display: grid; place-items: center; font-size: 12pt; margin-bottom: 2.5mm; }
+  .card b { display: block; color: var(--tinta); font-size: 10pt; margin-bottom: 1mm; }
+  .card p { font-size: 8.6pt; margin: 0; color: var(--suave); line-height: 1.45; }
+  .req { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; }
+  .req div { background: var(--fundo); border-radius: 3mm; padding: 3.5mm; text-align: center; }
+  .req b { display: block; font-size: 12pt; color: var(--roxo2); }
+  .req span { font-size: 8pt; color: var(--suave); font-weight: 700; }
+
+  .fluxo { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; margin-bottom: 6mm; position: relative; }
+  .etapa { border-radius: 4mm; padding: 4mm; background: var(--fundo); border: 1px solid var(--linha); position: relative; }
+  .etapa .quem { font-size: 7.5pt; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--teal); }
+  .etapa b { display: block; font-size: 10.5pt; color: var(--tinta); margin: 1mm 0; }
+  .etapa p { font-size: 8.4pt; margin: 0; color: var(--suave); line-height: 1.45; }
+  .etapa:not(:last-child)::after { content: '→'; position: absolute; right: -3.2mm; top: 50%; transform: translate(50%, -50%); color: var(--teal); font-weight: 900; font-size: 12pt; z-index: 2; }
+  .faq { display: grid; grid-template-columns: 1fr 1fr; gap: 3.5mm 6mm; }
+  .faq div { border-top: 2px solid var(--teal-claro); padding-top: 2.5mm; }
+  .faq b { display: block; font-size: 9.6pt; color: var(--tinta); margin-bottom: 1mm; }
+  .faq p { font-size: 8.6pt; margin: 0; line-height: 1.45; }
+  .faq code { font-size: 8pt; background: #f1edf8; padding: .2mm 1.2mm; border-radius: 1mm; color: var(--roxo2); }

@@ -17,7 +17,7 @@ const pedidos = new Map<string, Promise<InfoPlaneta[]>>()
  * Lista de planetas publicados, na ordem do catálogo. Busca uma vez por página (os outros
  * pedidos reaproveitam a resposta). Funciona no navegador e em Server Components
  * (no servidor, a resposta é renovada a cada 5 min).
- *   const planetas = await carregarPlanetas()   // [{ id: 'planeta-01', nome: 'Mitologia', … }, …]
+ *   const planetas = await carregarPlanetas()   // [{ id: 'planeta-mitologia', nome: 'Mitologia', … }, …]
  */
 export function carregarPlanetas(base: string = ENDERECO_PLANETAS): Promise<InfoPlaneta[]> {
   let pedido = pedidos.get(base)

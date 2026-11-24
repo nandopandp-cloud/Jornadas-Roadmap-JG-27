@@ -8,14 +8,15 @@ Instalação (uma vez só):
   2. npm i three
      npm i -D @types/three
   3. import { Planeta } from '@/components/planetas'
-     <Planeta id="planeta-03" tamanho={240} alt="Planeta Emoções" />
+     <Planeta id="planeta-emocoes" tamanho={240} alt="Planeta Emoções" />
 
 Os modelos 3D e os pôsteres não vêm no .zip: o componente busca tudo na web, pelo id.
 
-Planetas: planeta-01 Mitologia · planeta-02 Empreendedorismo · planeta-03 Emoções · planeta-04 Artes
-          planeta-05 Computação · planeta-06 Fantasia · planeta-07 Música · planeta-08 Terra
+Planetas (id = planeta-<nome>, sem acentos):
+  planeta-mitologia · planeta-empreendedorismo · planeta-emocoes · planeta-artes · planeta-computacao
+  planeta-fantasia · planeta-musica · planeta-terra · planeta-alfabetizacao
 
-Planeta novo: quando o Design publica, é só usar o id novo (ex.: <Planeta id="planeta-09" />).
+Planeta novo: quando o Design publica, é só usar o id novo (ex.: <Planeta id="planeta-<nome>" />).
 Não é preciso baixar nada de novo.
 
 Catálogo ao vivo: https://jornadas-roadmap-jg-27.vercel.app/planetas/catalogo.json
