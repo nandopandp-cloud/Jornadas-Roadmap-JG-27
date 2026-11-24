@@ -10,7 +10,7 @@ export const PLANETAS = {
   'planeta-empreendedorismo': { id: 'planeta-empreendedorismo', nome: 'Empreendedorismo', pasta: 'planetas/planeta-empreendedorismo', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.446, inicio: 0, elevacao: 12, fov: 30 },
   'planeta-emocoes': { id: 'planeta-emocoes', nome: 'Emoções', pasta: 'planetas/planeta-emocoes', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.397, inicio: 0, elevacao: 12, fov: 30 },
   'planeta-artes': { id: 'planeta-artes', nome: 'Artes', pasta: 'planetas/planeta-artes', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.463, inicio: 0, elevacao: 12, fov: 30 },
-  'planeta-computacao': { id: 'planeta-computacao', nome: 'Computação', pasta: 'planetas/planeta-computacao', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.322, inicio: 0, elevacao: 12, fov: 30 },
+  'planeta-computacao': { id: 'planeta-computacao', nome: 'Computação', pasta: 'planetas/planeta-computacao', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.385, inicio: 0, elevacao: 12, fov: 30 },
   'planeta-fantasia': { id: 'planeta-fantasia', nome: 'Fantasia', pasta: 'planetas/planeta-fantasia', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.612, inicio: 0, elevacao: 12, fov: 30 },
   'planeta-musica': { id: 'planeta-musica', nome: 'Música', pasta: 'planetas/planeta-musica', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.067, inicio: 315, elevacao: 35, fov: 30 },
   'planeta-terra': { id: 'planeta-terra', nome: 'Terra', pasta: 'planetas/planeta-terra', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.574, inicio: 0, elevacao: 12, fov: 30 },

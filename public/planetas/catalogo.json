@@ -51,7 +51,7 @@
       "pasta": "planetas/planeta-computacao",
       "modelo": "planeta.glb",
       "poster": "poster.webp",
-      "raioQuadro": 1.322,
+      "raioQuadro": 1.385,
       "inicio": 0,
       "elevacao": 12,
       "fov": 30
