@@ -15,6 +15,7 @@ Os modelos 3D e os pôsteres não vêm no .zip: o componente busca tudo na web, 
 Planetas (id = planeta-<nome>, sem acentos):
   planeta-mitologia · planeta-empreendedorismo · planeta-emocoes · planeta-artes · planeta-computacao
   planeta-fantasia · planeta-musica · planeta-terra · planeta-alfabetizacao · planeta-transito
+  planeta-esportes
 
 Planeta novo: quando o Design publica, é só usar o id novo (ex.: <Planeta id="planeta-<nome>" />).
 Não é preciso baixar nada de novo.
