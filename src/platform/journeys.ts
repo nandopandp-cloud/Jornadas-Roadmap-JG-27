@@ -539,6 +539,7 @@ export const journeys: Journey[] = [
       { id: 'giro', label: 'Giro 360°', icon: './planetas/planeta-01/poster.webp' },
       { id: 'planeta-02', label: 'Planeta 02', icon: './planetas/planeta-02/poster.webp' },
       { id: 'planeta-03', label: 'Planeta 03', icon: './planetas/planeta-03/poster.webp' },
+      { id: 'planeta-04', label: 'Planeta 04', icon: './planetas/planeta-04/poster.webp' },
       { id: 'claro', label: 'Giro em fundo claro', icon: './3d/sparkles.png' },
       { id: 'tamanhos', label: 'Tamanhos de uso', icon: './3d/planet.png' },
       { id: 'nextjs', label: 'Handoff Next.js', icon: './3d/clipboard.png' },
