@@ -1,3 +1,5 @@
+> **Mudou de lugar:** o kit, os planetas e as ferramentas agora vivem em **https://github.com/nandopandp-cloud/Planetas-3D**, com a vitrine em https://planetas-3d.vercel.app. O kit novo lê os planetas de lá. Esta pasta fica só como histórico.
+
 # Kit de planetas 3D · Exploradores
 
 Os planetas de massinha giram em 3D no eixo vertical. O kit está pronto para os projetos Next.js da Jovens Gênios: **instale uma vez e use os planetas pelo id.** Os modelos e os pôsteres ficam publicados na web, e o componente busca tudo sozinho.

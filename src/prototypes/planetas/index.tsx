@@ -257,16 +257,20 @@ const CODIGO = `import { Planeta }
 export function PlanetaDaTrilha() {
   return (
     <Planeta
-      id="planeta-mitologia"
+      id="planeta-emocoes"
       tamanho={240}
-      alt="Planeta da trilha"
+      alt="Planeta Emoções"
     />
   )
 }`
 
+// o kit e os planetas vivem no repositório Planetas-3D (site https://planetas-3d.vercel.app)
+const KIT = 'https://github.com/nandopandp-cloud/Planetas-3D/releases/download/kit-planetas/kit-planetas.zip'
+const GUIA = 'https://github.com/nandopandp-cloud/Planetas-3D/releases/download/kit-planetas/GUIA-ENGENHARIA.pdf'
+
 const PROPS: [string, string, string][] = [
   ['id', '—', "planeta do catálogo ('planeta-mitologia', 'planeta-emocoes', …)"],
-  ['base', "'/'", 'prefixo dos arquivos em public/'],
+  ['base', 'endereço dos planetas', 'de onde os arquivos são lidos (ENDERECO_PLANETAS)'],
   ['tamanho', '240', 'px ou medida CSS'],
   ['sentido', "'direita'", "ou 'esquerda' (para onde a frente corre)"],
   ['onSentidoChange', '—', 'avisa quando a pessoa joga o planeta para o outro lado'],
@@ -289,16 +293,15 @@ function Handoff() {
     <div className="pv-handoff">
       <ol className="pv-passos">
         <li>
-          <strong>Baixe o kit</strong> (<code>kit-planetas</code> no repositório, com o guia em PDF) e copie duas pastas:{' '}
-          <code>components/planetas</code> e <code>public/planetas</code>.
+          <strong>Instale uma vez:</strong> baixe o <a href={KIT}>kit (.zip)</a>, descompacte na raiz do projeto (cria{' '}
+          <code>components/planetas</code>) e rode <code>npm i three</code>. Passo a passo no <a href={GUIA}>guia em PDF</a>.
         </li>
         <li>
-          <strong>Instale o three.js</strong> (<code>npm i three</code>) e use <code>&lt;Planeta id="…" /&gt;</code> onde o planeta aparece.
-          Funciona em Server Components.
+          <strong>Use pelo id</strong> onde o planeta aparece: <code>&lt;Planeta id="planeta-emocoes" /&gt;</code>. Os modelos e pôsteres
+          vêm da web (planetas-3d.vercel.app). Funciona em Server Components.
         </li>
         <li>
-          <strong>Planeta novo?</strong> Chega uma pasta em <code>public/planetas/&lt;id&gt;/</code> e uma linha no catálogo{' '}
-          <code>planetas.ts</code>. O componente não muda.
+          <strong>Planeta novo?</strong> É só usar o id novo (<code>planeta-&lt;nome&gt;</code>). Não precisa baixar nada.
         </li>
       </ol>
 
