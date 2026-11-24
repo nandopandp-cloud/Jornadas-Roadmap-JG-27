@@ -29,6 +29,9 @@ a = sys.argv[sys.argv.index('--') + 1:]
 arg = lambda k, d=None: a[a.index(k) + 1] if k in a else d
 ENTRADA, SAIDA = arg('--entrada'), arg('--saida')
 TRIS = int(arg('--tris', 160000))
+# 'esfera' (padrão): centro e raio da esfera do planeta. 'ilha': modelos achatados (ilha flutuante,
+# disco) — centro = meio da caixa e raio = raio horizontal da ilha; use com --elevacao maior (~35)
+FORMA = arg('--forma', 'esfera')
 TEX = int(arg('--textura', 2048))
 QUAL = int(arg('--qualidade', 86))
 os.makedirs(SAIDA, exist_ok=True)
@@ -69,6 +72,12 @@ for _ in range(8):
     manter = np.abs(d) < max(0.004 * r, np.percentile(np.abs(d), 45))
 centro, raio = Vector(c), r
 fora = float((d > 0.02 * r).mean())
+if FORMA == 'ilha':
+    mn, mx = P.min(0), P.max(0)
+    c = (mn + mx) / 2
+    horiz = np.hypot(P[:, 0] - c[0], P[:, 1] - c[1])
+    centro, raio = Vector(c), float(np.percentile(horiz, 99.8))  # ignora uma ou outra ponta solta
+    fora = 0.0
 ob.matrix_world = Matrix.Scale(1 / raio, 4) @ Matrix.Translation(-centro) @ ob.matrix_world
 with bpy.context.temp_override(active_object=ob, selected_editable_objects=[ob], selected_objects=[ob]):
     bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
@@ -148,6 +157,7 @@ bpy.ops.render.render(write_still=True)
 
 info = {
     'origem': os.path.basename(ENTRADA), 'tris_original': tris_orig, 'tris': tris_final,
+    'forma': FORMA,
     'esfera_original': {'centro': [round(v, 4) for v in centro], 'raio': round(raio, 4), 'fracao_fora_da_esfera': round(fora, 3)},
     'raio_quadro': round(raio_quadro, 4), 'caixa': caixa, 'textura_px': TEX, 'inicio_graus': INICIO, 'elevacao_graus': ELEV,
     'fov_graus': FOV, 'glb_bytes': os.path.getsize(os.path.join(SAIDA, 'planeta.glb')),
