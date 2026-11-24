@@ -17,6 +17,7 @@ export const PLANETAS = {
   'planeta-alfabetizacao': { id: 'planeta-alfabetizacao', nome: 'Alfabetização', pasta: 'planetas/planeta-alfabetizacao', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.451, inicio: 0, elevacao: 40, fov: 30 },
   'planeta-transito': { id: 'planeta-transito', nome: 'Trânsito', pasta: 'planetas/planeta-transito', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.259, inicio: 0, elevacao: 40, fov: 30 },
   'planeta-esportes': { id: 'planeta-esportes', nome: 'Esportes', pasta: 'planetas/planeta-esportes', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.368, inicio: 0, elevacao: 12, fov: 30 },
+  'planeta-profissoes': { id: 'planeta-profissoes', nome: 'Profissões', pasta: 'planetas/planeta-profissoes', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.242, inicio: 0, elevacao: 12, fov: 30 },
 } satisfies Record<string, PlanetaDados & { nome: string }>
 
 export type IdPlaneta = keyof typeof PLANETAS
