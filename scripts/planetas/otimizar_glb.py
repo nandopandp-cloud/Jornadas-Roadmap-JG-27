@@ -124,7 +124,7 @@ cena.render.resolution_x = cena.render.resolution_y = 1024
 cena.render.image_settings.file_format = 'WEBP'
 cena.render.image_settings.quality = 88
 cena.render.image_settings.color_mode = 'RGBA'
-cena.view_settings.view_transform = 'AgX'
+cena.view_settings.view_transform = 'Khronos PBR Neutral'  # o mesmo tom do site (cores fiéis à textura)
 mundo = bpy.data.worlds.new('W')
 cena.world = mundo
 bg = next(n for n in mundo.node_tree.nodes if n.type == 'BACKGROUND')

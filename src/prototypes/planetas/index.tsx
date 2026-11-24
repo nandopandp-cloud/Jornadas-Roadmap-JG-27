@@ -152,7 +152,7 @@ export default function Planetas({ startScreen }: PrototypeProps) {
 
             {LISTA_PLANETAS.length > 1 && (
               <Campo titulo="Planeta" icone={Globe}>
-                <Segmentos valor={idPlaneta} opcoes={LISTA_PLANETAS.map((p) => ({ id: p.id, label: LISTA_PLANETAS.length > 3 ? p.nome.replace(/^Planeta\s+/, '') : p.nome }))} onChange={(v) => setIdPlaneta(v as IdPlaneta)} />
+                <Segmentos grade valor={idPlaneta} opcoes={LISTA_PLANETAS.map((p) => ({ id: p.id, label: p.nome }))} onChange={(v) => setIdPlaneta(v as IdPlaneta)} />
               </Campo>
             )}
 
@@ -210,16 +210,19 @@ function Campo({ titulo, icone: Icone, children }: { titulo: string; icone: Luci
 }
 
 function Segmentos({
+  grade = false,
   valor,
   opcoes,
   onChange,
 }: {
+  /** botões em grade de duas colunas (listas longas, como a de planetas) */
+  grade?: boolean
   valor: string
   opcoes: { id: string; label: string; sub?: string; icone?: LucideIcon }[]
   onChange: (id: string) => void
 }) {
   return (
-    <div className="pv-seg" role="radiogroup">
+    <div className={grade ? 'pv-seg pv-seg--grade' : 'pv-seg'} role="radiogroup">
       {opcoes.map(({ id, label, sub, icone: Icone }) => (
         <button key={id} role="radio" aria-checked={valor === id} className={valor === id ? 'is-on' : ''} onClick={() => onChange(id)}>
           {Icone && <Icone size={16} aria-hidden />}

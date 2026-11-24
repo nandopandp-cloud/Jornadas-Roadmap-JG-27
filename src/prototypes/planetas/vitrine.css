@@ -310,6 +310,10 @@
   border-radius: 14px;
   background: var(--linha-2);
 }
+.pv-seg--grade {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
 .pv-seg button {
   flex: 1;
   display: inline-flex;

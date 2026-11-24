@@ -2,12 +2,11 @@
 
 import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent } from 'react'
 import {
-  ACESFilmicToneMapping,
-  AgXToneMapping,
   DirectionalLight,
   Group,
   HemisphereLight,
   Mesh,
+  NeutralToneMapping,
   PMREMGenerator,
   PerspectiveCamera,
   SRGBColorSpace,
@@ -28,7 +27,8 @@ import s from './planeta-girando.module.css'
    Blender por ferramentas/otimizar_glb.py): centro da esfera na
    origem, raio 1, 160 mil triângulos, texturas PBR 2K em WebP e malha
    comprimida por meshopt (~2,4 MB). O three.js desenha com luz de estúdio
-   (principal no alto à esquerda + ambiente) e o objeto só gira: os
+   (principal no alto à esquerda + ambiente), tom Khronos PBR Neutral (cores fiéis à
+   textura) e o objeto só gira: os
    elementos aparecem, passam e somem sem nunca mudar de forma.
 
    Comportamento (igual ao das versões anteriores):
@@ -188,7 +188,9 @@ export function PlanetaGirando({
       return
     }
     renderer.outputColorSpace = SRGBColorSpace
-    renderer.toneMapping = AgXToneMapping ?? ACESFilmicToneMapping
+    // Khronos PBR Neutral: mostra a cor da textura como ela é (cores vibrantes da massinha).
+    // O AgX, usado antes, deixava a saturação em 62–72% da arte.
+    renderer.toneMapping = NeutralToneMapping
     renderer.toneMappingExposure = 1.05
     renderer.setClearColor(0x000000, 0)
 
