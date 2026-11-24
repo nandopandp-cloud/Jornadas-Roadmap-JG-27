@@ -1,7 +1,8 @@
-import { LISTA_PLANETAS, Planeta } from '@/components/planetas'
+import { Planeta, carregarPlanetas } from '@/components/planetas'
 
-// Página de demonstração: todos os planetas do catálogo, girando.
-export default function Pagina() {
+// Página de demonstração: todos os planetas publicados, girando (a lista vem do catálogo na web).
+export default async function Pagina() {
+  const planetas = await carregarPlanetas()
   return (
     <main className="pagina">
       <header>
@@ -10,9 +11,9 @@ export default function Pagina() {
         <p>Arraste para girar · setas do teclado · uma volta a cada 40 s</p>
       </header>
       <ul className="grade">
-        {LISTA_PLANETAS.map((p) => (
+        {planetas.map((p) => (
           <li key={p.id}>
-            <Planeta id={p.id} tamanho={260} alt={p.nome} />
+            <Planeta id={p.id} tamanho={260} alt={`Planeta ${p.nome}`} />
             <span>{p.nome}</span>
             <code>{`<Planeta id="${p.id}" />`}</code>
           </li>

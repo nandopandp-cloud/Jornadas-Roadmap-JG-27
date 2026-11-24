@@ -24,7 +24,7 @@ import s from './planeta-girando.module.css'
    PlanetaGirando · Exploradores — planeta 3D (.glb) girando no eixo vertical
    ---------------------------------------------------------------------
    O planeta é um modelo 3D de verdade (gerado no Tripo e otimizado no
-   Blender por ferramentas/otimizar_glb.py): centro da esfera na
+   Blender pelo Design): centro da esfera na
    origem, raio 1, 160 mil triângulos, texturas PBR 2K em WebP e malha
    comprimida por meshopt (~2,4 MB). O three.js desenha com luz de estúdio
    (principal no alto à esquerda + ambiente), tom Khronos PBR Neutral (cores fiéis à
@@ -87,6 +87,8 @@ export type PlanetaGirandoProps = {
   halo?: string | false
   /** sombra de contato embaixo. Padrão: true */
   sombra?: boolean
+  /** false = só o pôster, sem baixar o 3D (ex.: enquanto os dados do planeta chegam). Padrão: true */
+  carregar3d?: boolean
   className?: string
   style?: CSSProperties
 }
@@ -133,6 +135,7 @@ export function PlanetaGirando({
   flutuar = true,
   halo = '92, 196, 255',
   sombra = true,
+  carregar3d = true,
   className,
   style,
 }: PlanetaGirandoProps) {
@@ -166,7 +169,7 @@ export function PlanetaGirando({
   useEffect(() => {
     const el = caixa.current
     const cv = canvas.current
-    if (!el || !cv) return
+    if (!el || !cv || !carregar3d) return
     if (!temWebGL()) {
       setSemGL(true)
       return
@@ -178,6 +181,7 @@ export function PlanetaGirando({
     let qualidade = 1
     let lentos = 0
     const g = giro.current
+    g.ang = rad(planeta.inicio + inicio) // o 3D entra no mesmo ângulo do pôster deste planeta
     ;(el as HTMLDivElement & { __giro?: typeof g }).__giro = g // estado visível para testes automatizados
 
     let renderer: WebGLRenderer
@@ -303,7 +307,7 @@ export function PlanetaGirando({
     }
     // o laço lê o resto por ref; só reinicia se trocar o planeta
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [planeta, base])
+  }, [planeta, base, carregar3d])
 
   /* ---- mão: arrastar na horizontal ---------------------------------- */
   const amostras = useRef<{ t: number; x: number }[]>([])

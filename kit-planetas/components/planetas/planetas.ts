@@ -1,20 +1,35 @@
 import type { PlanetaDados } from './PlanetaGirando'
 
 /* =====================================================================
-   Catálogo de planetas — UMA linha por planeta.
-   Os arquivos de cada um ficam em public/planetas/<id>/ (planeta.glb e poster.webp).
-   Planeta novo: o script ferramentas/otimizar_glb.py imprime a linha pronta para colar aqui.
+   Onde os planetas estão publicados.
+   O catálogo (<endereço>planetas/catalogo.json) e os arquivos de cada planeta
+   (<endereço>planetas/<id>/planeta.glb e poster.webp) são lidos daqui.
+   Planeta novo publicado pelo Design já funciona pelo id, sem mudar nada no projeto.
    ===================================================================== */
-export const PLANETAS = {
-  'planeta-01': { id: 'planeta-01', nome: 'Mitologia', pasta: 'planetas/planeta-01', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.347, inicio: 305, elevacao: 12, fov: 30 },
-  'planeta-02': { id: 'planeta-02', nome: 'Empreendedorismo', pasta: 'planetas/planeta-02', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.446, inicio: 0, elevacao: 12, fov: 30 },
-  'planeta-03': { id: 'planeta-03', nome: 'Emoções', pasta: 'planetas/planeta-03', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.397, inicio: 0, elevacao: 12, fov: 30 },
-  'planeta-04': { id: 'planeta-04', nome: 'Artes', pasta: 'planetas/planeta-04', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.463, inicio: 0, elevacao: 12, fov: 30 },
-  'planeta-05': { id: 'planeta-05', nome: 'Computação', pasta: 'planetas/planeta-05', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.322, inicio: 0, elevacao: 12, fov: 30 },
-  'planeta-06': { id: 'planeta-06', nome: 'Fantasia', pasta: 'planetas/planeta-06', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.612, inicio: 0, elevacao: 12, fov: 30 },
-  'planeta-07': { id: 'planeta-07', nome: 'Música', pasta: 'planetas/planeta-07', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.067, inicio: 315, elevacao: 35, fov: 30 },
-  'planeta-08': { id: 'planeta-08', nome: 'Terra', pasta: 'planetas/planeta-08', modelo: 'planeta.glb', poster: 'poster.webp', raioQuadro: 1.574, inicio: 0, elevacao: 12, fov: 30 },
-} satisfies Record<string, PlanetaDados & { nome: string }>
+export const ENDERECO_PLANETAS = 'https://jornadas-roadmap-jg-27.vercel.app/'
 
-export type IdPlaneta = keyof typeof PLANETAS
-export const LISTA_PLANETAS = (Object.keys(PLANETAS) as IdPlaneta[]).map((id) => ({ ...PLANETAS[id], id }))
+export type InfoPlaneta = PlanetaDados & { nome: string }
+
+const juntar = (base: string, caminho: string) => (base.endsWith('/') ? base : base + '/') + caminho
+const pedidos = new Map<string, Promise<InfoPlaneta[]>>()
+
+/**
+ * Lista de planetas publicados, na ordem do catálogo. Busca uma vez por página (os outros
+ * pedidos reaproveitam a resposta). Funciona no navegador e em Server Components
+ * (no servidor, a resposta é renovada a cada 5 min).
+ *   const planetas = await carregarPlanetas()   // [{ id: 'planeta-01', nome: 'Mitologia', … }, …]
+ */
+export function carregarPlanetas(base: string = ENDERECO_PLANETAS): Promise<InfoPlaneta[]> {
+  let pedido = pedidos.get(base)
+  if (!pedido) {
+    pedido = fetch(juntar(base, 'planetas/catalogo.json'), { next: { revalidate: 300 } } as RequestInit)
+      .then((r) => {
+        if (!r.ok) throw new Error(`catálogo de planetas: HTTP ${r.status}`)
+        return r.json() as Promise<{ planetas: InfoPlaneta[] }>
+      })
+      .then((j) => j.planetas)
+    pedido.catch(() => pedidos.delete(base)) // falhou: tenta de novo no próximo pedido
+    pedidos.set(base, pedido)
+  }
+  return pedido
+}
