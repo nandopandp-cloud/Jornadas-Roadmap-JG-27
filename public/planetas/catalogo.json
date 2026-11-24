@@ -99,6 +99,17 @@
       "inicio": 0,
       "elevacao": 40,
       "fov": 30
+    },
+    {
+      "id": "planeta-transito",
+      "nome": "Trânsito",
+      "pasta": "planetas/planeta-transito",
+      "modelo": "planeta.glb",
+      "poster": "poster.webp",
+      "raioQuadro": 1.259,
+      "inicio": 0,
+      "elevacao": 40,
+      "fov": 30
     }
   ]
 }
