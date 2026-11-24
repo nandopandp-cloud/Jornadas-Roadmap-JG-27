@@ -23,7 +23,7 @@ import s from './planeta-girando.module.css'
 /* =====================================================================
    PlanetaGirando · Exploradores — planeta 3D (.glb) girando no eixo vertical
    ---------------------------------------------------------------------
-   O planeta é um modelo 3D de verdade (gerado no Tripo e otimizado no
+   O planeta é um modelo 3D de verdade (otimizado no
    Blender por scripts/planetas/otimizar_glb.py): centro da esfera na
    origem, raio 1, 160 mil triângulos, texturas PBR 2K em WebP e malha
    comprimida por meshopt (~2,4 MB). O three.js desenha com luz de estúdio
