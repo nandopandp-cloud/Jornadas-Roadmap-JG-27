@@ -606,3 +606,8 @@
   line-height: 1.5;
   color: #2f5f5c;
 }
+
+.pv-passos a {
+  color: var(--teal-2);
+  font-weight: 700;
+}
