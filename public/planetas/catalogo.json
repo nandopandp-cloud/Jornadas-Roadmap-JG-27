@@ -132,6 +132,17 @@
       "inicio": 0,
       "elevacao": 12,
       "fov": 30
+    },
+    {
+      "id": "planeta-robotica",
+      "nome": "Robótica",
+      "pasta": "planetas/planeta-robotica",
+      "modelo": "planeta.glb",
+      "poster": "poster.webp",
+      "raioQuadro": 1.787,
+      "inicio": 0,
+      "elevacao": 12,
+      "fov": 30
     }
   ]
 }
