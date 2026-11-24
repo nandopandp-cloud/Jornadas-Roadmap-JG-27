@@ -1,0 +1,28 @@
+PLANETAS 3D · EXPLORADORES (Jovens Gênios)
+==========================================
+
+Este .zip já vem com as pastas no lugar certo. Descompacte na raiz do projeto Next.js:
+
+  components/planetas/   componente <Planeta> + catálogo
+  public/planetas/       modelo 3D (planeta.glb) e pôster (poster.webp) de cada planeta
+
+Depois:
+
+  npm i three
+  npm i -D @types/three
+
+E use:
+
+  import { Planeta } from '@/components/planetas'
+  <Planeta id="planeta-03" tamanho={240} alt="Planeta Emoções" />
+
+Planetas: planeta-01 Mitologia · planeta-02 Empreendedorismo · planeta-03 Emoções · planeta-04 Artes
+          planeta-05 Computação · planeta-06 Fantasia · planeta-07 Música · planeta-08 Terra
+
+O projeto usa src/? Mova components/planetas para src/components/planetas.
+
+Planeta novo ou atualizado: baixe este .zip de novo (o link é sempre o mesmo) e substitua as duas pastas.
+
+Download:  https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/releases/download/kit-planetas/kit-planetas.zip
+Guia:      https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/releases/download/kit-planetas/GUIA-ENGENHARIA.pdf
+Ao vivo:   https://jornadas-roadmap-jg-27.vercel.app/#/p/planetas

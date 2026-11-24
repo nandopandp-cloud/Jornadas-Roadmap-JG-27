@@ -1,53 +1,61 @@
 # Kit de planetas 3D · Exploradores
 
-Planetas de massinha em 3D, girando no eixo vertical, prontos para a plataforma da Jovens Gênios (Next.js). **Para usar, copie duas pastas e instale o `three`.**
+Os planetas de massinha giram em 3D no eixo vertical. O kit está pronto para os projetos Next.js da Jovens Gênios: **um download, uma dependência e um componente.**
 
-Veja funcionando:
+| | |
+| --- | --- |
+| **Baixar o kit (.zip)** | https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/releases/download/kit-planetas/kit-planetas.zip |
+| **Guia em PDF** | https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/releases/download/kit-planetas/GUIA-ENGENHARIA.pdf |
+| **Ver funcionando** | https://jornadas-roadmap-jg-27.vercel.app/#/p/planetas |
 
-- na vitrine: https://jornadas-roadmap-jg-27.vercel.app/#/p/planetas
-- localmente: `npm install && npm run dev` nesta pasta.
+Os dois links de download nunca mudam e sempre trazem a versão mais nova. Os arquivos originais (Tripo, Blender) ficam com o Design. A engenharia não precisa deles: cada planeta chega pronto.
 
-Guia em PDF: [GUIA-ENGENHARIA.pdf](GUIA-ENGENHARIA.pdf).
-
-## Copiar e colar
+## Instalar
 
 ```bash
-# 1. dependência
+# 1. baixe e descompacte na raiz do projeto (as pastas já vêm no lugar certo)
+REPO=https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27
+curl -LO $REPO/releases/download/kit-planetas/kit-planetas.zip
+unzip -o kit-planetas.zip -x LEIA-ME.txt && rm kit-planetas.zip
+
+# 2. instale o three.js
 npm i three
 npm i -D @types/three
-
-# 2. copie as duas pastas para o projeto
-cp -R kit-planetas/components/planetas  <projeto>/components/planetas
-cp -R kit-planetas/public/planetas      <projeto>/public/planetas
 ```
 
 ```tsx
 // 3. use onde o planeta aparece (funciona em Server Components)
 import { Planeta } from '@/components/planetas'
 
-<Planeta id="planeta-01" tamanho={240} alt="Planeta da trilha" />
+<Planeta id="planeta-03" tamanho={240} alt="Planeta Emoções" />
 ```
 
-Se o alias `@/` do projeto apontar para `src/`, copie para `src/components/planetas`.
+O .zip cria duas pastas: `components/planetas/` (componente e catálogo) e `public/planetas/` (modelo e pôster de cada planeta). Se o projeto usa `src/`, mova a primeira para `src/components/planetas`.
 
-## O que tem aqui
+## Planetas
 
-| Caminho | O que é |
+| id | Nome |
 | --- | --- |
-| `components/planetas/PlanetaGirando.tsx` | O componente (`'use client'`, three.js) |
-| `components/planetas/planeta-girando.module.css` | Camadas: flutuação, halo, sombra, foco, cursor |
-| `components/planetas/planetas.ts` | **Catálogo:** uma linha por planeta |
-| `components/planetas/Planeta.tsx` | Atalho `<Planeta id="…" />` |
-| `components/planetas/index.ts` | Exportações |
-| `public/planetas/<id>/` | `planeta.glb` (~2,4 MB) e `poster.webp` (~60 KB) de cada planeta |
-| `app/` | Página de demonstração com todos os planetas |
-| `ferramentas/otimizar_glb.py` | Prepara um planeta novo (Blender) |
+| `planeta-01` | Mitologia |
+| `planeta-02` | Empreendedorismo |
+| `planeta-03` | Emoções |
+| `planeta-04` | Artes |
+| `planeta-05` | Computação |
+| `planeta-06` | Fantasia |
+| `planeta-07` | Música |
+| `planeta-08` | Terra |
+
+O nome também vem no catálogo: `PLANETAS['planeta-03'].nome` devolve `'Emoções'`. `LISTA_PLANETAS` traz todos, em ordem.
+
+## Planeta novo ou atualizado
+
+O Design gera o planeta, prepara e publica no mesmo link. A engenharia **baixa o .zip de novo e substitui as duas pastas**. O componente não muda, e não precisa de Blender nem de script.
 
 ## Props
 
 | Prop | Padrão | O que faz |
 | --- | --- | --- |
-| `id` | — | Planeta do catálogo (`planeta-01`, …) |
+| `id` | — | Planeta do catálogo (tabela acima) |
 | `tamanho` | `240` | Largura e altura (px ou medida CSS) |
 | `alt` | `''` | Texto alternativo. Vazio deixa o planeta decorativo |
 | `sentido` | `'direita'` | Para onde a superfície da frente corre (`'direita'` ou `'esquerda'`) |
@@ -62,37 +70,16 @@ Se o alias `@/` do projeto apontar para `src/`, copie para `src/components/plane
 ## Comportamento
 
 - **Giro:** uma volta a cada 40 s, sem outras velocidades.
-- **Arrastar** (mouse ou dedo): gira; ao soltar, o planeta segue com embalo e volta ao giro normal no sentido em que foi jogado.
+- **Arrastar** (mouse ou dedo): gira; ao soltar, o planeta segue com embalo e volta ao giro normal.
 - **Teclado:** setas ← e → com o planeta em foco.
 - **Celular:** deslizar na vertical continua rolando a página.
 - **"Reduzir movimento"** ligado no sistema: o planeta não gira sozinho, mas a mão continua funcionando.
-- **Carregamento:** o pôster aparece na hora; o modelo (2,4 MB) só é baixado quando o planeta está na página e troca de forma suave.
+- **Carregamento:** o pôster aparece na hora. O modelo (~2,5 MB) só é baixado quando o planeta está na página.
 - **Sem WebGL:** fica o pôster.
-- **Desempenho:**
-  - para de desenhar fora da tela;
-  - baixa a resolução sozinho em aparelho lento;
-  - a velocidade não depende da taxa de quadros.
+- **Desempenho:** para de desenhar fora da tela e baixa a resolução sozinho em aparelho lento.
 
-## Planeta novo
+## Esta pasta
 
-1. **Design** gera o planeta 3D no Tripo e exporta em `.glb`.
-2. **Otimizar** (Blender 5.3):
+É uma página de demonstração com todos os planetas: `npm install && npm run dev`. Para usar no produto, baixe o .zip; não é preciso copiar esta pasta.
 
-   ```bash
-   blender -b --factory-startup -P ferramentas/otimizar_glb.py -- \
-     --entrada "planeta-02.glb" --saida public/planetas/planeta-02 \
-     --id planeta-02 --nome "Planeta 02" --inicio 305
-   ```
-
-   O script centraliza a esfera, reduz para 160 mil triângulos, converte as texturas para 2K WebP e comprime a malha com meshopt. Ele também gera o `poster.webp` e **imprime a linha do catálogo**.
-3. **Catálogo:** cole a linha em `components/planetas/planetas.ts`.
-4. **Engenharia:** copia `public/planetas/planeta-02/` e o `planetas.ts` atualizado. Nada mais muda.
-
-`--inicio` é o ângulo em que o planeta aparece primeiro, o mesmo do pôster.
-
-## Testado
-
-- Next.js 15.5 (App Router), React 19.1 e three 0.170.
-- `next build` sem erros.
-- No navegador, a velocidade medida foi de 0,14 rad/s (esperado 0,157), o arrastar funcionou e o console ficou sem erros.
-- Na vitrine, 18 verificações automáticas: giro, mão, embalo, setas, pausa, "reduzir movimento", sem WebGL e toque no celular.
+Testado com Next.js 15.5 (App Router), React 19.1 e three 0.170: `next build` sem erros, e giro, arrastar, toque, teclado, "reduzir movimento" e falta de WebGL conferidos no navegador.

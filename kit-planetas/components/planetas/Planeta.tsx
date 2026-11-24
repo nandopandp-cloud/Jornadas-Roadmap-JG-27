@@ -3,7 +3,7 @@ import { PLANETAS, type IdPlaneta } from './planetas'
 
 /**
  * Atalho: o planeta pelo id do catálogo.
- *   <Planeta id="planeta-01" tamanho={240} alt="Planeta da trilha" />
+ *   <Planeta id="planeta-03" tamanho={240} alt="Planeta Emoções" />
  * Aceita todas as props do PlanetaGirando (menos `planeta`). Pode ser usado em Server Components;
  * só `onSentidoChange` (função) exige um componente cliente em volta.
  */
