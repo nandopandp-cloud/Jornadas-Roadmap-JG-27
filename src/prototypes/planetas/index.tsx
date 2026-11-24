@@ -152,7 +152,7 @@ export default function Planetas({ startScreen }: PrototypeProps) {
 
             {LISTA_PLANETAS.length > 1 && (
               <Campo titulo="Planeta" icone={Globe}>
-                <Segmentos valor={idPlaneta} opcoes={LISTA_PLANETAS.map((p) => ({ id: p.id, label: p.nome }))} onChange={(v) => setIdPlaneta(v as IdPlaneta)} />
+                <Segmentos valor={idPlaneta} opcoes={LISTA_PLANETAS.map((p) => ({ id: p.id, label: LISTA_PLANETAS.length > 3 ? p.nome.replace(/^Planeta\s+/, '') : p.nome }))} onChange={(v) => setIdPlaneta(v as IdPlaneta)} />
               </Campo>
             )}
 
