@@ -1,19 +1,18 @@
 # Kit de planetas 3D · Exploradores
 
-Os planetas de massinha giram em 3D no eixo vertical. O kit está pronto para os projetos Next.js da Jovens Gênios: **um download, uma dependência e um componente.**
+Os planetas de massinha giram em 3D no eixo vertical. O kit está pronto para os projetos Next.js da Jovens Gênios: **instale uma vez e use os planetas pelo id.** Os modelos e os pôsteres ficam publicados na web, e o componente busca tudo sozinho.
 
 | | |
 | --- | --- |
 | **Baixar o kit (.zip)** | https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/releases/download/kit-planetas/kit-planetas.zip |
 | **Guia em PDF** | https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/releases/download/kit-planetas/GUIA-ENGENHARIA.pdf |
+| **Catálogo ao vivo** | https://jornadas-roadmap-jg-27.vercel.app/planetas/catalogo.json |
 | **Ver funcionando** | https://jornadas-roadmap-jg-27.vercel.app/#/p/planetas |
 
-Os dois links de download nunca mudam e sempre trazem a versão mais nova. Os arquivos originais (Tripo, Blender) ficam com o Design. A engenharia não precisa deles: cada planeta chega pronto.
-
-## Instalar
+## Instalar (uma vez só)
 
 ```bash
-# 1. baixe e descompacte na raiz do projeto (as pastas já vêm no lugar certo)
+# 1. baixe e descompacte na raiz do projeto: cria components/planetas/
 REPO=https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27
 curl -LO $REPO/releases/download/kit-planetas/kit-planetas.zip
 unzip -o kit-planetas.zip -x LEIA-ME.txt && rm kit-planetas.zip
@@ -30,7 +29,7 @@ import { Planeta } from '@/components/planetas'
 <Planeta id="planeta-03" tamanho={240} alt="Planeta Emoções" />
 ```
 
-O .zip cria duas pastas: `components/planetas/` (componente e catálogo) e `public/planetas/` (modelo e pôster de cada planeta). Se o projeto usa `src/`, mova a primeira para `src/components/planetas`.
+Se o projeto usa `src/`, mova a pasta para `src/components/planetas`.
 
 ## Planetas
 
@@ -45,11 +44,13 @@ O .zip cria duas pastas: `components/planetas/` (componente e catálogo) e `publ
 | `planeta-07` | Música |
 | `planeta-08` | Terra |
 
-O nome também vem no catálogo: `PLANETAS['planeta-03'].nome` devolve `'Emoções'`. `LISTA_PLANETAS` traz todos, em ordem.
+A lista sempre atualizada está no [catálogo ao vivo](https://jornadas-roadmap-jg-27.vercel.app/planetas/catalogo.json). No código, `await carregarPlanetas()` devolve todos os planetas (`id`, `nome`, …), no navegador ou em Server Components.
 
-## Planeta novo ou atualizado
+## Planeta novo
 
-O Design gera o planeta, prepara e publica no mesmo link. A engenharia **baixa o .zip de novo e substitui as duas pastas**. O componente não muda, e não precisa de Blender nem de script.
+Quando o Design publica um planeta, **basta usar o id novo**: `<Planeta id="planeta-09" />`. Não é preciso baixar nada nem mudar o kit.
+
+Se o id não existir, o console avisa e lista os ids publicados.
 
 ## Props
 
@@ -64,7 +65,7 @@ O Design gera o planeta, prepara e publica no mesmo link. A engenharia **baixa o
 | `inicio` | `0` | Graus somados ao ângulo inicial |
 | `luz` · `flutuar` · `sombra` | `true` | Liga e desliga cada camada |
 | `halo` | `'92, 196, 255'` | Cor do brilho atrás (r, g, b) ou `false` |
-| `base` | `'/'` | Prefixo dos arquivos em `public/` (ex.: `basePath` do Next) |
+| `base` | endereço dos planetas | De onde os arquivos são lidos (padrão: `ENDERECO_PLANETAS`, em `planetas.ts`) |
 | `onSentidoChange` | — | Avisa quando a pessoa joga o planeta para o outro lado (exige componente cliente) |
 
 ## Comportamento
@@ -74,12 +75,18 @@ O Design gera o planeta, prepara e publica no mesmo link. A engenharia **baixa o
 - **Teclado:** setas ← e → com o planeta em foco.
 - **Celular:** deslizar na vertical continua rolando a página.
 - **"Reduzir movimento"** ligado no sistema: o planeta não gira sozinho, mas a mão continua funcionando.
-- **Carregamento:** o pôster aparece na hora. O modelo (~2,5 MB) só é baixado quando o planeta está na página.
-- **Sem WebGL:** fica o pôster.
+- **Carregamento:** o pôster aparece na hora, já no HTML do servidor. O modelo (~2,5 MB) só é baixado quando o planeta está na página.
+- **Sem WebGL ou sem rede:** fica o pôster.
 - **Desempenho:** para de desenhar fora da tela e baixa a resolução sozinho em aparelho lento.
+
+## Hospedagem
+
+Os arquivos são servidos de `jornadas-roadmap-jg-27.vercel.app/planetas/`, com CORS liberado. Para servir de outro endereço (uma CDN da Jovens Gênios, por exemplo), copie a pasta `planetas/` desse site para lá e troque `ENDERECO_PLANETAS` em `components/planetas/planetas.ts`.
+
+Com CSP, libere esse endereço em `img-src` e `connect-src`, e inclua `'wasm-unsafe-eval'` em `script-src` (a descompressão da malha usa WebAssembly).
 
 ## Esta pasta
 
-É uma página de demonstração com todos os planetas: `npm install && npm run dev`. Para usar no produto, baixe o .zip; não é preciso copiar esta pasta.
+É uma página de demonstração com todos os planetas publicados: `npm install && npm run dev`. Para usar no produto, baixe o .zip; não é preciso copiar esta pasta.
 
-Testado com Next.js 15.5 (App Router), React 19.1 e three 0.170: `next build` sem erros, e giro, arrastar, toque, teclado, "reduzir movimento" e falta de WebGL conferidos no navegador.
+Testado com Next.js 15.5 (App Router), React 19.1 e three 0.170, num projeto limpo só com o componente: `next build` sem erros, planeta lido da web, pôster no HTML do servidor e id inexistente avisado no console.
