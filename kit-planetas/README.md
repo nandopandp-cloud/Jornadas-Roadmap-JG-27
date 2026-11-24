@@ -44,6 +44,7 @@ Se o projeto usa `src/`, mova a pasta para `src/components/planetas`.
 | `planeta-musica` | Música |
 | `planeta-terra` | Terra |
 | `planeta-alfabetizacao` | Alfabetização |
+| `planeta-transito` | Trânsito |
 
 A lista sempre atualizada está no [catálogo ao vivo](https://jornadas-roadmap-jg-27.vercel.app/planetas/catalogo.json). No código, `await carregarPlanetas()` devolve todos os planetas (`id`, `nome`, …), no navegador ou em Server Components.
 

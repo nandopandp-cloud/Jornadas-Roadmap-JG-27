@@ -545,6 +545,7 @@ export const journeys: Journey[] = [
       { id: 'planeta-musica', label: 'Planeta Música', icon: './planetas/planeta-musica/poster.webp' },
       { id: 'planeta-terra', label: 'Planeta Terra', icon: './planetas/planeta-terra/poster.webp' },
       { id: 'planeta-alfabetizacao', label: 'Planeta Alfabetização', icon: './planetas/planeta-alfabetizacao/poster.webp' },
+      { id: 'planeta-transito', label: 'Planeta Trânsito', icon: './planetas/planeta-transito/poster.webp' },
       { id: 'claro', label: 'Giro em fundo claro', icon: './3d/sparkles.png' },
       { id: 'tamanhos', label: 'Tamanhos de uso', icon: './3d/planet.png' },
       { id: 'nextjs', label: 'Handoff Next.js', icon: './3d/clipboard.png' },
