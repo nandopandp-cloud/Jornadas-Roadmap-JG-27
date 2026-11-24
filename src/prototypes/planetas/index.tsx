@@ -342,8 +342,8 @@ function Handoff() {
       </table>
 
       <p className="pv-nota">
-        <Info size={16} aria-hidden /> Uma volta a cada {SEGUNDOS_POR_VOLTA} s, sem outras velocidades. Cada planeta tem de 2,5 a 3,5 MB
-        (malha comprimida e texturas 2K), pausa sozinho fora da tela. Com “reduzir movimento” não gira sozinho; sem WebGL mostra o pôster.
+        <Info size={16} aria-hidden /> Uma volta a cada {SEGUNDOS_POR_VOLTA} s, sem outras velocidades. Cada planeta tem menos de 1 MB
+        (malha Draco, cor 2K em AVIF) e pausa sozinho fora da tela. Com “reduzir movimento” não gira sozinho; sem WebGL mostra o pôster.
       </p>
     </div>
   )

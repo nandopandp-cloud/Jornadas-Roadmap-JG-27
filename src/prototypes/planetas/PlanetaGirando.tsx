@@ -17,6 +17,7 @@ import {
 } from 'three'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import s from './planeta-girando.module.css'
 
@@ -24,9 +25,9 @@ import s from './planeta-girando.module.css'
    PlanetaGirando · Exploradores — planeta 3D (.glb) girando no eixo vertical
    ---------------------------------------------------------------------
    O planeta é um modelo 3D de verdade (otimizado no
-   Blender por scripts/planetas/otimizar_glb.py): centro da esfera na
-   origem, raio 1, 160 mil triângulos, texturas PBR 2K em WebP e malha
-   comprimida por meshopt (~2,4 MB). O three.js desenha com luz de estúdio
+   Blender pelo Design): centro da esfera na
+   origem, raio 1, ~120 mil triângulos, cor 2K em AVIF e malha
+   comprimida por Draco (menos de 1 MB; decodificador em <base>draco/). O three.js desenha com luz de estúdio
    (principal no alto à esquerda + ambiente), tom Khronos PBR Neutral (cores fiéis à
    textura) e o objeto só gira: os
    elementos aparecem, passam e somem sem nunca mudar de forma.
@@ -99,6 +100,17 @@ const VEL_AUTO = (2 * Math.PI) / SEGUNDOS_POR_VOLTA
 const VEL_MAX = 7 // rad/s, teto do arremesso
 const IMPULSO_TECLA = 1.2 // rad/s por toque na seta
 const DPR_MAX = 2
+
+/** decodificador Draco (malha comprimida): baixado do mesmo endereço dos planetas, uma vez só, e só se o modelo usar Draco */
+const dracos = new Map<string, DRACOLoader>()
+function decodificadorDraco(base: string) {
+  let d = dracos.get(base)
+  if (!d) {
+    d = new DRACOLoader().setDecoderPath(juntar(base, 'draco/'))
+    dracos.set(base, d)
+  }
+  return d
+}
 
 const juntar = (base: string, ...partes: string[]) => (base.endsWith('/') ? base : base + '/') + partes.join('/')
 const rad = (g: number) => (g * Math.PI) / 180
@@ -272,6 +284,7 @@ export function PlanetaGirando({
 
     const loader = new GLTFLoader()
     loader.setMeshoptDecoder(MeshoptDecoder)
+    loader.setDRACOLoader(decodificadorDraco(base))
     loader.load(
       juntar(base, planeta.pasta, planeta.modelo),
       (gltf) => {
