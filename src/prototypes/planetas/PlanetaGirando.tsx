@@ -84,7 +84,7 @@ export type PlanetaGirandoProps = {
   luz?: boolean
   /** sobe e desce devagar. Padrão: true */
   flutuar?: boolean
-  /** cor do halo (r, g, b) ou false. Padrão: '92, 196, 255' */
+  /** brilho colorido atrás do planeta: cor (r, g, b), ex. '92, 196, 255'. Padrão: false (só o planeta) */
   halo?: string | false
   /** sombra de contato embaixo. Padrão: true */
   sombra?: boolean
@@ -145,7 +145,7 @@ export function PlanetaGirando({
   inicio = 0,
   luz = true,
   flutuar = true,
-  halo = '92, 196, 255',
+  halo = false,
   sombra = true,
   carregar3d = true,
   className,

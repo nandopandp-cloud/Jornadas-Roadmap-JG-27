@@ -1,4 +1,4 @@
-> **Mudou de lugar:** o kit, os planetas e as ferramentas agora vivem em **https://github.com/nandopandp-cloud/Planetas-3D**, com a vitrine em https://planetas-3d.vercel.app. O kit novo lê os planetas de lá. Esta pasta fica só como histórico.
+> **Mudou de lugar:** o kit, os planetas e as ferramentas agora vivem em **https://github.com/Jovens-Genios/Planetas-3D**, com a vitrine em https://planetas-3d.vercel.app. O kit novo lê os planetas de lá. Esta pasta fica só como histórico.
 
 # Kit de planetas 3D · Exploradores
 
