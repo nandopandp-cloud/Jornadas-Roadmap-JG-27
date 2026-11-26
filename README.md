@@ -29,7 +29,7 @@ Antes de uma iniciativa virar produto, o time precisa mostrar como ela vai funci
 
 <!-- jornadas:inicio (gerado automaticamente a partir de src/platform/journeys.ts — não edite à mão) -->
 
-A plataforma tem hoje **15 jornadas**. Cada uma vive na sua própria branch, com um README dedicado.
+A plataforma tem hoje **16 jornadas**. Cada uma vive na sua própria branch, com um README dedicado.
 
 ### Alfabetização
 
@@ -150,6 +150,14 @@ Em Relatórios › Atividades › Campeonatos, o educador acompanha cada campeon
 Os planetas de massinha dos Exploradores viram modelos 3D de verdade: o planeta gira no eixo vertical com uma volta a cada 40 s, com casa, floresta, cachoeira, barco, polvo e praia em volume real de todos os lados. O estudante pode girar com a mão (arrastando ou com as setas). Modelo gerado no Tripo e otimizado no Blender (de 64 MB para 2,4 MB); componente pronto para o Next.js com three.js.
 
 [Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/planetas) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/planetas) · [Branch `exploradores-planetas-360`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/exploradores-planetas-360)
+
+### Novos Relatórios
+
+**Plataforma Educadores** · Gestores de rede, unidades regionais, escolas, coordenação e professores · _em construção_
+
+Relatórios da Educadores e BIs externos viram uma coisa só: fonte única de dados, as mesmas regras de cálculo e o mesmo permissionamento para todos os clientes. Cada pessoa tem 3 visões prontas (Resumo, Acompanhamento e Detalhada) em qualquer recorte (rede, unidade regional, escola, turma, estudante, atividade ou evento) e pode montar os próprios painéis com blocos de um catálogo único, como um lego.
+
+[Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/novos-relatorios) · [Branch `prototipo-novos-relatorios`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/prototipo-novos-relatorios)
 
 <!-- jornadas:fim -->
 

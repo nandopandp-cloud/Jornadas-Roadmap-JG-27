@@ -556,5 +556,30 @@ export const journeys: Journey[] = [
     ],
     component: lazy(() => import('../prototypes/planetas')),
   },
+  {
+    slug: 'novos-relatorios',
+    name: 'Novos Relatórios',
+    product: 'Plataforma Educadores',
+    audience: 'Gestores de rede, unidades regionais, escolas, coordenação e professores',
+    description:
+      'Relatórios da Educadores e BIs externos viram uma coisa só: fonte única de dados, as mesmas regras de cálculo e o mesmo permissionamento para todos os clientes. Cada pessoa tem 3 visões prontas (Resumo, Acompanhamento e Detalhada) em qualquer recorte (rede, unidade regional, escola, turma, estudante, atividade ou evento) e pode montar os próprios painéis com blocos de um catálogo único, como um lego.',
+    icon: './3d/notes.png',
+    accent: '#441f67',
+    status: 'em-breve',
+    dispositivo: 'desktop',
+    dominio: 'educadores.jovensgenios.com',
+    etapas: [
+      { nome: 'Mapeamento das bibliotecas', estado: 'atual' },
+      { nome: 'Tela piloto para validação', estado: 'proximo' },
+      { nome: 'Telas nas 3 larguras', estado: 'proximo' },
+      { nome: 'Componentes da jornada', estado: 'proximo' },
+      { nome: 'Protótipo e handoff', estado: 'proximo' },
+      { nome: 'Navegável', estado: 'proximo' },
+    ],
+    links: [
+      { label: 'Figma da jornada', url: 'https://www.figma.com/design/A5hHDrpWbICZ1JfKpUiS2k/Novos-Relat%C3%B3rios' },
+      { label: 'PRD (documento)', url: 'https://claude.ai/artifact/YK2QFjJVHLy9BaXHc3o7oE' },
+    ],
+  },
 ]
 export const findJourney = (slug?: string) => journeys.find((j) => j.slug === slug)
