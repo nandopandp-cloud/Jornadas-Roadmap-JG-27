@@ -2005,3 +2005,54 @@
     width: 100vw;
   }
 }
+
+/* catálogo de indicadores (Meus painéis) */
+.nr-cat-filtros {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.nr-cat-filtros select {
+  height: 36px;
+  min-width: 0;
+  padding: 0 10px;
+  border: 1px solid var(--nr-linha);
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  font-size: 13px;
+  color: var(--nr-tinta);
+}
+.nr-cat-tema {
+  display: grid;
+  gap: 8px;
+}
+.nr-cat-tema + .nr-cat-tema {
+  margin-top: 8px;
+}
+.nr-cat-tema > p {
+  position: sticky;
+  top: -20px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--nr-mudo, #6b6b80);
+}
+.nr-cat-tema > p span {
+  font-weight: 500;
+}
+.nr-catalogo .nr-busca .nr-icone-btn {
+  width: 24px;
+  height: 24px;
+}
+.nr-painel-largo {
+  grid-column: 1 / -1;
+  min-width: 0;
+}

@@ -377,7 +377,7 @@ const estTodos: Rel = {
       ['sec', ['Onde agir primeiro', 'Estudantes com desempenho abaixo de 60% ou sem acesso há mais de 30 dias.']],
       ['row', [{ t: 'lista', titulo: 'Estudantes que precisam de apoio', itens: [['Giovana Pires', 'Insuficiente · 12 interações · último acesso 02/11', { F: 27 }], ['Felipe Nunes', 'Básico · 31 interações · último acesso 19/11', { F: 40 }], ['Manuela Castro', 'Sem acesso desde 15/10 · 9 interações', { F: 52 }], ['Eduarda Lima', 'Básico · 35 interações · último acesso 23/11', { F: 52 }]] }, { t: 'prof', w: 400, titulo: 'Rubricas de proficiência', dist: RUBD([8, 2, 35, 9, 38, 10, 15, 4, 4, 1]), rodape: '26 estudantes. Meta: 60% em Proficiente + Avançado.' }]],
       ['sec', ['Todos os estudantes', 'Um estudante por linha. Abra o relatório individual pela última coluna.']],
-      ['tab', { titulo: 'Estudantes da Turma 701', busca: 'Pesquisar estudante...', leg: RUB5, pag: ['Mostrando 8 de 26 estudantes', 4], cols: [{ t: 'Estudante', sort: true }, { t: 'Interações', w: 110, al: 'CENTER', sort: true }, { t: 'Dias ativos', w: 104, al: 'CENTER', sort: true }, { t: 'Tempo de estudo', w: 124, al: 'CENTER' }, { t: 'Tópicos dominados', w: 150, al: 'CENTER', sort: true }, { t: 'Desempenho', w: 112, al: 'CENTER', sort: true }, { t: 'Rubrica', w: 140 }, { t: 'Relatório', w: 140 }], rows: E701.map((r, i) => [r[0], r[1], E701_EXTRA[i][0], r[2], E701_EXTRA[i][1] + ' de 20', { F: r[10] }, { p: faixa(r[10]) }, r[0] === 'Alice Moreira' ? { lk: 'Ver estudante', ir: 'est' } : { lk: 'Ver estudante' }]) }],
+      ['tab', { titulo: 'Lista de estudantes', busca: 'Pesquisar estudante...', leg: RUB5, pag: ['Mostrando 8 de 26 estudantes', 4], cols: [{ t: 'Estudante', sort: true }, { t: 'Interações', w: 110, al: 'CENTER', sort: true }, { t: 'Dias ativos', w: 104, al: 'CENTER', sort: true }, { t: 'Tempo de estudo', w: 124, al: 'CENTER' }, { t: 'Tópicos dominados', w: 150, al: 'CENTER', sort: true }, { t: 'Desempenho', w: 112, al: 'CENTER', sort: true }, { t: 'Rubrica', w: 140 }, { t: 'Relatório', w: 140 }], rows: E701.map((r, i) => [r[0], r[1], E701_EXTRA[i][0], r[2], E701_EXTRA[i][1] + ' de 20', { F: r[10] }, { p: faixa(r[10]) }, r[0] === 'Alice Moreira' ? { lk: 'Ver estudante', ir: 'est' } : { lk: 'Ver estudante' }]) }],
     ],
     Engajamento: [
       ['kpis', [['Média de interações realizadas', '38', '40', 95, ['por estudante ativo']], ['Estudantes ativos', '52%', '50%', 104, ['14 de 26 estudantes']], ['Tempo médio de estudo', '7h', null, null, ['por estudante no período']], ['Sem acesso há mais de 30 dias', '3', null, null, ['de 26 estudantes']]]],
@@ -425,7 +425,7 @@ const profTodos: Rel = {
       ['sec', ['Onde agir primeiro', 'Professores sem atividades criadas no período ou abaixo de 30% da meta.']],
       ['row', [{ t: 'lista', titulo: 'Professores que precisam de acompanhamento', itens: [['5 professores sem uso no período', 'André Lopes, Carlos Menezes, Juliana Costa, Patrícia Gomes e Sílvia Rocha', { b: '0 atividades', t: 'cr' }], ['Paula Andrade', 'Ciências · 5 dias ativos', { b: '30% da meta', t: 'at' }], ['Marina Teles', 'História · 9 dias ativos', { b: '20% da meta', t: 'at' }], ['Paulo Viana', 'Geografia · 7 dias ativos', { b: '20% da meta', t: 'at' }], ['Lúcia Ramos', 'Educação Física · 4 dias ativos', { b: '10% da meta', t: 'cr' }]] }, { t: 'H', w: 400, titulo: 'Atividades criadas por professor', desc: 'Meta: 10 atividades no período.', max: 12, wRot: 120, itens: PROFS.filter((p) => p[4] > 0).map((p) => [p[0], p[4]]) }]],
       ['sec', ['Todos os professores', 'Um professor por linha. Abra o relatório individual pela última coluna.']],
-      ['tab', { titulo: 'Professores da EM Jardim das Flores', busca: 'Pesquisar professor...', pag: ['Mostrando 14 de 14 professores', 1], cols: [{ t: 'Professor', sort: true }, { t: 'Disciplina', w: 150 }, { t: 'Turmas', w: 160 }, { t: 'Estudantes', w: 100, al: 'CENTER' }, { t: 'Atividades criadas', w: 140, al: 'CENTER', sort: true }, { t: 'Dias ativos', w: 100, al: 'CENTER', sort: true }, { t: 'Desempenho das turmas', w: 170, al: 'CENTER' }, { t: 'Relatório', w: 140 }], rows: PROFS.map((p) => [p[0], p[1], p[2], p[3], p[4], p[5], { F: p[7] }, p[0] === 'Rafael Souza' ? { lk: 'Ver professor', ir: 'prof' } : { lk: 'Ver professor' }]) }],
+      ['tab', { titulo: 'Lista de professores', busca: 'Pesquisar professor...', pag: ['Mostrando 14 de 14 professores', 1], cols: [{ t: 'Professor', sort: true }, { t: 'Disciplina', w: 150 }, { t: 'Turmas', w: 160 }, { t: 'Estudantes', w: 100, al: 'CENTER' }, { t: 'Atividades criadas', w: 140, al: 'CENTER', sort: true }, { t: 'Dias ativos', w: 100, al: 'CENTER', sort: true }, { t: 'Desempenho das turmas', w: 170, al: 'CENTER' }, { t: 'Relatório', w: 140 }], rows: PROFS.map((p) => [p[0], p[1], p[2], p[3], p[4], p[5], { F: p[7] }, p[0] === 'Rafael Souza' ? { lk: 'Ver professor', ir: 'prof' } : { lk: 'Ver professor' }]) }],
     ],
     Engajamento: [
       ['kpis', [['Professores ativos', '64%', '50%', 128, ['9 de 14 professores']], ['Atividades criadas', '47', null, null, ['no período · 3,4 por professor']], ['Interações por professor ativo', '87', null, null, ['no período']], ['Dias ativos', '18', null, null, ['média por professor ativo']]]],
@@ -437,6 +437,213 @@ const profTodos: Rel = {
       ['kpis', [['Pontos de aprendizado por estudante ativo', '6,1', '10', 61, ['1 ponto por tópico dominado']], ['Estudantes com aprendizado adequado', '39%', '60%', 65, ['Proficiente + Avançado']], ['Desempenho médio', '52%', null, null, ['Ponderado pelas interações de aprendizagem']], ['Tópicos dominados', '1.403', null, null, ['Somando todos os estudantes ativos']]]],
       ['row', [{ t: 'H', titulo: 'Ranking de aprendizagem por professor', desc: '% de estudantes com aprendizado adequado nas turmas de cada professor.', max: 100, pct: true, wRot: 120, itens: PROFS.slice(0, 9).slice().sort((a, b) => b[8] - a[8]).map((p) => [p[0], p[8]]) }, pilhas('Rubricas por disciplina', [['Matemática', [7, 33, 30, 20, 10]], ['Língua Portuguesa', [8, 33, 30, 19, 10]], ['Ciências', [7, 32, 31, 20, 10]], ['Inglês', [8, 34, 29, 19, 10]], ['História', [7, 32, 31, 20, 10]]], 'Percentual de estudantes por rubrica em cada disciplina.')]],
       ['tab', { titulo: 'Aprendizagem nas turmas de cada professor', busca: 'Pesquisar professor...', leg: RUB5, pag: ['Mostrando 9 de 14 professores', 2], cols: [{ t: 'Professor', sort: true }, { t: 'Disciplina', w: 150 }, { t: 'Estudantes', w: 100, al: 'CENTER' }, { t: 'Desempenho das turmas', w: 170, al: 'CENTER', sort: true }, { t: 'Aprendizado adequado', w: 170, al: 'CENTER', sort: true }, { t: 'Tópico mais difícil', w: 200 }], rows: PROFS.slice(0, 9).map((p, i) => [p[0], p[1], p[3], { F: p[7] }, { M: p[8], meta: 60 }, ['Porcentagem', 'Frações equivalentes', 'Equações do 1º grau', 'Interpretação de crônicas', 'Present continuous', 'Ciclo da água', 'Revolução Industrial', 'Escalas cartográficas', 'Regras do vôlei'][i]]) }],
+    ],
+  },
+}
+
+/* ------------------------------------------------------------------ visões "todos" (padrão de cada tipo) */
+// Regra do usuário (27/11): ao escolher Escola, Turma, Professores ou Estudante, o relatório abre primeiro
+// com TODOS do recorte do acesso (todas as escolas, todas as turmas, todos os professores, todos os estudantes).
+// O individual aparece quando a pessoa escolhe um item no filtro.
+const nUn = (n: number, s: string, p: string) => `${n} ${n === 1 ? s : p}`
+const contaQuad = (pts: { x: number; y: number }[], mx: number, my: number, s: string, p: string) => {
+  const c = [0, 0, 0, 0]
+  pts.forEach((q) => c[q.x >= mx ? (q.y >= my ? 0 : 1) : q.y >= my ? 2 : 3]++)
+  return c.map((n) => nUn(n, s, p))
+}
+const migI = (tipo: string, fim: string) => ['Início', 'Relatórios', 'Institucionais', tipo, fim]
+
+// turma, escola, professores, estudantes, % ativos, interações por estudante ativo, tempo de estudo, atividades criadas, desempenho, % adequado, tópico mais difícil
+type LTurma = [string, string, number, number, number, number, string, number, number, number, string]
+type CfgT = { id: string; perfil: Perfil; sels: Sel[]; acesso?: string; titulo: string; sub: string; mig: string; rows: LTurma[]; pag?: [string, number]; total: string; comEscola: boolean; mx: number; kVG: Kpi[]; kEng: Kpi[]; kApr: Kpi[]; ativos: number[]; rub: [string, number[]][] }
+const todosTurmas = (o: CfgT): Rel => {
+  const nm = (r: LTurma) => 'Turma ' + r[0] + (o.comEscola ? ' · ' + r[1].replace('EM ', '') : '')
+  const pts = o.rows.map((r) => ({ x: r[4], y: r[8], nome: nm(r) }))
+  const esc = o.comEscola ? [{ t: 'Escola', w: 190 }] : []
+  const ver = (r: LTurma) => (r[0] === '701' && r[1] === 'EM Jardim das Flores' ? { lk: 'Ver turma', ir: 'turma' } : { lk: 'Ver turma' })
+  const ord = (i: number) => o.rows.slice().sort((a, b) => (b[i] as number) - (a[i] as number))
+  return {
+    id: o.id,
+    grupo: 'inst',
+    tipo: 'Turma',
+    perfil: o.perfil,
+    mig: migI('Turma', o.mig),
+    cab: instCab(o.sels, o.acesso),
+    ent: [o.titulo, 'Turma', 'users', o.sub],
+    T: {
+      'Visão geral': [
+        ['kpis', o.kVG],
+        ['sec', ['Desempenho × engajamento', 'Cada ponto é uma turma. Mostra onde agir primeiro: ativação, reforço pedagógico ou os dois.']],
+        quadB('Mapa de ativação × desempenho', pts, o.mx, 60, 'Engajamento (% de estudantes ativos)', [nm(ord(8)[0]), nm(ord(8)[o.rows.length - 1])], contaQuad(pts, o.mx, 60, 'turma', 'turmas')),
+        ['sec', [o.total, 'Uma turma por linha. Abra o relatório individual pela última coluna.']],
+        ['tab', { titulo: 'Lista de turmas', busca: 'Pesquisar turma...', pag: o.pag, cols: [{ t: 'Turma', sort: true }, ...esc, { t: 'Estudantes', w: 100, al: 'CENTER' }, { t: 'Professores', w: 104, al: 'CENTER' }, { t: '% ativos', w: 96, al: 'CENTER', sort: true }, { t: 'Desempenho', w: 112, al: 'CENTER', sort: true }, { t: 'Aprendizado adequado', w: 170, al: 'CENTER', sort: true }, { t: 'Relatório', w: 130 }], rows: o.rows.map((r) => ['Turma ' + r[0], ...(o.comEscola ? [r[1]] : []), r[3], r[2], { M: r[4] }, { F: r[8] }, { M: r[9], meta: 60 }, ver(r)]) }],
+      ],
+      Engajamento: [
+        ['kpis', o.kEng],
+        ['row', [ativTempo('Ativação ao longo do tempo', [['p1', 'Estudantes ativos (%)']], [['Ativos', o.ativos, 'p1']]), { t: 'H', w: 400, titulo: 'Ranking de engajamento por turma', desc: '% de estudantes ativos.', max: 100, pct: true, wRot: o.comEscola ? 170 : 90, itens: ord(4).slice(0, 9).map((r) => [nm(r), r[4]]) }]],
+        ['tab', { titulo: 'Engajamento por turma', busca: 'Pesquisar turma...', pag: o.pag, cols: [{ t: 'Posição', w: 88 }, { t: 'Turma', sort: true }, ...esc, { t: '% de estudantes ativos', w: 200 }, { t: 'Interações por estudante ativo', w: 200, al: 'CENTER', sort: true }, { t: 'Tempo de estudo', w: 124, al: 'CENTER' }, { t: 'Atividades criadas', w: 140, al: 'CENTER' }], rows: ord(4).map((r, i) => [i + 1 + 'º', 'Turma ' + r[0], ...(o.comEscola ? [r[1]] : []), { tr: r[4], tx: r[4] + '% · meta 50%', meta: 50 }, r[5], r[6], r[7]]) }],
+      ],
+      Aprendizagem: [
+        ['kpis', o.kApr],
+        ['row', [pilhas('Distribuição de rubricas por turma', o.rub, 'Percentual de estudantes por rubrica em cada turma.'), { t: 'H', w: 400, titulo: 'Ranking de aprendizagem', desc: '% de estudantes com aprendizado adequado.', max: 100, pct: true, wRot: o.comEscola ? 170 : 90, itens: ord(9).slice(0, 9).map((r) => [nm(r), r[9]]) }]],
+        ['tab', { titulo: 'Aprendizagem por turma', busca: 'Pesquisar turma...', leg: RUB5, pag: o.pag, cols: [{ t: 'Turma', sort: true }, ...esc, { t: 'Desempenho', w: 112, al: 'CENTER', sort: true }, { t: 'Aprendizado adequado', w: 170, al: 'CENTER', sort: true }, { t: 'Rubrica média', w: 140 }, { t: 'Tópico mais difícil', w: 210 }], rows: ord(8).map((r) => ['Turma ' + r[0], ...(o.comEscola ? [r[1]] : []), { F: r[8] }, { M: r[9], meta: 60 }, { p: faixa(r[8]) }, r[10]]) }],
+      ],
+    },
+  }
+}
+
+// nome, escola, turma, interações, dias ativos, tempo de estudo, tópicos dominados (de 20), desempenho, último acesso, tópico mais difícil
+type LEst = [string, string, string, number, number, string, number, number, string, string]
+type CfgE = { id: string; perfil: Perfil; sels: Sel[]; acesso?: string; sub: string; mig: string; rows: LEst[]; pag: [string, number]; comEscola: boolean; kVG: Kpi[]; kEng: Kpi[]; kApr: Kpi[]; atencao: [string, string, Cel][]; rubD: number[]; nEst: string; dist: number[]; rub: [string, number[]][]; rubTit: string }
+const todosEsts = (o: CfgE): Rel => {
+  const esc = o.comEscola ? [{ t: 'Escola', w: 180 }] : []
+  const pre = (r: LEst) => [...(o.comEscola ? [r[1]] : []), r[2]]
+  const ver = (r: LEst) => (r[0] === 'Alice Moreira' ? { lk: 'Ver estudante', ir: 'est' } : { lk: 'Ver estudante' })
+  const pct = (r: LEst) => Math.round((r[3] * 100) / 40)
+  return {
+    id: o.id,
+    grupo: 'inst',
+    tipo: 'Estudante',
+    perfil: o.perfil,
+    mig: migI('Estudante', o.mig),
+    cab: instCab(o.sels, o.acesso),
+    ent: ['Todos os estudantes', 'Estudante', 'graduation-cap', o.sub],
+    T: {
+      'Visão geral': [
+        ['kpis', o.kVG],
+        ['sec', ['Onde agir primeiro', 'Estudantes com desempenho abaixo de 60% ou sem acesso há mais de 30 dias.']],
+        ['row', [{ t: 'lista', titulo: 'Estudantes que precisam de apoio', itens: o.atencao }, { t: 'prof', w: 400, titulo: 'Rubricas de proficiência', dist: RUBD(o.rubD), rodape: `${o.nEst} estudantes. Meta: 60% em Proficiente + Avançado.` }]],
+        ['sec', ['Todos os estudantes', 'Um estudante por linha. Abra o relatório individual pela última coluna.']],
+        ['tab', { titulo: 'Lista de estudantes', busca: 'Pesquisar estudante...', leg: RUB5, pag: o.pag, cols: [{ t: 'Estudante', sort: true }, ...esc, { t: 'Turma', w: 80 }, { t: 'Interações', w: 110, al: 'CENTER', sort: true }, { t: 'Dias ativos', w: 104, al: 'CENTER', sort: true }, { t: 'Tópicos dominados', w: 150, al: 'CENTER' }, { t: 'Desempenho', w: 112, al: 'CENTER', sort: true }, { t: 'Rubrica', w: 130 }, { t: 'Relatório', w: 140 }], rows: o.rows.map((r) => [r[0], ...pre(r), r[3], r[4], r[6] + ' de 20', { F: r[7] }, { p: faixa(r[7]) }, ver(r)]) }],
+      ],
+      Engajamento: [
+        ['kpis', o.kEng],
+        ['row', [{ t: 'H', titulo: 'Interações de aprendizado por estudante', desc: `Os ${o.rows.length} primeiros do período.`, max: 60, wRot: 130, itens: o.rows.map((r) => [r[0], r[3]]) }, { t: 'V', w: 400, titulo: 'Distribuição de interações', desc: 'Número de estudantes em cada faixa.', max: Math.ceil(Math.max(...o.dist) * 1.1), itens: ['Nenhuma', '1 a 10', '11 a 40', '41 a 100', 'Mais de 100'].map((f, i) => [f, o.dist[i]]) }]],
+        ['tab', { titulo: 'Engajamento dos estudantes', busca: 'Pesquisar estudante...', pag: o.pag, cols: [{ t: 'Estudante', sort: true }, ...esc, { t: 'Turma', w: 80 }, { t: 'Interações', w: 110, al: 'CENTER', sort: true }, { t: 'Dias ativos', w: 104, al: 'CENTER' }, { t: 'Tempo de estudo', w: 124, al: 'CENTER' }, { t: 'Último acesso', w: 120, al: 'CENTER' }, { t: '% da meta', w: 170 }], rows: o.rows.map((r) => [r[0], ...pre(r), r[3], r[4], r[5], r[8], { tr: Math.min(100, pct(r)), tx: pct(r) + '%', meta: 100 }]) }],
+      ],
+      Aprendizagem: [
+        ['kpis', o.kApr],
+        ['row', [{ t: 'H', titulo: 'Ranking de desempenho', desc: 'Desempenho médio de cada estudante (%).', max: 100, pct: true, wRot: 130, itens: o.rows.slice().sort((a, b) => b[7] - a[7]).map((r) => [r[0], r[7]]) }, pilhas(o.rubTit, o.rub, 'Percentual de estudantes por rubrica.')]],
+        ['tab', { titulo: 'Aprendizagem por estudante', busca: 'Pesquisar estudante...', leg: RUB5, pag: o.pag, cols: [{ t: 'Estudante', sort: true }, ...esc, { t: 'Turma', w: 80 }, { t: 'Pontos de aprendizado', w: 170, al: 'CENTER', sort: true }, { t: 'Desempenho', w: 112, al: 'CENTER', sort: true }, { t: 'Rubrica', w: 130 }, { t: 'Tópico mais difícil', w: 200 }], rows: o.rows.map((r) => [r[0], ...pre(r), r[6], { F: r[7] }, { p: faixa(r[7]) }, r[9]]) }],
+      ],
+    },
+  }
+}
+
+/* Escola · Todas as escolas (gestora): mesmos números da Rede, com o cabeçalho de Escola. */
+const escolaTodas: Rel = { ...rede, id: 'escola-todas', tipo: 'Escola', mig: migI('Escola', 'Todas as escolas'), cab: instCab([['Tipo de relatório', 'Escola', 'school', 220], ['Escola', 'Todas as escolas', 'school', 260]]), ent: ['Todas as escolas', 'Escola', 'school', 'Rede Municipal de Nova Esperança · 18 escolas · 142 turmas · 3.860 estudantes · 214 professores'] }
+
+const JDF = 'EM Jardim das Flores'
+const K_ESC_VG: Kpi[] = [['Turmas', '9', null, null, ['230 estudantes · 14 professores']], ['Estudantes ativos', '41%', '50%', 82, ['95 de 230 estudantes']], ['Desempenho médio', '52%', null, null, ['Ponderado pelas interações de aprendizagem']], ['Estudantes com aprendizado adequado', '39%', '60%', 65, ['Proficiente + Avançado']]]
+const K_ESC_APR = escola.T.Aprendizagem[0][1] as Kpi[]
+const K_REDE_APR = rede.T.Aprendizagem[0][1] as Kpi[]
+const K_PROF_APR = prof.T.Aprendizagem[0][1] as Kpi[]
+const ATIV_ESC = [30, 36, 40, 44, 45, 33, 44, 46, 44, 41]
+const ATIV_REDE = [38, 47, 53, 58, 60, 44, 61, 64, 66, 62]
+const ATIV_MINHAS = [38, 42, 44, 47, 48, 36, 47, 50, 49, 45]
+
+const turmaTodas = todosTurmas({
+  id: 'turma-todas', perfil: 'coord', comEscola: false, mx: 40, total: 'Todas as turmas', mig: 'Todas as turmas',
+  sels: [['Tipo de relatório', 'Turma', 'users', 200], ['Escola', JDF, 'school', 240, false, true], ['Turma', 'Todas as turmas', 'users', 200]], acesso: 'Seu acesso: EM Jardim das Flores',
+  titulo: 'Todas as turmas', sub: 'EM Jardim das Flores · 9 turmas do 5º ao 9º ano · 230 estudantes · 14 professores',
+  rows: [['701', JDF, 8, 26, 52, 71, '41h', 6, 58, 44, 'Porcentagem'], ['501', JDF, 5, 26, 46, 76, '37h', 5, 54, 41, 'Frações equivalentes'], ['801', JDF, 8, 26, 45, 69, '35h', 6, 56, 42, 'Problemas com porcentagem'], ['601', JDF, 8, 25, 44, 75, '34h', 5, 53, 40, 'Números decimais'], ['901', JDF, 8, 26, 40, 78, '31h', 5, 52, 38, 'Equações do 2º grau'], ['902', JDF, 8, 25, 39, 78, '30h', 5, 51, 40, 'Equações do 2º grau'], ['702', JDF, 8, 25, 38, 73, '29h', 6, 48, 36, 'Operações com frações'], ['802', JDF, 8, 24, 36, 72, '26h', 5, 50, 37, 'Sistemas de equações'], ['502', JDF, 5, 27, 28, 85, '22h', 4, 45, 33, 'Multiplicação de decimais']],
+  kVG: K_ESC_VG, kEng: (escola.T.Engajamento[0][1] as Kpi[]), kApr: K_ESC_APR, ativos: ATIV_ESC,
+  rub: [['Turma 701', [9, 35, 29, 16, 11]], ['Turma 801', [8, 34, 30, 18, 10]], ['Turma 501', [5, 36, 32, 17, 10]], ['Turma 601', [6, 34, 31, 19, 10]], ['Turma 901', [7, 31, 31, 20, 11]], ['Turma 902', [7, 33, 30, 19, 11]], ['Turma 702', [6, 30, 32, 21, 11]], ['Turma 802', [6, 31, 32, 20, 11]], ['Turma 502', [3, 30, 31, 25, 11]]],
+})
+const turmaMinhas = todosTurmas({
+  id: 'turma-minhas', perfil: 'prof', comEscola: false, mx: 45, total: 'Minhas turmas', mig: 'Minhas turmas',
+  sels: [['Tipo de relatório', 'Turma', 'users', 200], ['Escola', JDF, 'school', 240, false, true], ['Turma', 'Minhas turmas', 'users', 200]], acesso: 'Seu acesso: suas turmas',
+  titulo: 'Minhas turmas', sub: 'EM Jardim das Flores · Matemática · turmas 701, 702 e 801 · 77 estudantes',
+  rows: [['701', JDF, 8, 26, 52, 71, '41h', 6, 58, 44, 'Porcentagem'], ['801', JDF, 8, 26, 45, 69, '35h', 3, 56, 42, 'Problemas com porcentagem'], ['702', JDF, 8, 25, 38, 73, '29h', 3, 48, 36, 'Operações com frações']],
+  kVG: [['Turmas', '3', null, null, ['77 estudantes · Matemática']], ['Estudantes ativos', '45%', '50%', 90, ['35 de 77 estudantes']], ['Desempenho médio', '54%', null, null, ['Ponderado pelas interações de aprendizagem']], ['Estudantes com aprendizado adequado', '41%', '60%', 68, ['Proficiente + Avançado']]],
+  kEng: [['Média de interações realizadas', '33', '40', 83, ['por estudante ativo']], ['Estudantes ativos', '45%', '50%', 90, ['35 de 77 estudantes']], ['Atividades no período', '12', null, null, ['6 tarefas · 4 Provas Genial · 2 desafios']], ['Interações por dia ativo', '1,3', null, null, ['Média dos estudantes ativos']]],
+  kApr: K_PROF_APR, ativos: ATIV_MINHAS,
+  rub: [['Turma 701', [9, 35, 29, 16, 11]], ['Turma 801', [8, 34, 30, 18, 10]], ['Turma 702', [6, 30, 32, 21, 11]]],
+})
+const turmaTodasRede = todosTurmas({
+  id: 'turma-todas-rede', perfil: 'gestora', comEscola: true, mx: 62, total: 'Todas as turmas', mig: 'Todas as turmas da rede', pag: ['Mostrando 10 de 142 turmas', 15],
+  sels: [['Tipo de relatório', 'Turma', 'users', 200], ['Escola', 'Todas as escolas', 'school', 240], ['Turma', 'Todas as turmas', 'users', 200]],
+  titulo: 'Todas as turmas', sub: 'Rede Municipal de Nova Esperança · 18 escolas · 142 turmas · 3.860 estudantes',
+  rows: [['901', 'EM Castro Alves', 8, 28, 84, 64, '52h', 9, 68, 66, 'Funções do 1º grau'], ['701', 'EM Monteiro Lobato', 8, 27, 80, 61, '48h', 8, 66, 64, 'Operações com frações'], ['501', 'EM Ana Néri', 5, 26, 74, 55, '41h', 7, 63, 61, 'Frações equivalentes'], ['801', 'EM Anita Garibaldi', 8, 26, 71, 54, '38h', 6, 62, 60, 'Porcentagem'], ['601', 'EM Cecília Meireles', 8, 27, 68, 50, '35h', 6, 59, 57, 'Números decimais'], ['702', 'EM Machado de Assis', 8, 25, 62, 48, '30h', 5, 58, 55, 'Operações com frações'], ['902', 'EM Dom Pedro II', 8, 26, 58, 45, '27h', 5, 56, 53, 'Equações do 2º grau'], ['701', JDF, 8, 26, 52, 71, '41h', 6, 58, 44, 'Porcentagem'], ['502', 'EM Paulo Freire', 5, 27, 49, 40, '21h', 4, 52, 48, 'Multiplicação de decimais'], ['502', JDF, 5, 27, 28, 85, '22h', 4, 45, 33, 'Multiplicação de decimais']],
+  kVG: [['Turmas', '142', null, null, ['18 escolas · 3.860 estudantes']], ['Estudantes ativos', '62%', '50%', 124, ['2.393 de 3.860 estudantes']], ['Desempenho médio', '57%', null, null, ['Ponderado pelas interações de aprendizagem']], ['Estudantes com aprendizado adequado', '54%', '60%', 90, ['dos 3.412 estudantes avaliados']]],
+  kEng: (rede.T.Engajamento[0][1] as Kpi[]), kApr: K_REDE_APR, ativos: ATIV_REDE,
+  rub: [['901 · Castro Alves', [16, 44, 22, 9, 9]], ['701 · Monteiro Lobato', [15, 42, 24, 10, 9]], ['501 · Ana Néri', [13, 41, 25, 11, 10]], ['601 · Cecília Meireles', [12, 38, 27, 12, 11]], ['502 · Paulo Freire', [9, 34, 31, 14, 12]], ['701 · Jardim das Flores', [9, 35, 29, 16, 11]]],
+})
+
+const estTodosEscola = todosEsts({
+  id: 'est-todos-escola', perfil: 'coord', comEscola: false, mig: 'Todos os estudantes da escola', pag: ['Mostrando 8 de 230 estudantes', 29], nEst: '230',
+  sels: [['Tipo de relatório', 'Estudante', 'graduation-cap', 200], ['Escola', JDF, 'school', 240, false, true], ['Turma', 'Todas as turmas', 'users', 200], ['Estudante', 'Todos os estudantes', 'graduation-cap', 240]], acesso: 'Seu acesso: EM Jardim das Flores',
+  sub: 'EM Jardim das Flores · 9 turmas · 230 estudantes',
+  rows: [['Alice Moreira', JDF, '701', 58, 41, '14h', 18, 93, 'Hoje', 'Porcentagem'], ['Bruno Teixeira', JDF, '701', 51, 38, '12h', 16, 86, 'Hoje', 'Porcentagem'], ['Pedro Lins', JDF, '801', 49, 36, '11h', 15, 86, 'Ontem', 'Porcentagem'], ['Camila Rocha', JDF, '701', 44, 33, '10h', 12, 71, 'Ontem', 'Operações com frações'], ['Olívia Santana', JDF, '702', 40, 30, '9h', 11, 74, '24/11', 'Operações com frações'], ['Eduarda Lima', JDF, '701', 35, 24, '7h', 8, 52, '23/11', 'Operações com frações'], ['Isabela Duarte', JDF, '702', 28, 19, '6h', 6, 48, '20/11', 'Proporção'], ['Enzo Martins', JDF, '702', 6, 4, '1h', 1, 20, '18/10', 'Números decimais']],
+  kVG: [['Estudantes', '230', null, null, ['9 turmas']], ['Estudantes ativos', '41%', '50%', 82, ['95 de 230 estudantes']], ['Desempenho médio', '52%', null, null, ['Ponderado pelas interações de aprendizagem']], ['Estudantes com aprendizado adequado', '39%', '60%', 65, ['Proficiente + Avançado']]],
+  kEng: [['Média de interações realizadas', '31', '40', 78, ['por estudante ativo']], ['Estudantes ativos', '41%', '50%', 82, ['95 de 230 estudantes']], ['Tempo médio de estudo', '6h', null, null, ['por estudante no período']], ['Sem acesso há mais de 30 dias', '42', null, null, ['de 230 estudantes']]],
+  kApr: K_ESC_APR, atencao: [['Enzo Martins', 'Turma 702 · sem acesso desde 18/10', { F: 20 }], ['Giovana Pires', 'Turma 701 · Insuficiente · último acesso 02/11', { F: 27 }], ['Felipe Nunes', 'Turma 701 · Básico · último acesso 19/11', { F: 40 }], ['Isabela Duarte', 'Turma 702 · Básico · último acesso 20/11', { F: 48 }]],
+  rubD: [7, 16, 32, 74, 30, 70, 20, 45, 11, 25], dist: [135, 22, 38, 27, 8], rubTit: 'Distribuição de rubricas por turma',
+  rub: [['Turma 701', [9, 35, 29, 16, 11]], ['Turma 801', [8, 34, 30, 18, 10]], ['Turma 501', [5, 36, 32, 17, 10]], ['Turma 601', [6, 34, 31, 19, 10]], ['Turma 702', [6, 30, 32, 21, 11]], ['Turma 502', [3, 30, 31, 25, 11]]],
+})
+const estTodosMinhas = todosEsts({
+  id: 'est-todos-minhas', perfil: 'prof', comEscola: false, mig: 'Todos os estudantes das minhas turmas', pag: ['Mostrando 8 de 77 estudantes', 10], nEst: '77',
+  sels: [['Tipo de relatório', 'Estudante', 'graduation-cap', 200], ['Escola', JDF, 'school', 240, false, true], ['Turma', 'Minhas turmas', 'users', 200], ['Estudante', 'Todos os estudantes', 'graduation-cap', 240]], acesso: 'Seu acesso: suas turmas',
+  sub: 'EM Jardim das Flores · Matemática · turmas 701, 702 e 801 · 77 estudantes',
+  rows: [['Alice Moreira', JDF, '701', 58, 41, '14h', 18, 93, 'Hoje', 'Porcentagem'], ['Bruno Teixeira', JDF, '701', 51, 38, '12h', 16, 86, 'Hoje', 'Porcentagem'], ['Pedro Lins', JDF, '801', 49, 36, '11h', 15, 86, 'Ontem', 'Porcentagem'], ['Camila Rocha', JDF, '701', 44, 33, '10h', 12, 71, 'Ontem', 'Operações com frações'], ['Olívia Santana', JDF, '702', 40, 30, '9h', 11, 74, '24/11', 'Operações com frações'], ['Nicolas Prado', JDF, '801', 36, 26, '8h', 10, 78, '24/11', 'Problemas com porcentagem'], ['Kauã Ferreira', JDF, '702', 27, 18, '6h', 7, 66, '21/11', 'Proporção'], ['Giovana Pires', JDF, '701', 12, 8, '2h', 2, 27, '02/11', 'Operações com frações']],
+  kVG: [['Estudantes', '77', null, null, ['Turmas 701, 702 e 801']], ['Estudantes ativos', '45%', '50%', 90, ['35 de 77 estudantes']], ['Desempenho médio', '54%', null, null, ['Ponderado pelas interações de aprendizagem']], ['Estudantes com aprendizado adequado', '41%', '60%', 68, ['Proficiente + Avançado']]],
+  kEng: [['Média de interações realizadas', '33', '40', 83, ['por estudante ativo']], ['Estudantes ativos', '45%', '50%', 90, ['35 de 77 estudantes']], ['Tempo médio de estudo', '6h', null, null, ['por estudante no período']], ['Sem acesso há mais de 30 dias', '11', null, null, ['de 77 estudantes']]],
+  kApr: K_PROF_APR, atencao: [['Enzo Martins', 'Turma 702 · sem acesso desde 18/10', { F: 20 }], ['Giovana Pires', 'Turma 701 · Insuficiente · último acesso 02/11', { F: 27 }], ['Lorena Cruz', 'Turma 801 · Insuficiente · último acesso 12/11', { F: 24 }], ['Felipe Nunes', 'Turma 701 · Básico · último acesso 19/11', { F: 40 }]],
+  rubD: [6, 5, 35, 27, 36, 28, 17, 13, 6, 4], dist: [30, 9, 21, 15, 2], rubTit: 'Distribuição de rubricas por turma',
+  rub: [['Turma 701', [9, 35, 29, 16, 11]], ['Turma 801', [8, 34, 30, 18, 10]], ['Turma 702', [6, 30, 32, 21, 11]]],
+})
+const estTodosRede = todosEsts({
+  id: 'est-todos-rede', perfil: 'gestora', comEscola: true, mig: 'Todos os estudantes da rede', pag: ['Mostrando 8 de 3.860 estudantes', 483], nEst: '3.860',
+  sels: [['Tipo de relatório', 'Estudante', 'graduation-cap', 200], ['Escola', 'Todas as escolas', 'school', 240], ['Turma', 'Todas as turmas', 'users', 200], ['Estudante', 'Todos os estudantes', 'graduation-cap', 240]],
+  sub: 'Rede Municipal de Nova Esperança · 18 escolas · 142 turmas · 3.860 estudantes',
+  rows: [['Beatriz Almeida', 'EM Castro Alves', '901', 64, 46, '16h', 19, 95, 'Hoje', 'Funções do 1º grau'], ['Larissa Campos', 'EM Cecília Meireles', '801', 61, 44, '15h', 18, 91, 'Hoje', 'Porcentagem'], ['Alice Moreira', JDF, '701', 58, 41, '14h', 18, 93, 'Hoje', 'Porcentagem'], ['Pietro Lacerda', 'EM Machado de Assis', '902', 55, 40, '13h', 16, 84, 'Ontem', 'Equações do 2º grau'], ['Pedro Lins', JDF, '801', 49, 36, '11h', 15, 86, 'Ontem', 'Porcentagem'], ['Kevin Matos', 'EM Paulo Freire', '601', 33, 22, '7h', 6, 45, '22/11', 'Números decimais'], ['Giovana Pires', JDF, '701', 12, 8, '2h', 2, 27, '02/11', 'Operações com frações'], ['Manuela Castro', JDF, '701', 9, 6, '1h', 3, 52, '15/10', 'Números decimais']],
+  kVG: [['Estudantes', '3.860', null, null, ['18 escolas · 142 turmas']], ['Estudantes ativos', '62%', '50%', 124, ['2.393 de 3.860 estudantes']], ['Desempenho médio', '57%', null, null, ['Ponderado pelas interações de aprendizagem']], ['Estudantes com aprendizado adequado', '54%', '60%', 90, ['dos 3.412 estudantes avaliados']]],
+  kEng: [['Média de interações realizadas', '48', '40', 120, ['por estudante ativo']], ['Estudantes ativos', '62%', '50%', 124, ['2.393 de 3.860 estudantes']], ['Tempo médio de estudo', '9h', null, null, ['por estudante no período']], ['Sem acesso há mais de 30 dias', '1.120', null, null, ['de 3.860 estudantes']]],
+  kApr: K_REDE_APR, atencao: [['Manuela Castro', 'EM Jardim das Flores · 701 · sem acesso desde 15/10', { F: 52 }], ['Giovana Pires', 'EM Jardim das Flores · 701 · Insuficiente', { F: 27 }], ['Kevin Matos', 'EM Paulo Freire · 601 · Básico', { F: 45 }], ['1.120 estudantes sem acesso há mais de 30 dias', 'Em 18 escolas · veja a lista filtrando por escola', { b: '29% da rede', t: 'cr' }]],
+  rubD: [12, 478, 35, 1365, 27, 1058, 13, 511, 13, 448], dist: [1467, 380, 760, 980, 273], rubTit: 'Distribuição de rubricas por escola',
+  rub: [['Castro Alves', [15, 42, 23, 10, 10]], ['Monteiro Lobato', [14, 41, 24, 11, 10]], ['Ana Néri', [13, 41, 25, 11, 10]], ['Cecília Meireles', [12, 38, 27, 12, 11]], ['Paulo Freire', [9, 34, 31, 14, 12]], ['Jardim das Flores', [7, 32, 30, 20, 11]]],
+})
+
+/* Professores · Todos os professores da rede (gestora) */
+// nome, escola, disciplina, turmas, estudantes, atividades criadas, dias ativos, desempenho das turmas, % adequado
+const PROFS_REDE: [string, string, string, number, number, number, number, number, number][] = [
+  ['Luana Ferraz', 'EM Castro Alves', 'Matemática', 4, 108, 24, 62, 66, 64],
+  ['Diego Antunes', 'EM Monteiro Lobato', 'Língua Portuguesa', 5, 132, 21, 58, 64, 62],
+  ['Helena Prado', 'EM Ana Néri', 'Polivalente', 2, 52, 19, 55, 63, 61],
+  ['Sérgio Matos', 'EM Anita Garibaldi', 'Ciências', 6, 158, 17, 51, 60, 59],
+  ['Tatiane Reis', 'EM Cecília Meireles', 'Matemática', 4, 104, 15, 47, 58, 56],
+  ['Roberto Lins', 'EM Machado de Assis', 'História', 6, 150, 14, 44, 57, 57],
+  ['Rafael Souza', JDF, 'Matemática', 3, 77, 12, 38, 54, 41],
+  ['Fernanda Lima', JDF, 'Polivalente', 2, 53, 10, 35, 50, 37],
+  ['Marcos Teixeira', 'EM Dom Pedro II', 'Inglês', 7, 180, 9, 31, 54, 54],
+  ['Carla Duarte', 'EM Paulo Freire', 'Arte', 6, 160, 0, 0, 49, 43],
+]
+const profTodosRede: Rel = {
+  id: 'prof-todos-rede',
+  grupo: 'inst',
+  tipo: 'Professores',
+  perfil: 'gestora',
+  mig: migI('Professores', 'Todos os professores da rede'),
+  cab: instCab([['Tipo de relatório', 'Professores', 'award', 200], ['Escola', 'Todas as escolas', 'school', 240], ['Turma', 'Todas as turmas', 'users', 200], ['Professor', 'Todos os professores', 'users', 240]]),
+  ent: ['Todos os professores', 'Professores', 'award', 'Rede Municipal de Nova Esperança · 214 professores · 18 escolas · 142 turmas'],
+  T: {
+    'Visão geral': [
+      ['kpis', [['Professores ativos', '71%', '50%', 142, ['152 de 214 professores']], ['Média de atividades criadas', '12,1', '10', 121, ['por professor · 2.580 no período']], ['Estudantes atendidos', '3.860', null, null, ['nas 142 turmas da rede']], ['Desempenho médio', '57%', null, null, ['Ponderado pelas interações de aprendizagem']]]],
+      ['sec', ['Onde agir primeiro', 'Professores sem atividades criadas no período ou abaixo de 30% da meta.']],
+      ['row', [{ t: 'lista', titulo: 'Professores que precisam de acompanhamento', itens: [['62 professores sem uso no período', 'Em 14 das 18 escolas · filtre por escola para ver os nomes', { b: '0 atividades', t: 'cr' }], ['EM Jardim das Flores', '5 de 14 professores sem uso', { b: '36% sem uso', t: 'cr' }], ['EM Paulo Freire', '4 de 12 professores sem uso', { b: '33% sem uso', t: 'at' }], ['EM Carlos Drummond', '4 de 12 professores sem uso', { b: '33% sem uso', t: 'at' }]] }, { t: 'H', w: 400, titulo: 'Professores ativos por escola', desc: '% de professores ativos · 6 de 18 escolas.', max: 100, pct: true, wRot: 170, itens: [['EM Castro Alves', 88], ['EM Monteiro Lobato', 87], ['EM Anita Garibaldi', 80], ['EM Ana Néri', 79], ['EM Paulo Freire', 67], ['EM Jardim das Flores', 64]] }]],
+      ['sec', ['Todos os professores', 'Um professor por linha. Abra o relatório individual pela última coluna.']],
+      ['tab', { titulo: 'Lista de professores', busca: 'Pesquisar professor...', pag: ['Mostrando 10 de 214 professores', 22], cols: [{ t: 'Professor', sort: true }, { t: 'Escola', w: 180 }, { t: 'Disciplina', w: 150 }, { t: 'Turmas', w: 88, al: 'CENTER' }, { t: 'Estudantes', w: 100, al: 'CENTER' }, { t: 'Atividades criadas', w: 140, al: 'CENTER', sort: true }, { t: 'Dias ativos', w: 100, al: 'CENTER', sort: true }, { t: 'Desempenho das turmas', w: 170, al: 'CENTER' }, { t: 'Relatório', w: 140 }], rows: PROFS_REDE.map((p) => [p[0], p[1], p[2], p[3], p[4], p[5], p[6], { F: p[7] }, p[0] === 'Rafael Souza' ? { lk: 'Ver professor', ir: 'prof' } : { lk: 'Ver professor' }]) }],
+    ],
+    Engajamento: [
+      ['kpis', [['Professores ativos', '71%', '50%', 142, ['152 de 214 professores']], ['Atividades criadas', '2.580', null, null, ['no período · 12,1 por professor']], ['Interações por professor ativo', '66', null, null, ['no período']], ['Dias ativos', '24', null, null, ['média por professor ativo']]]],
+      ['row', [ativTempo('Professores ativos ao longo do tempo', [['p1', 'Professores ativos (%)']], [['Ativos', [58, 64, 68, 71, 72, 52, 72, 74, 73, 71], 'p1']]), { t: 'V', titulo: 'Total de atividades criadas × meta', max: 360, meta: 214, leg: [['p1', 'Atividades criadas no mês'], ['muted', 'Meta: 214 (1 por professor)', true]], itens: MESES.map((m, i) => [m, [140, 250, 290, 300, 290, 120, 310, 320, 300, 260][i]]) }]],
+      ['row', [{ t: 'H', titulo: 'Atividades criadas por tipo', max: 1400, wRot: 170, itens: [['Tarefa', 1284], ['Desafio', 612], ['Prova Genial', 386], ['Sala de Aula Invertida', 158], ['Diagnóstico', 80], ['Projeto', 42], ['Campeonato', 18]] }, { t: 'H', titulo: 'Distribuição de ações pedagógicas', max: 100, pct: true, wRot: 170, itens: [['Ver relatório', 38], ['Criar atividade', 33], ['Acompanhar estudantes', 18], ['Compartilhar', 11]] }]],
+      ['tab', { titulo: 'Ranking de engajamento de professores', busca: 'Pesquisar professor...', pag: ['Mostrando 10 de 214 professores', 22], cols: [{ t: 'Posição', w: 88 }, { t: 'Professor', sort: true }, { t: 'Escola', w: 180 }, { t: 'Disciplina', w: 150 }, { t: 'Atividades criadas', w: 150, al: 'CENTER', sort: true }, { t: 'Dias ativos', w: 110, al: 'CENTER' }, { t: '% da meta', w: 200 }], rows: PROFS_REDE.map((p, i) => [i + 1 + 'º', p[0], p[1], p[2], p[5], p[6], { tr: Math.min(100, p[5] * 10), tx: p[5] * 10 + '%', meta: 100 }]) }],
+    ],
+    Aprendizagem: [
+      ['kpis', K_REDE_APR],
+      ['row', [{ t: 'H', titulo: 'Ranking de aprendizagem por professor', desc: '% de estudantes com aprendizado adequado nas turmas de cada professor.', max: 100, pct: true, wRot: 120, itens: PROFS_REDE.slice().sort((a, b) => b[8] - a[8]).map((p) => [p[0], p[8]]) }, pilhas('Rubricas por disciplina', [['Matemática', [11, 34, 28, 14, 13]], ['Língua Portuguesa', [12, 36, 27, 12, 13]], ['Ciências', [12, 35, 27, 13, 13]], ['Inglês', [13, 36, 26, 12, 13]], ['História', [12, 35, 28, 12, 13]]], 'Percentual de estudantes por rubrica em cada disciplina.')]],
+      ['tab', { titulo: 'Aprendizagem nas turmas de cada professor', busca: 'Pesquisar professor...', leg: RUB5, pag: ['Mostrando 10 de 214 professores', 22], cols: [{ t: 'Professor', sort: true }, { t: 'Escola', w: 180 }, { t: 'Disciplina', w: 150 }, { t: 'Estudantes', w: 100, al: 'CENTER' }, { t: 'Desempenho das turmas', w: 170, al: 'CENTER', sort: true }, { t: 'Aprendizado adequado', w: 170, al: 'CENTER', sort: true }], rows: PROFS_REDE.map((p) => [p[0], p[1], p[2], p[4], { F: p[7] }, { M: p[8], meta: 60 }]) }],
     ],
   },
 }
@@ -803,7 +1010,7 @@ const liga: Rel = {
   },
 }
 
-export const RELS: Record<string, Rel> = { rede, escola, turma, prof, 'prof-todos': profTodos, est, 'est-todos': estTodos, alf, tarefa, prova, desafio, sala, projeto, raiox, camp, redacao, oli, liga }
+export const RELS: Record<string, Rel> = { rede, 'escola-todas': escolaTodas, escola, 'turma-todas-rede': turmaTodasRede, 'turma-todas': turmaTodas, 'turma-minhas': turmaMinhas, turma, 'prof-todos-rede': profTodosRede, 'prof-todos': profTodos, prof, 'est-todos-rede': estTodosRede, 'est-todos-escola': estTodosEscola, 'est-todos-minhas': estTodosMinhas, 'est-todos': estTodos, est, alf, tarefa, prova, desafio, sala, projeto, raiox, camp, redacao, oli, liga }
 
 /* ------------------------------------------------------------------ 1 e 8 · escolhas */
 export const TIPOS_I: Record<string, { ic: string; d: string; rel: string; sub: string }> = {

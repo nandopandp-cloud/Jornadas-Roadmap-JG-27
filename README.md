@@ -98,11 +98,13 @@ Para validar a experiência antes de Tablet e Celular. Está na plataforma (main
 - **Barra de filtros compacta (27/11, aprovada pelo usuário):**
   - sempre em uma linha (52 px), com rótulo, valor e setinha em cada item; cada item abre o seu seletor;
   - não há versão expandida nem botão de expandir ou recolher.
-- **Visões "Todos" em Estudante e Professores (27/11, só no navegável, em validação):**
-  - no seletor Estudante, "Todos os estudantes da turma" abre `est-todos` (Turma 701, professor): o que precisa de atenção, rubricas, tabela com um estudante por linha e link para o relatório individual; abas Engajamento e Aprendizagem por estudante;
-  - no seletor Professor, "Todos os professores" abre `prof-todos` (EM Jardim das Flores, coordenadora): professores para acompanhar, atividades criadas × meta, os 14 professores com link para o individual; abas Engajamento e Aprendizagem por professor;
-  - os números batem com os relatórios de Turma 701 e de Escola (9 de 14 professores ativos, 47 atividades, 26 estudantes);
-  - no Figma (se aprovado): telas novas das duas visões nas 3 larguras.
+- **Relatório abre com "todos" (27/11, pedido do usuário):** ao escolher Escola, Turma, Professores ou Estudante, a primeira tela é a visão de todos do acesso; o individual vem do filtro.
+  - Gestora: Escola → `escola-todas` (18 escolas, números da Rede) · Turma → `turma-todas-rede` (142) · Professores → `prof-todos-rede` (214) · Estudante → `est-todos-rede` (3.860).
+  - Coordenadora: Escola → `escola` (a única escola dela) · Turma → `turma-todas` (9) · Professores → `prof-todos` (14) · Estudante → `est-todos-escola` (230).
+  - Professor: Turma → `turma-minhas` (3) · Estudante → `est-todos-minhas` (77); escolhendo a Turma 701 → `est-todos` (26).
+  - Nos seletores, a 1ª opção é sempre "Todas/Todos" e a opção atual aparece marcada. Regras em `acesso.ts` (`relPadrao`, `relDoEscopo`, `podeAbrir`).
+- **Sem "Salvar como painel" (27/11, pedido do usuário):** o botão saiu dos relatórios institucionais e de atividades (fica Compartilhar e Exportar).
+- **Catálogo de Meus painéis com todos os indicadores (27/11):** gerado dos próprios relatórios (`CATALOGO_TODOS` em `acesso.ts`): cada indicador, gráfico e tabela que existe em algum relatório, sem repetição, filtrado pelo acesso (gestora 159, coordenadora 141, professor 104). Busca, filtro Institucionais/Atividades, formato (Indicador, Gráfico, Tabela), relatório de origem e grupos Panorama/Engajamento/Aprendizagem; qualquer item adicionado aparece no painel com a amostra do relatório de origem.
 - **Sem tela no Figma:** as visões Turma e Ano escolar das Olimpíadas usam dados coerentes com as outras visões.
 
 | Atalho (`?screen=`) | Tela |
@@ -116,8 +118,8 @@ Para validar a experiência antes de Tablet e Celular. Está na plataforma (main
 | `liga`, `liga-eng` | 18 · Liga das Estrelas |
 | `paineis`, `painel`, `painel-edicao`, `painel-novo`, `painel-compartilhado` | 19 · Meus painéis |
 | `migracao` | 20 · Migração dos BIs |
-| `est-todos`, `est-todos-eng`, `est-todos-apr`, `prof-todos`, `prof-todos-eng`, `prof-todos-apr` | Visões "Todos os estudantes" e "Todos os professores" (só no navegável) |
-| `o-onde`, `o-atividade`, `o-tipo-atividade`, `o-periodo`, `o-glossario`, `o-filtros`, `o-compartilhar`, `o-exportar`, `o-salvar`, `o-menu-bloco`, `o-excluir`, `o-perfil`, `o-aviso`, `o-tipo` | 21 · Sobrepostos |
+| `escola-todas`, `turma-todas-rede`, `turma-todas`, `turma-minhas`, `prof-todos-rede`, `prof-todos`, `est-todos-rede`, `est-todos-escola`, `est-todos-minhas`, `est-todos` (+ `-eng`, `-apr`) | Visões "todos" (padrão ao escolher o tipo) |
+| `o-onde`, `o-atividade`, `o-tipo-atividade`, `o-periodo`, `o-glossario`, `o-filtros`, `o-compartilhar`, `o-exportar`, `o-menu-bloco`, `o-excluir`, `o-perfil`, `o-aviso`, `o-tipo` | 21 · Sobrepostos |
 
 Verificação: `verificar.mjs` com 73 atalhos nas 3 larguras (219/219 ok) e um teste de fluxos clicando de ponta a ponta.
 
