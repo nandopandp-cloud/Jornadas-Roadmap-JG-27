@@ -2,12 +2,13 @@
 
 Protótipo da **Plataforma Educadores** que junta os relatórios da Educadores e os BIs externos por cliente numa experiência só. Faz parte do Roadmap 2027 da Jovens Gênios. Esta branch trata só desta jornada; a visão geral da plataforma e das demais jornadas está no README da branch `main`.
 
-> **Em construção.** Etapa atual: todas as telas em Desktop e o protótipo navegável no Figma, para validação. Tablet e Celular vêm depois do OK.
+> **Em validação.** Etapa atual: navegável do Desktop (React), feito a partir das telas do Figma, para avaliar a experiência antes de Tablet e Celular.
 
 - **Na plataforma:** https://jornadas-roadmap-jg-27.vercel.app/#/jornada/novos-relatorios
 - **Figma:** https://www.figma.com/design/A5hHDrpWbICZ1JfKpUiS2k/Novos-Relat%C3%B3rios
 - **PRD:** [PRD.md](PRD.md) (cópia de 26/11/2026) · documento vivo em https://claude.ai/artifact/YK2QFjJVHLy9BaXHc3o7oE
-- **Código (quando houver navegável):** `src/prototypes/novos-relatorios/`
+- **Navegável (preview desta branch):** ver a seção "Navegável Desktop" abaixo
+- **Código:** `src/prototypes/novos-relatorios/`
 
 ## A ideia em uma frase
 
@@ -66,7 +67,50 @@ Uma fonte única de dados, as mesmas regras de cálculo e o mesmo acesso para to
 
 São 60 telas e 14 sobrepostos, com o protótipo ligado. Os pontos de partida são 1.1 (gestora), 1.2 (coordenadora), 1.3 (professor) e 19.1 (Meus painéis).
 
-**Pendente:** o nome das rubricas. A Educadores usa Proficiente e Insuficiente; o BI usa Adequado e Abaixo do Básico. Por enquanto as telas usam os nomes da Educadores.
+**Rubricas (decidido em 27/11):** valem as da Educadores: Insuficiente, Básico, Proficiente e Avançado (mais "Não avaliado" quando faltam respostas).
+
+## Navegável Desktop (27/11/2026)
+
+Feito só nesta branch, para validar a experiência antes de Tablet e Celular. Fica fora da produção da plataforma até o OK.
+
+- **Dados:** os mesmos das telas do Figma, portados dos módulos do kit `nrel` para `data.ts`.
+- **Perfis:** troca pelo rodapé da sidebar ("Ver como"): Mariana (gestora), Carla (coordenadora) e Rafael (professor). As permissões valem de verdade: a escolha de relatórios, o seletor de tipo e os links seguem o acesso de cada perfil.
+- **O que funciona:**
+  - abas, Glossário, "Ver por" (Engajamento ou Tópicos; nas Olimpíadas, Nações, Escolas, Turma e Ano escolar);
+  - busca e ordenação nas tabelas;
+  - seletores de tipo, atividade, recorte (Escola, Turma, Professor, Estudante) e período;
+  - Filtros, Compartilhar, Exportar e Salvar como painel;
+  - menu ⋯ dos blocos;
+  - Meus painéis: abrir, editar (reordenar, tirar e adicionar blocos do catálogo), criar um painel novo e excluir.
+- **Links entre relatórios:** só os recortes que têm dados abrem outro relatório: EM Jardim das Flores, Turma 701, Rafael Souza, Alice Moreira e as atividades do histórico. Os demais mostram um aviso de "fora da amostra".
+- **Mudanças em relação ao Figma:**
+  - "Unidade Sul" saiu do recorte dos painéis;
+  - "Comparativo por unidade regional" saiu do Salvar como painel;
+  - "Aba atual (Resumo)" virou o nome da aba atual.
+  - Esses textos antigos ainda estão no Figma e são ajustados junto com Tablet e Celular.
+- **Sem tela no Figma:** as visões Turma e Ano escolar das Olimpíadas usam dados coerentes com as outras visões.
+
+| Atalho (`?screen=`) | Tela |
+| --- | --- |
+| `estrutura` | 0 · Estrutura e permissões |
+| `inst-gestora`, `inst-coord`, `inst-prof` | 1 · Escolha do relatório institucional |
+| `rede`, `escola`, `turma`, `prof`, `est`, `alf` | 2 a 7 · Relatórios institucionais (com `-eng` e `-apr` para as outras abas) |
+| `ativ-gestora`, `ativ-coord`, `ativ-prof` | 8 · Escolha da atividade |
+| `tarefa`, `prova`, `desafio`, `sala`, `projeto`, `raiox`, `camp`, `redacao` | 9 a 16 · Atividades (com `-eng` e `-apr`; Projeto também tem `-enviados`) |
+| `oli`, `oli-escolas` | 17 · Olimpíadas |
+| `liga`, `liga-eng` | 18 · Liga das Estrelas |
+| `paineis`, `painel`, `painel-edicao`, `painel-novo`, `painel-compartilhado` | 19 · Meus painéis |
+| `migracao` | 20 · Migração dos BIs |
+| `o-onde`, `o-atividade`, `o-periodo`, `o-glossario`, `o-filtros`, `o-compartilhar`, `o-exportar`, `o-salvar`, `o-menu-bloco`, `o-excluir`, `o-perfil`, `o-aviso`, `o-tipo` | 21 · Sobrepostos |
+
+Verificação: `verificar.mjs` com 73 atalhos nas 3 larguras (219/219 ok) e um teste de fluxos clicando de ponta a ponta.
+
+**Código:**
+- `src/prototypes/novos-relatorios/data.ts`: dados;
+- `src/prototypes/novos-relatorios/pecas.tsx`: KPIs, gráficos, tabela e seletores;
+- `src/prototypes/novos-relatorios/index.tsx`: casca, telas e sobrepostos;
+- `src/prototypes/novos-relatorios/nrl.css`: estilos;
+- a casca vem do `rgx.css`.
 
 ## Decisões (26/11/2026)
 
