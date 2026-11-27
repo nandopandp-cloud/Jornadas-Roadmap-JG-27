@@ -88,17 +88,16 @@ Para validar a experiência antes de Tablet e Celular. Está na plataforma (main
   - "Comparativo por unidade regional" saiu do Salvar como painel;
   - "Aba atual (Resumo)" virou o nome da aba atual.
   - Esses textos antigos ainda estão no Figma e são ajustados junto com Tablet e Celular.
-- **Seleção de atividades em dois passos (27/11, só no navegável, em validação):**
-  - o filtro "Tipo de atividade" abre a lista de tipos com a contagem do perfil; o tipo sem atividades no acesso aparece desabilitado (Redação para o professor);
-  - ao escolher o tipo, abre o filtro "Atividade" só com as atividades daquele tipo, com busca quando a lista é longa e o link "Trocar tipo";
-  - na escolha da atividade, "Atividade" fica travado até haver tipo.
-  - Antes era um popover único de duas colunas (tipo e atividade específica). Se aprovado, o Figma (tela 8 e o sobreposto O2) é ajustado depois.
-  - Em cada tipo, a primeira atividade da lista é a que tem dados; as outras mostram o aviso "fora da amostra".
-- **Barra de filtros recolhível (27/11, só no navegável, em validação):**
-  - o botão ⌃ ao lado de Filtros recolhe a barra numa linha de resumo (de 95 para 52 px no desktop);
-  - cada item do resumo continua abrindo o seu seletor, e ⌄ expande a barra de novo;
-  - a escolha vale para todos os relatórios e fica guardada no navegador.
-  - Se aprovado, entra no Figma junto com os outros ajustes.
+- **Seleção de atividades (27/11, só no navegável, em validação):**
+  - dois passos: "Tipo de atividade" e, em seguida, "Atividade", só com as atividades daquele tipo. Um tipo sem atividades no acesso do perfil aparece desabilitado (Redação para o professor);
+  - **o relatório de atividade é sempre de UMA atividade:** não existe "Todas as tarefas" nem "Todas as propostas". Tarefa virou "Razão e proporção" (Turma 801) e Redação virou "Carta ao prefeito" (Turmas 901 e 902), com indicadores de atividade única;
+  - **listas longas** (por exemplo, 1.284 tarefas na rede): busca sempre visível por nome, turma ou professor, filtro de status (Todas, Em progresso, Finalizadas), agrupamento por mês com as mais recentes primeiro, contador "Mostrando 15 de 1.284" e "Carregar mais" de 15 em 15;
+  - na tela de escolha, os cartões de tipo ("Escolher atividade") escolhem o tipo e abrem a lista de atividades;
+  - em cada tipo, só a primeira atividade da lista tem dados; as outras mostram o aviso "fora da amostra".
+  - Se aprovado, ajustar no Figma a tela 8, o sobreposto O2 e as telas 9 e 16 (Tarefa e Redação agregadas).
+- **Barra de filtros recolhida por padrão (27/11, aprovada pelo usuário):**
+  - resumo em uma linha (52 px), com setinha em cada item; cada item abre o seu seletor;
+  - ⌄ expande e ⌃ recolhe de novo; a escolha fica guardada no navegador.
 - **Sem tela no Figma:** as visões Turma e Ano escolar das Olimpíadas usam dados coerentes com as outras visões.
 
 | Atalho (`?screen=`) | Tela |

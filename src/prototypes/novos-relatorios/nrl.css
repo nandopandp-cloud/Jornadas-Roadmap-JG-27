@@ -1484,6 +1484,63 @@
 .nr-pop__rola.is-alta {
   max-height: 460px;
 }
+.nr-pop__rola.is-lista {
+  max-height: min(420px, 52vh);
+  gap: 0;
+}
+.nr-pop__mes {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 8px 8px 4px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--nr-suave);
+}
+.nr-ativ-item .nr-opcao .nr-badge {
+  flex: none;
+}
+.nr-pop__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px 0 2px;
+}
+.nr-fchip {
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid var(--nr-linha);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 12px;
+  color: var(--nr-tinta);
+}
+.nr-fchip:hover {
+  border-color: #c4b5d4;
+}
+.nr-fchip.is-on {
+  border-color: var(--nr-roxo);
+  background: var(--nr-lilas);
+  color: var(--nr-roxo);
+  font-weight: 500;
+}
+.nr-pop__rodape.is-entre {
+  justify-content: space-between;
+}
+.nr-pop__rodape small {
+  color: var(--nr-suave);
+  font-size: 12px;
+}
+.nr-pop__tipo small {
+  color: var(--nr-suave);
+  font-size: 12px;
+  font-weight: 400;
+}
+.nr-tipo.is-on {
+  border-color: var(--nr-roxo);
+  box-shadow: 0 0 0 1px var(--nr-roxo);
+}
 .nr-pop__tipo {
   display: flex;
   align-items: center;

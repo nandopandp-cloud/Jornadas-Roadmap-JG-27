@@ -387,42 +387,44 @@ const alf: Rel = {
   },
 }
 
-/* ------------------------------------------------------------------ 9 · Tarefa (gestora, todas) */
-const TAR: [string, string, string, string, string, number, number, number, number | null, string][] = [
-  ['Frações equivalentes · lista 3', 'EM Jardim das Flores · Turma 501', 'Fernanda Lima', 'Matemática', '24/11', 18, 26, 15, 52, 'Encerrada'],
-  ['Leitura: contos de assombração', 'EM Vila Nova · 4º ano B', 'Juliana Prado', 'Língua Portuguesa', '28/11', 21, 30, 21, null, 'Em andamento'],
-  ['Decimais no dia a dia', 'EM São Pedro · 5º ano C', 'Marcos Teixeira', 'Matemática', '21/11', 27, 29, 25, 71, 'Encerrada'],
-  ['Ciclo da água', 'EM Recanto Verde · 3º ano A', 'Beatriz Nunes', 'Ciências', '19/11', 19, 25, 16, 68, 'Encerrada'],
-  ['Pontuação em diálogos', 'EM Jardim das Flores · Turma 502', 'Fernanda Lima', 'Língua Portuguesa', '30/11', 9, 27, 9, null, 'Em andamento'],
-  ['Equações do 1º grau · lista 2', 'EM Jardim das Flores · Turma 702', 'Rafael Souza', 'Matemática', '21/11', 17, 25, 14, 54, 'Encerrada'],
-  ['Leitura de mapas', 'EM Castro Alves · Turma 601', 'Roberto Lins', 'Geografia', '20/11', 23, 27, 21, 66, 'Encerrada'],
-  ['Revolução Industrial', 'EM Monteiro Lobato · Turma 801', 'Tatiane Reis', 'História', '25/11', 22, 28, 20, 61, 'Encerrada'],
+/* ------------------------------------------------------------------ 9 · Tarefa "Razão e proporção" (uma única tarefa · Turma 801)
+   27/11: o relatório de atividade é sempre de UMA atividade (pedido do usuário); a visão "Todas as tarefas" do Figma saiu. */
+// estudante, status, questões respondidas (de 12), acurácia %, tempo, interações (relativo à turma, %)
+const ET801: [string, string, number, number | null, string, number][] = [
+  ['Pedro Lins', 'Finalizada', 12, 92, '38 min', 90],
+  ['Nicolas Prado', 'Finalizada', 12, 83, '35 min', 82],
+  ['Ana Júlia Rocha', 'Finalizada', 12, 75, '33 min', 74],
+  ['Mateus Pinto', 'Finalizada', 12, 67, '30 min', 66],
+  ['Sara Lopes', 'Finalizada', 12, 58, '29 min', 60],
+  ['Lucas Ferreira', 'Em progresso', 7, 57, '18 min', 42],
+  ['Vitor Hugo Dias', 'Em progresso', 5, 40, '12 min', 30],
+  ['Lorena Cruz', 'Não iniciada', 0, null, '—', 0],
 ]
+const TOP_TAR: any[] = [['Tópico', 'Razão', 78, '84 respostas'], ['Tópico', 'Proporção', 66, '72 respostas'], ['Tópico', 'Regra de três simples', 52, '58 respostas']]
 const tarefa: Rel = {
   id: 'tarefa',
   grupo: 'ativ',
   tipo: 'Tarefa',
   perfil: 'gestora',
-  mig: ['Início', 'Relatórios', 'Atividades', 'Tarefa', 'Todas as tarefas'],
-  cab: ativCab('Tarefa', 'list-checks', 'Todas as tarefas', 'Onde', 'Rede Municipal de Nova Esperança'),
-  ent: ['Todas as tarefas', 'Tarefa', 'list-checks', 'Rede Municipal de Nova Esperança · 1.284 tarefas criadas por 146 professores · 01/02 a 26/11/2026'],
+  mig: ['Início', 'Relatórios', 'Atividades', 'Tarefa', 'Razão e proporção'],
+  cab: ativCab('Tarefa', 'list-checks', 'Razão e proporção · 25/11', 'Onde', 'Turma 801'),
+  ent: ['Razão e proporção', 'Tarefa', 'list-checks', 'Turma 801 · EM Jardim das Flores · Matemática · 25/11 a 28/11/2026 · 12 questões · criada por Rafael Souza', [['Em progresso', 'inf']]],
   T: {
     'Visão geral': [
-      ['kpis', [['Tarefas iniciadas', '29.585', null, null, ['Relações tarefa-estudante com ao menos uma resposta']], ['Tarefas concluídas', '25.065', null, null, ['85% das tarefas iniciadas']], ['Desempenho médio', '61%', null, null, ['Ponderado pelo número de tarefas iniciadas']], ['Estudantes com aprendizado adequado', '53%', '60%', 88, ['Proficiente + Avançado']]]],
-      ['sec', ['Desempenho × engajamento', 'Cada ponto é uma escola: desempenho nas tarefas × interações realizadas.']],
-      quadB('Desempenho × engajamento', ESC.map(([n, , , a, , ad]) => ({ x: a, y: ad + 6, nome: n })), 62, 60, 'Interações realizadas (relativo à rede, %)', ['EM Castro Alves', 'EM Jardim das Flores'], ['3 escolas', '3 escolas', '0 escolas', '4 escolas']),
-      ['tab', { titulo: 'Ranking de tarefas', busca: 'Pesquisar tarefa...', pag: ['Mostrando 8 de 1.284 tarefas', 161], cols: [{ t: 'Tarefa', sort: true }, { t: 'Data', w: 96, al: 'CENTER', sort: true }, { t: 'Professor', w: 150 }, { t: 'Total', w: 96, al: 'CENTER' }, { t: 'Concluídas %', w: 180 }, { t: 'Desempenho', w: 128, al: 'CENTER', sort: true }, { t: 'Relatório', w: 130 }], rows: TAR.map(([n, onde, pr, , prazo, e, tot, , des]) => [{ d: [n, onde] }, prazo, pr, tot, { tr: Math.round((e * 100) / tot), tx: Math.round((e * 100) / tot) + '%', meta: 70 }, des === null ? { m: 'Parcial' } : { F: des }, { lk: 'Ver tarefa' }]) }],
+      ['kpis', [['Estudantes previstos', '26', null, null, ['Com a tarefa atribuída']], ['Estudantes que iniciaram', '21', '26', 81, ['Responderam ao menos uma questão']], ['Estudantes que finalizaram', '15', '26', 58, ['Responderam as 12 questões']], ['Taxa de acurácia', '68%', null, null, ['Acertos ÷ respostas']]]],
+      ['sec', ['Desempenho × engajamento', 'Cada ponto é um estudante: acurácia na tarefa × interações realizadas.']],
+      quadB('Desempenho × engajamento', ET801.filter((r) => r[3] !== null).map((r) => ({ x: r[5], y: r[3] as number, nome: r[0].split(' ')[0] })), 54, 60, 'Interações realizadas (relativo à turma, %)', ['Pedro', 'Vitor'], ['4 estudantes', '1 estudante', '0 estudantes', '2 estudantes']),
+      ['tab', { titulo: 'Tabela de engajamento', busca: 'Pesquisar estudante...', pag: ['Mostrando 8 de 26 estudantes', 4], cols: [{ t: 'Estudante', sort: true }, { t: 'Status', w: 140 }, { t: 'Questões respondidas', w: 170, al: 'CENTER' }, { t: 'Acurácia', w: 110, al: 'CENTER', sort: true }, { t: 'Tempo de resolução', w: 160, al: 'CENTER' }, { t: 'Relatório', w: 140 }], rows: ET801.map(([n, st, q, a, t]) => [n, { b: st, t: st === 'Finalizada' ? 'suc' : st === 'Em progresso' ? 'inf' : 'neutro' }, q + ' de 12', a === null ? '—' : { F: a }, t, a === null ? '—' : { lk: 'Ver estudante' }]) }],
     ],
     Engajamento: [
-      ['kpis', [['Estudantes ativos', '81%', null, null, ['3.120 de 3.860 fizeram ao menos uma tarefa']], ['Estudantes que finalizaram', '2.640', null, null, ['concluíram todas as tarefas recebidas']], ['Média de interações realizadas', '21', '40', 53, ['por estudante ativo nas tarefas']], ['Tarefas criadas', '1.284', null, null, ['por 146 professores']]]],
-      ['row', [progresso(25065, 2958, 1562, 29585), { t: 'V', titulo: 'Tarefas criadas por mês', max: 180, itens: MESES.map((m, i) => [m, [92, 118, 131, 140, 136, 74, 142, 151, 160, 140][i]]) }]],
-      ['row', [{ t: 'hab', titulo: 'Ranking de tópicos', itens: [['EF06MA07', 'Frações equivalentes', 46, '4.820 respostas'], ['EF09MA05', 'Porcentagem e juros', 51, '3.940 respostas'], ['EF05LP04', 'Pontuação em diálogos', 55, '3.310 respostas'], ['EF07MA04', 'Números decimais', 66, '5.120 respostas']] }]],
+      ['kpis', [['Estudantes ativos', '21', '26', 81, ['Iniciaram a tarefa']], ['Média de interações realizadas', '26', '40', 65, ['por estudante ativo']], ['Tempo médio de resolução', '31 min', null, null, ['Entre os que finalizaram']], ['Questões respondidas', '214', null, null, ['de 312 possíveis']]]],
+      ['row', [progresso(15, 6, 5, 26), { t: 'V', titulo: 'Tempo de resolução', max: 8, itens: [['Até 19 min', 3], ['20 a 29 min', 4], ['30 a 39 min', 7], ['40 min ou mais', 2]] }]],
+      ['row', [{ t: 'hab', titulo: 'Ranking de tópicos', itens: TOP_TAR }]],
     ],
     Aprendizagem: [
-      ['kpis', [['Estudantes com aprendizado adequado', '53%', '60%', 88, ['Proficiente + Avançado']], ['Taxa de acurácia', '61%', null, null, ['Acertos ÷ respostas']], ['Desempenho médio', '61%', null, null, ['Ponderado pelas tarefas iniciadas']], ['Taxa média de acerto das questões', '58%', null, null, ['Questões das tarefas no recorte']]]],
-      ['row', [{ t: 'prof', titulo: 'Rubricas de proficiência', dist: R4([12, 374, 41, 1279, 32, 998, 15, 469]), rodape: '3.120 estudantes com pelo menos 1 tarefa entregue. Meta: 60% em Proficiente + Avançado.' }, desTempo([57, 58, 60, 61, 60, 58, 62, 63, 63, 61])]],
-      ['row', [{ t: 'H', titulo: 'Desempenho por área de conhecimento', max: 100, pct: true, wRot: 170, itens: [['Ciências da Natureza', 66], ['Linguagens', 62], ['Ciências Humanas', 61], ['Matemática', 57]] }, pilhas('Rubricas por ano escolar', [['5º ano', [11, 39, 33, 17, 0]], ['6º ano', [12, 41, 32, 15, 0]], ['7º ano', [13, 42, 31, 14, 0]], ['8º ano', [12, 41, 32, 15, 0]], ['9º ano', [11, 40, 33, 16, 0]]])]],
-      ['tab', { titulo: 'Questões das tarefas', busca: 'Pesquisar questão...', pag: ['Mostrando 6 de 9.840 questões', 1640], cols: [{ t: 'Tarefa / Questão', sort: true }, { t: 'Tentativas', w: 110, al: 'CENTER' }, { t: 'Taxa de acerto', w: 130, al: 'CENTER', sort: true }, { t: 'Dificuldade', w: 120, al: 'CENTER' }, { t: 'Tempo médio por tentativa', w: 200, al: 'CENTER' }, { t: 'Sinais', w: 160 }], rows: ([['Frações equivalentes · lista 3', 'Q4 · Simplifique 18/24', 26, 31, 'Alta', '2 min 50 s', 'Em branco'], ['Revolução Industrial', 'Q2 · Causas da Revolução Industrial', 28, 39, 'Média', '1 min 40 s', 'Sem sinais'], ['Decimais no dia a dia', 'Q6 · Troco em reais', 29, 45, 'Média', '2 min 10 s', 'Sem sinais'], ['Leitura de mapas', 'Q3 · Escala do mapa', 27, 48, 'Média', '1 min 55 s', 'Suspeita'], ['Equações do 1º grau · lista 2', 'Q5 · Resolva 3x + 5 = 20', 25, 52, 'Média', '2 min 20 s', 'Sem sinais'], ['Sistema solar', 'Q1 · Ordem dos planetas', 26, 81, 'Baixa', '1 min 05 s', 'Sem sinais']] as any[]).map(([t, q, n, a, d, tm, s]) => [{ d: [t, q] }, n, { F: a }, d, tm, { b: s, t: s === 'Sem sinais' ? 'neutro' : 'at' }]) }],
+      ['kpis', [['Estudantes com aprendizado adequado', '57%', '60%', 95, ['12 de 21 estudantes']], ['Taxa de acurácia', '68%', null, null, ['Acertos ÷ respostas']], ['Desempenho médio', '66%', null, null, ['Em branco conta como erro']], ['Taxa média de acerto das questões', '64%', null, null, ['12 questões da tarefa']]]],
+      ['row', [{ t: 'prof', titulo: 'Rubricas de proficiência', dist: R4([19, 4, 38, 8, 29, 6, 14, 3]), rodape: '21 estudantes que iniciaram a tarefa. Meta: 60% em Proficiente + Avançado.' }, { t: 'hab', w: 400, titulo: 'Ranking de habilidades', itens: [['EF07MA13', 'Regra de três simples', 52, '58 respostas'], ['EF07MA09', 'Razão entre grandezas', 61, '96 respostas'], ['EF07MA17', 'Grandezas diretamente proporcionais', 72, '60 respostas']] }]],
+      ['tab', { titulo: 'Questões da tarefa', busca: 'Pesquisar questão...', pag: ['Mostrando 5 de 12 questões', 3], cols: [{ t: 'Questão', w: 80 }, { t: 'Habilidade', w: 110 }, { t: 'Enunciado' }, { t: 'Tentativas', w: 110, al: 'CENTER' }, { t: 'Taxa de acerto', w: 130, al: 'CENTER', sort: true }, { t: 'Tempo médio por tentativa', w: 200, al: 'CENTER' }, { t: 'Sinais', w: 140 }], rows: ([[9, 'EF07MA13', 'Se 3 cadernos custam R$ 27, quanto custam 7 cadernos?', 19, 47, '3 min 10 s', 'Sem sinais'], [11, 'EF07MA13', 'Uma receita usa 2 ovos para 5 pessoas. Quantos ovos para 15 pessoas?', 17, 53, '2 min 40 s', 'Em branco'], [6, 'EF07MA09', 'Qual é a razão entre 12 meninas e 18 meninos?', 21, 62, '1 min 50 s', 'Sem sinais'], [4, 'EF07MA17', 'Complete a tabela de grandezas proporcionais.', 21, 71, '2 min 05 s', 'Suspeita'], [1, 'EF07MA09', 'Escreva a razão 3 para 4 na forma de fração.', 21, 90, '0 min 50 s', 'Sem sinais']] as any[]).map(([q, h, e, n, a, tm, si]) => ['Q' + q, h, { wrap: e }, n, { F: a }, tm, { b: si, t: si === 'Sem sinais' ? 'neutro' : 'at' }]) }],
     ],
   },
 }
@@ -634,30 +636,31 @@ const camp: Rel = {
   },
 }
 
-/* ------------------------------------------------------------------ 16 · Redação (coordenadora · BI) */
+/* ------------------------------------------------------------------ 16 · Redação "Carta ao prefeito" (uma única proposta · coordenadora)
+   27/11: o relatório de atividade é sempre de UMA atividade; a visão "todas as propostas" do Figma saiu. */
+const ERED: [string, string, string, number | null][] = [['Bianca Rezende', '901', 'Corrigida', 860], ['Thales Moura', '901', 'Corrigida', 780], ['Sabrina Lopes', '901', 'Corrigida', 720], ['Lucas Mendes', '902', 'Corrigida', 660], ['Júlia Castro', '902', 'Corrigida', 620], ['Caio Brandão', '902', 'Corrigida', 540], ['Laís Fontes', '901', 'Corrigida', 380], ['Davi Correia', '902', 'Iniciada', null]]
 const redacao: Rel = {
   id: 'redacao',
   grupo: 'ativ',
   tipo: 'Redação',
   perfil: 'coord',
-  mig: ['Início', 'Relatórios', 'Atividades', 'Redação', 'Todas as propostas'],
-  cab: ativCab('Redação', 'pencil', 'Todas as propostas', 'Onde', 'EM Jardim das Flores', 'Seu acesso: EM Jardim das Flores'),
-  ent: ['Redações · todas as propostas', 'Redação', 'pencil', 'EM Jardim das Flores · 6º ao 9º ano · 8 propostas · correção por 5 critérios (0 a 200 cada)'],
+  mig: ['Início', 'Relatórios', 'Atividades', 'Redação', 'Carta ao prefeito'],
+  cab: ativCab('Redação', 'pencil', 'Carta ao prefeito · 10/10', 'Onde', 'Turmas 901 e 902', 'Seu acesso: EM Jardim das Flores'),
+  ent: ['Carta ao prefeito', 'Redação', 'pencil', 'Carta argumentativa · Turmas 901 e 902 · EM Jardim das Flores · 10/10 a 17/10/2026 · correção por 5 critérios (0 a 200 cada) · proposta de Marina Teles', [['Finalizada', 'suc']]],
   T: {
     'Visão geral': [
-      ['kpis', [['Redações iniciadas', '341', null, null, ['no recorte selecionado']], ['Redações enviadas', '312', null, null, ['enviadas ou corrigidas']], ['Taxa de envio', '91%', null, null, ['enviadas ÷ iniciadas']], ['Nota média', '612', '1.000', 61, ['das redações enviadas']]]],
-      ['row', [{ t: 'V', titulo: 'Distribuição de notas', max: 150, itens: [['Até 399', 41], ['400 a 599', 109], ['600 a 799', 134], ['800 a 1.000', 28]] }, { t: 'status', w: 420, titulo: 'Distribuição de proficiência', sub: '312 redações enviadas.', partes: [['av', 'Avançado', 9, 28], ['suc', 'Proficiente', 43, 134], ['at', 'Básico', 35, 109], ['cr', 'Insuficiente', 13, 41]] }]],
-      ['tab', { titulo: 'Ranking de temas', busca: 'Pesquisar tema...', desc: 'Clique num tema para abrir o enunciado e os textos motivadores.', pag: ['Mostrando 5 de 8 temas', 2], cols: [{ t: 'Tema', sort: true }, { t: 'Tipo', w: 150 }, { t: 'Data', w: 96, al: 'CENTER' }, { t: 'Iniciadas', w: 110, al: 'CENTER' }, { t: 'Enviadas', w: 110, al: 'CENTER' }, { t: 'Nota média', w: 130, al: 'CENTER', sort: true }], rows: ([['Carta ao prefeito', 'Carta argumentativa', '10/10', 56, 52, 642], ['O papel da escola na comunidade', 'Dissertativa', '07/11', 46, 43, 634], ['Resenha de filme', 'Resenha', '12/09', 38, 35, 618], ['Fake news nas redes sociais', 'Dissertativa', '24/10', 42, 39, 601], ['Desafios da mobilidade urbana', 'Dissertativa', '21/11', 49, 42, 588]] as any[]).map(([t, ti, d, i, e, n]) => [t, ti, d, i, e, { M: Math.round(n / 10), s: String(n), meta: 60 }]) }],
+      ['kpis', [['Redações iniciadas', '56', null, null, ['de 62 estudantes das turmas']], ['Redações enviadas', '52', null, null, ['enviadas ou corrigidas']], ['Taxa de envio', '93%', null, null, ['enviadas ÷ iniciadas']], ['Nota média', '642', '1.000', 64, ['das redações enviadas']]]],
+      ['row', [{ t: 'V', titulo: 'Distribuição de notas', max: 30, itens: [['Até 399', 6], ['400 a 599', 15], ['600 a 799', 25], ['800 a 1.000', 6]] }, { t: 'status', w: 420, titulo: 'Distribuição de proficiência', sub: '52 redações enviadas.', partes: [['av', 'Avançado', 12, 6], ['suc', 'Proficiente', 48, 25], ['at', 'Básico', 29, 15], ['cr', 'Insuficiente', 11, 6]] }]],
+      ['tab', { titulo: 'Redações dos estudantes', busca: 'Pesquisar estudante...', desc: 'Clique numa redação para ler o texto e a correção por critério.', pag: ['Mostrando 8 de 56 redações', 7], cols: [{ t: 'Estudante', sort: true }, { t: 'Turma', w: 96 }, { t: 'Status', w: 140 }, { t: 'Nota', w: 140, al: 'CENTER', sort: true }, { t: 'Redação', w: 140 }], rows: ERED.map(([n, t, st, nt]) => [n, t, { b: st, t: st === 'Corrigida' ? 'suc' : 'inf' }, nt === null ? '—' : { M: Math.round(nt / 10), s: String(nt), meta: 60 }, nt === null ? '—' : { lk: 'Ler redação' }]) }],
     ],
     Engajamento: [
-      ['kpis', [['Estudantes que iniciaram', '132', '177', 75, ['6º ao 9º ano']], ['Redações totais', '341', null, null, ['iniciadas no período']], ['Redações enviadas', '312', null, null, ['finalizadas e enviadas']], ['Taxa de envio', '91%', null, null, ['enviadas ÷ iniciadas']]]],
-      ['row', [{ t: 'L', titulo: 'Engajamento diário', rotX: SEM, max: 60, leg: [['p1', 'Redações iniciadas por semana']], series: [['Iniciadas', [12, 18, 41, 22, 15, 38, 46, 27], 'p1']] }, { t: 'H', titulo: 'Redações enviadas por ano escolar', max: 120, wRot: 80, itens: [['6º ano', 52], ['7º ano', 61], ['8º ano', 93], ['9º ano', 106]] }]],
-      ['tab', { titulo: 'Ranking de estudantes em redação', busca: 'Pesquisar estudante...', pag: ['Mostrando 6 de 132 estudantes', 22], cols: [{ t: 'Estudante', sort: true }, { t: 'Turma', w: 96 }, { t: 'Iniciadas', w: 120, al: 'CENTER' }, { t: 'Enviadas', w: 120, al: 'CENTER', sort: true }, { t: 'Nota média', w: 140, al: 'CENTER', sort: true }], rows: ([['Bianca Rezende', '901', 4, 4, 820], ['Thales Moura', '901', 4, 4, 760], ['Sabrina Lopes', '901', 3, 3, 690], ['Lucas Mendes', '902', 4, 3, 650], ['Júlia Castro', '902', 3, 3, 600], ['Laís Fontes', '901', 3, 2, 380]] as any[]).map(([n, t, i, e, nt]) => [n, t, i, e, { M: Math.round(nt / 10), s: String(nt), meta: 60 }]) }],
+      ['kpis', [['Estudantes que iniciaram', '56', '62', 90, ['Turmas 901 e 902']], ['Redações enviadas', '52', null, null, ['finalizadas e enviadas']], ['Taxa de envio', '93%', null, null, ['enviadas ÷ iniciadas']], ['Tempo médio de escrita', '48 min', null, null, ['entre as redações enviadas']]]],
+      ['row', [{ t: 'L', titulo: 'Envios por dia', rotX: ['10/10', '11/10', '12/10', '13/10', '14/10', '15/10', '16/10', '17/10'], max: 20, leg: [['p1', 'Redações enviadas por dia']], series: [['Enviadas', [4, 9, 2, 1, 7, 8, 6, 15], 'p1']] }, { t: 'H', titulo: 'Redações enviadas por turma', max: 31, wRot: 80, itens: [['901', 27], ['902', 25]] }]],
     ],
     Aprendizagem: [
-      ['kpis', [['Nota média geral', '612', '1.000', 61, ['escala de 0 a 1.000']], ['Melhor critério', 'C1 · 64%', null, null, ['Norma culta']], ['Critério mais frágil', 'C3 · 58%', null, null, ['Seleção e organização de argumentos']]]],
-      ['row', [{ t: 'V', titulo: 'Desempenho por critério de avaliação', max: 100, pct: true, leg: [['p1', 'Aproveitamento do critério (%)']], itens: [['C1', 64], ['C2', 61], ['C3', 58], ['C4', 62], ['C5', 62]] }, pilhas('Distribuição por rubrica · ano escolar', [['6º ano', [6, 40, 38, 16, 0]], ['7º ano', [7, 41, 37, 15, 0]], ['8º ano', [12, 46, 31, 11, 0]], ['9º ano', [10, 44, 34, 12, 0]]])]],
-      ['tab', { titulo: 'Ranking de critérios', busca: 'Pesquisar critério...', cols: [{ t: 'Critério', sort: true }, { t: 'Média (0 a 200)', w: 160, al: 'CENTER' }, { t: 'Aproveitamento', w: 220 }], rows: ([['C1 · Domínio da norma culta', 128, 64], ['C4 · Coesão textual', 124, 62], ['C5 · Proposta de intervenção', 123, 62], ['C2 · Compreensão da proposta', 121, 61], ['C3 · Seleção e organização de argumentos', 116, 58]] as any[]).map(([c, m, p]) => [c, m, { tr: p, tx: p + '%', meta: 60 }]) }],
+      ['kpis', [['Nota média', '642', '1.000', 64, ['escala de 0 a 1.000']], ['Melhor critério', 'C1 · 68%', null, null, ['Norma culta']], ['Critério mais frágil', 'C5 · 57%', null, null, ['Proposta de intervenção']]]],
+      ['row', [{ t: 'V', titulo: 'Desempenho por critério de avaliação', max: 100, pct: true, leg: [['p1', 'Aproveitamento do critério (%)']], itens: [['C1', 68], ['C2', 66], ['C3', 62], ['C4', 65], ['C5', 57]] }, pilhas('Distribuição por rubrica · turma', [['901', [13, 50, 26, 11, 0]], ['902', [10, 46, 33, 11, 0]]])]],
+      ['tab', { titulo: 'Ranking de critérios', busca: 'Pesquisar critério...', cols: [{ t: 'Critério', sort: true }, { t: 'Média (0 a 200)', w: 160, al: 'CENTER' }, { t: 'Aproveitamento', w: 220 }], rows: ([['C1 · Domínio da norma culta', 136, 68], ['C2 · Compreensão da proposta', 132, 66], ['C4 · Coesão textual', 130, 65], ['C3 · Seleção e organização de argumentos', 124, 62], ['C5 · Proposta de intervenção', 114, 57]] as any[]).map(([c, m, p]) => [c, m, { tr: p, tx: p + '%', meta: 60 }]) }],
     ],
   },
 }
@@ -747,7 +750,7 @@ export const TIPOS_A: [string, string, string, string][] = [
   ['Projeto', 'flag', 'projeto', 'Estudantes que finalizaram, projetos enviados e avaliados, autoavaliação e arquivos.'],
   ['Raio-X', 'target', 'raiox', 'Raio-X finalizados, média de acertos, histograma de acertos e comparativo de conclusão.'],
   ['Campeonato', 'trophy', 'camp', 'Batalhas, vitórias, derrotas, % de vitórias e rankings de batalhas.'],
-  ['Redação', 'pencil', 'redacao', 'Redações iniciadas e enviadas, nota média (0 a 1.000), critérios e temas.'],
+  ['Redação', 'pencil', 'redacao', 'Redações iniciadas e enviadas, nota média (0 a 1.000), rubricas e critérios.'],
   ['Olimpíadas', 'medal', 'oli', 'Rankings das nações, escolas, turmas e anos escolares, com pódio e pontos.'],
   ['Liga das Estrelas', 'star', 'liga', 'Estudantes ativos, missões realizadas, taxa de adesão e ranking por estrelas.'],
 ]
@@ -757,57 +760,63 @@ export const N_A: Record<Perfil, (string | null)[]> = {
   prof: ['6 nas suas turmas', '4 nas suas turmas', '2 nas suas turmas', '1 nas suas turmas', '1 concluído', '1 aplicação', '1 em andamento', null, 'Olimpíada de Matemática 2026', 'Temporada 2026 · semana 38'],
 }
 export const N_TIPO_A: Record<string, string> = { Tarefa: '1.284', 'Prova Genial': '386', Desafio: '612', 'Sala de Aula Invertida': '158', Projeto: '42', 'Raio-X': '80', Redação: '96', Campeonato: '18', Olimpíadas: '1', 'Liga das Estrelas': '1' }
-// Atividades de cada tipo (2º filtro): [nome, onde · data, relatório com dados ou null (fora da amostra), quem vê]
-// g = gestora, c = coordenadora, p = professor. A primeira de cada tipo é a que tem dados no protótipo.
-const ATIVS: Record<string, [string, string, string | null, string][]> = {
-  Tarefa: [
-    ['Todas as tarefas', '', 'tarefa', 'gcp'],
-    ['Razão e proporção', 'Turma 801 · 25/11', null, 'gcp'],
-    ['Revolução Industrial', 'EM Monteiro Lobato · 25/11', null, 'g'],
-    ['Frações equivalentes · lista 3', 'Turma 501 · 24/11', null, 'gc'],
-    ['Equações do 1º grau', 'Turma 702 · 21/11', null, 'gcp'],
-    ['Leitura de mapas', 'EM Castro Alves · 19/11', null, 'g'],
-  ],
-  'Prova Genial': [
-    ['Frações e decimais', 'Turma 701 · 18/11', 'prova', 'gcp'],
-    ['Geometria plana', 'Turma 702 · 11/11', null, 'gcp'],
-    ['Interpretação de texto', 'Turma 601 · 10/11', null, 'gc'],
-    ['Ciências da natureza · bimestral', 'EM Castro Alves · 06/11', null, 'g'],
-  ],
-  Desafio: [
-    ['Porcentagem no cotidiano', 'Turma 801 · 24/11', 'desafio', 'gcp'],
-    ['Tabuada relâmpago', 'Turma 502 · 20/11', null, 'gc'],
-    ['Sistema solar', 'EM Ana Néri · 18/11', null, 'g'],
-  ],
-  'Sala de Aula Invertida': [
-    ['Proporção', 'Turma 702 · 19/11', 'sala', 'gcp'],
-    ['Ecossistemas', 'EM Paulo Freire · 12/11', null, 'g'],
-  ],
-  Projeto: [
-    ['Horta escolar', 'Turmas 501 e 502 · 01/09 a 30/11', 'projeto', 'gcp'],
-    ['Feira de ciências', 'EM Cecília Meireles · 01/10 a 28/11', null, 'g'],
-  ],
-  'Raio-X': [
-    ['Matemática · 7º ano · 2ª aplicação', 'Rede · 06 a 10/10', 'raiox', 'gcp'],
-    ['Matemática · 7º ano · 1ª aplicação', 'Rede · 07 a 11/04', null, 'gc'],
-    ['Língua Portuguesa · 7º ano · 2ª aplicação', 'Rede · 06 a 10/10', null, 'g'],
-  ],
-  Campeonato: [
-    ['Campeonato de Matemática · 2º semestre', 'EM Jardim das Flores · 01/09 a 05/12', 'camp', 'gcp'],
-    ['Campeonato de Língua Portuguesa · 2º semestre', 'EM Castro Alves · 01/09 a 05/12', null, 'g'],
-  ],
-  Redação: [
-    ['Todas as propostas', '', 'redacao', 'gc'],
-    ['Carta de opinião · O celular na escola', '9º ano · 17/11', null, 'gc'],
-    ['Relato pessoal · Um dia marcante', '6º ano · 10/11', null, 'gc'],
-  ],
-  Olimpíadas: [['Olimpíada de Matemática 2026', 'Rede · 03 a 28/08', 'oli', 'gcp']],
-  'Liga das Estrelas': [['Temporada 2026', 'Rede · 02/03 a 18/12 · semana 38', 'liga', 'gcp']],
+// Atividades de cada tipo (2º filtro). O relatório de atividade é sempre de UMA atividade: não há "Todas as …".
+// Em cada tipo, a primeira (amostra) é a que tem dados; as outras são geradas para simular listas longas.
+export type AtivItem = { nome: string; onde: string; data: string; mes: string; status: 'Em progresso' | 'Finalizada'; autor?: string; rel: string | null }
+// tipo → [nome, onde, data de início (dd/mm), status, autor, relatório]
+const AMOSTRA: Record<string, [string, string, string, AtivItem['status'], string, string]> = {
+  Tarefa: ['Razão e proporção', 'Turma 801 · EM Jardim das Flores', '25/11', 'Em progresso', 'Rafael Souza', 'tarefa'],
+  'Prova Genial': ['Frações e decimais', 'Turma 701 · EM Jardim das Flores', '18/11', 'Finalizada', 'Rafael Souza', 'prova'],
+  Desafio: ['Porcentagem no cotidiano', 'Turma 801 · EM Jardim das Flores', '24/11', 'Finalizada', 'Rafael Souza', 'desafio'],
+  'Sala de Aula Invertida': ['Proporção', 'Turma 702 · EM Jardim das Flores', '19/11', 'Finalizada', 'Rafael Souza', 'sala'],
+  Projeto: ['Horta escolar', 'Turmas 501 e 502 · EM Jardim das Flores', '01/09', 'Em progresso', 'Fernanda Lima', 'projeto'],
+  'Raio-X': ['Matemática · 7º ano · 2ª aplicação', 'Rede inteira', '06/10', 'Finalizada', 'Secretaria de Educação', 'raiox'],
+  Campeonato: ['Campeonato de Matemática · 2º semestre', 'EM Jardim das Flores', '01/09', 'Em progresso', 'Carla Nogueira', 'camp'],
+  Redação: ['Carta ao prefeito', 'Turmas 901 e 902 · EM Jardim das Flores', '10/10', 'Finalizada', 'Marina Teles', 'redacao'],
+  Olimpíadas: ['Olimpíada de Matemática 2026', 'Rede inteira', '03/08', 'Finalizada', 'Secretaria de Educação', 'oli'],
+  'Liga das Estrelas': ['Temporada 2026', 'Rede inteira', '02/03', 'Em progresso', 'Secretaria de Educação', 'liga'],
 }
-const LETRA: Record<Perfil, string> = { gestora: 'g', coord: 'c', prof: 'p' }
-export const ATIVIDADES_DO_TIPO = (pf: Perfil, tipo: string): [string, string, string | null][] => {
+const NOMES_A: Record<string, string[]> = {
+  Tarefa: ['Equações do 1º grau', 'Frações equivalentes · lista 3', 'Revolução Industrial', 'Leitura de mapas', 'Decimais no dia a dia', 'Sistema solar', 'Pontuação em diálogos', 'Expressões numéricas', 'Ângulos e retas', 'Ciclo da água', 'Interpretação de tirinhas', 'Brasil Colônia', 'Porcentagem · lista 2', 'Verbos no pretérito', 'Área e perímetro', 'Cadeia alimentar', 'Números inteiros', 'Substantivos e adjetivos', 'Estados físicos da matéria', 'Gráficos de barras'],
+  'Prova Genial': ['Geometria plana', 'Interpretação de texto', 'Ciências da natureza · bimestral', 'Números inteiros', 'Gramática · 3º bimestre', 'História do Brasil', 'Frações · recuperação', 'Leitura e escrita', 'Matemática · simulado', 'Geografia · bimestral'],
+  Desafio: ['Tabuada relâmpago', 'Sistema solar', 'Capitais do Brasil', 'Ortografia', 'Frações em jogo', 'Corpo humano', 'Mapas e coordenadas'],
+  'Sala de Aula Invertida': ['Ecossistemas', 'Equações', 'Gêneros textuais', 'Energia', 'Revolução Francesa'],
+  Projeto: ['Feira de ciências', 'Jornal da escola', 'Reciclagem na comunidade', 'Memórias do bairro'],
+  'Raio-X': ['Matemática · 7º ano · 1ª aplicação', 'Língua Portuguesa · 7º ano · 2ª aplicação', 'Língua Portuguesa · 7º ano · 1ª aplicação', 'Matemática · 9º ano · 2ª aplicação', 'Matemática · 5º ano · 2ª aplicação', 'Língua Portuguesa · 9º ano · 2ª aplicação'],
+  Campeonato: ['Campeonato de Língua Portuguesa · 2º semestre', 'Campeonato de Ciências · 2º semestre', 'Campeonato de Matemática · 1º semestre'],
+  Redação: ['O celular na escola', 'Um dia marcante', 'O papel da escola na comunidade', 'Fake news nas redes sociais', 'Desafios da mobilidade urbana', 'Resenha de filme', 'Carta de leitor'],
+  Olimpíadas: [],
+  'Liga das Estrelas': [],
+}
+const ONDE_A: Record<Perfil, string[]> = {
+  gestora: ['Turma 601 · EM Castro Alves', 'Turma 801 · EM Monteiro Lobato', 'Turma 502 · EM Ana Néri', 'Turma 901 · EM Paulo Freire', 'Turma 702 · EM Cecília Meireles', 'Turma 701 · EM Jardim das Flores', 'Turma 602 · EM Tiradentes', 'Turma 802 · EM Rui Barbosa'],
+  coord: ['Turma 501', 'Turma 502', 'Turma 601', 'Turma 602', 'Turma 701', 'Turma 702', 'Turma 801', 'Turma 901', 'Turma 902'].map((t) => t + ' · EM Jardim das Flores'),
+  prof: ['Turma 701', 'Turma 702', 'Turma 801'].map((t) => t + ' · EM Jardim das Flores'),
+}
+const AUTORES: Record<Perfil, string[]> = { gestora: ['Roberto Lins', 'Tatiane Reis', 'Paulo Viana', 'Helena Prado', 'Sérgio Matos', 'Rafael Souza'], coord: ['Rafael Souza', 'Fernanda Lima', 'Marina Teles', 'Paulo Viana'], prof: ['Rafael Souza'] }
+const MES_NOME = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
+const REDE_TODA = ['Raio-X', 'Olimpíadas', 'Liga das Estrelas']
+export const ATIVIDADES_DO_TIPO = (pf: Perfil, tipo: string): { total: number; itens: AtivItem[] } => {
   const i = TIPOS_A.findIndex((t) => t[0] === tipo)
-  return (ATIVS[tipo] ?? []).filter(([, , , q]) => q.includes(LETRA[pf])).map(([n, s, r]) => [n, s || (N_A[pf][i] ?? ''), r])
+  const n = N_A[pf][i]
+  if (!n || !AMOSTRA[tipo]) return { total: 0, itens: [] }
+  const total = /^[\d.]+ /.test(n) ? Number(n.split(' ')[0].replace('.', '')) : 1
+  const [nome, onde, data, status, autor, rel] = AMOSTRA[tipo]
+  const [d0, m0] = data.split('/').map(Number)
+  const dia = new Date(2026, m0 - 1, d0)
+  const item = (nm: string, on: string, dt: Date, st: AtivItem['status'], au: string, r: string | null): AtivItem => ({ nome: nm, onde: on, data: `${String(dt.getDate()).padStart(2, '0')}/${String(dt.getMonth() + 1).padStart(2, '0')}`, mes: `${MES_NOME[dt.getMonth()]} de 2026`, status: st, autor: au, rel: r })
+  const itens = [item(nome, onde, dia, status, autor, rel)]
+  const nomes = NOMES_A[tipo]
+  const ondes = REDE_TODA.includes(tipo) ? ['Rede inteira'] : tipo === 'Campeonato' && pf !== 'gestora' ? ['EM Jardim das Flores'] : ONDE_A[pf]
+  const gerar = Math.min(total, 80) - 1
+  for (let k = 0; k < gerar && nomes.length; k++) {
+    dia.setDate(dia.getDate() - ((k * 7) % 3) - (tipo === 'Tarefa' ? 0 : 3))
+    const nm = nomes[k % nomes.length] + (k >= nomes.length ? ` · ${Math.floor(k / nomes.length) + 1}` : '')
+    const recente = (new Date(2026, 10, 26).getTime() - dia.getTime()) / 864e5 < 5
+    const on = ondes[(k * 5) % ondes.length]
+    itens.push(item(nm, on, new Date(dia), recente ? 'Em progresso' : 'Finalizada', REDE_TODA.includes(tipo) ? 'Secretaria de Educação' : (pf === 'gestora' && on.includes('Jardim das Flores') ? 'Rafael Souza' : AUTORES[pf][(k * 3) % (pf === 'gestora' ? 5 : AUTORES[pf].length)]), null))
+  }
+  return { total, itens }
 }
 export const HIST_A = (pf: Perfil): Cel[][] =>
   ([['Razão e proporção', 'Tarefa', 'Turma 801', '25/11', '28/11', 'Em progresso', 'tarefa'], ['Porcentagem no cotidiano', 'Desafio', 'Turma 801', '24/11', '24/11', 'Finalizada', 'desafio'], ['Proporção', 'Sala de Aula Invertida', 'Turma 702', '19/11', '19/11', 'Finalizada', 'sala'], ['Frações e decimais', 'Prova Genial', 'Turma 701', '18/11', '18/11', 'Finalizada', 'prova'], ['Campeonato de Matemática', 'Campeonato', pf === 'prof' ? 'Turmas 701 a 801' : 'EM Jardim das Flores', '01/09', '05/12', 'Em progresso', 'camp'], ['Liga das Estrelas 2026', 'Liga das Estrelas', 'Rede inteira', '02/03', '18/12', 'Em progresso', 'liga']] as string[][]).map(([n, t, o, i, f, s, r]) => [n, t, o, i, f, { b: s, t: s === 'Finalizada' ? 'suc' : 'inf' }, { lk: 'Ver relatório', ir: r }])

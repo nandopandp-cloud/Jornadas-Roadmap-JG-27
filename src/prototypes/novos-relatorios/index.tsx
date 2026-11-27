@@ -57,6 +57,8 @@ import {
   MODELOS,
   N_A,
   ATIVIDADES_DO_TIPO,
+  fmt,
+  type AtivItem,
   OLI_VISOES,
   PAINEIS,
   PERFIS,
@@ -176,12 +178,12 @@ export default function NovosRelatorios({ startScreen }: PrototypeProps) {
   const [periodo, setPeriodo] = useState(PERIODO)
   const [nFiltros, setNFiltros] = useState(0)
   const [tipoAtiv, setTipoAtiv] = useState<string | null>(null)
-  // barra de filtros recolhida: preferência do visitante, vale para todas as telas
+  // barra de filtros recolhida (padrão, aprovado em 27/11): preferência do visitante, vale para todas as telas
   const [selRecolhida, setSelRecolhidaSt] = useState(() => {
     try {
-      return localStorage.getItem('nr-filtros-recolhidos') === '1'
+      return localStorage.getItem('nr-filtros-recolhidos') !== '0'
     } catch {
-      return false
+      return true
     }
   })
   const setSelRecolhida = (v: boolean) => {
@@ -220,7 +222,7 @@ export default function NovosRelatorios({ startScreen }: PrototypeProps) {
   useEffect(() => {
     // sobrepostos abertos por atalho: ancora no seletor correspondente
     if (!ini.modal) return
-    const sel: Record<string, string> = { perfil: '.nr-side-usuario', periodo: '.nr-sel:last-child .nr-sel__btn', tipo: '.nr-sel:first-child .nr-sel__btn', tipoAtiv: '[data-rot="Tipo de atividade"] .nr-sel__btn', atividade: '[data-rot="Atividade"] .nr-sel__btn', onde: '.nr-sel:nth-child(2) .nr-sel__btn', menuBloco: '.nr-cartao__topo .nr-icone-btn' }
+    const sel: Record<string, string> = { perfil: '.nr-side-usuario', periodo: '[data-rot="Período"] button', tipo: '.nr-selbar [data-rot]:first-child button', tipoAtiv: '[data-rot="Tipo de atividade"] button', atividade: '[data-rot="Atividade"] button', onde: '.nr-selbar [data-rot]:nth-child(2) button', menuBloco: '.nr-cartao__topo .nr-icone-btn' }
     const t = setTimeout(() => {
       const alvo = document.querySelector(sel[ini.modal!.id] ?? '__') as HTMLElement | null
       if (alvo) setAncora(alvo.getBoundingClientRect())
@@ -237,6 +239,12 @@ export default function NovosRelatorios({ startScreen }: PrototypeProps) {
   const abrir = (m: Modal) => {
     setAncora(ultimoClique.current)
     setModal(m)
+  }
+  // tipo escolhido num cartão da tela de escolha: vai para o topo e abre a lista de atividades do tipo
+  const escolherTipo = (t: string) => {
+    setTipoAtiv(t)
+    document.querySelector('.rx-rolagem')?.scrollTo({ top: 0 })
+    setTimeout(() => abrirNoSel('Atividade', { id: 'atividade', tipo: t }), 60)
   }
   // abre um sobreposto ancorado no seletor de rótulo `rot` (ex.: tipo escolhido → abre "Atividade")
   const abrirNoSel = (rot: string, m: Modal) => {
@@ -339,7 +347,7 @@ export default function NovosRelatorios({ startScreen }: PrototypeProps) {
           <AnimatePresence mode="wait" initial={false}>
             <motion.div key={JSON.stringify(tela) + perfil} className="rx-conteudo nr-conteudo" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, transition: { duration: 0.1 } }} transition={{ duration: 0.22 }}>
               {tela.id === 'escolhaI' && <EscolhaInst perfil={perfil} periodo={periodo} onAbrir={abrirRel} onSel={abrir} nFiltros={nFiltros} />}
-              {tela.id === 'escolhaA' && <EscolhaAtiv perfil={perfil} tipo={tipoAtiv} onAbrir={abrirRel} onSel={abrir} onIr={onIr} nFiltros={nFiltros} />}
+              {tela.id === 'escolhaA' && <EscolhaAtiv perfil={perfil} tipo={tipoAtiv} onTipo={escolherTipo} onSel={abrir} onIr={onIr} nFiltros={nFiltros} />}
               {tela.id === 'rel' && rel && (
                 <Relatorio
                   key={rel.id}
@@ -547,6 +555,7 @@ const BarraSel = ({ children, nFiltros, onFiltros }: { children: ReactNode; nFil
                 <Ic n={sp.ic} size={14} />
                 <small>{sp.rot}</small>
                 <span>{sp.valor}</span>
+                {sp.travado ? <Lock size={13} /> : <ChevronDown size={14} />}
               </button>
             </span>
           ))}
@@ -628,7 +637,7 @@ function EscolhaInst({ perfil, periodo, onAbrir, onSel, nFiltros }: { perfil: Pe
 }
 
 /* ================================================================== 8 · escolha da atividade */
-function EscolhaAtiv({ perfil, tipo, onAbrir, onSel, onIr, nFiltros }: { perfil: Perfil; tipo: string | null; onAbrir: (r: string) => void; onSel: (m: Modal) => void; onIr: (r: string) => void; nFiltros: number }) {
+function EscolhaAtiv({ perfil, tipo, onTipo, onSel, onIr, nFiltros }: { perfil: Perfil; tipo: string | null; onTipo: (t: string) => void; onSel: (m: Modal) => void; onIr: (r: string) => void; nFiltros: number }) {
   const P = PERFIS[perfil]
   const hist: Tabela = { titulo: 'Histórico de atividades', busca: 'Pesquisar atividade...', pag: ['Mostrando 6 atividades mais recentes', 5], cols: [{ t: 'Nome', sort: true }, { t: 'Tipo', w: 170 }, { t: 'Onde', w: 220 }, { t: 'Início', w: 96, al: 'CENTER', sort: true }, { t: 'Término', w: 96, al: 'CENTER' }, { t: 'Status', w: 136 }, { t: 'Relatório', w: 130 }], rows: HIST_A(perfil) }
   return (
@@ -644,10 +653,10 @@ function EscolhaAtiv({ perfil, tipo, onAbrir, onSel, onIr, nFiltros }: { perfil:
         <h2>Qual atividade você quer ver?</h2>
       </div>
       <div className="nr-tipos">
-        {TIPOS_A.map(([t, ic, r, d], i) => {
+        {TIPOS_A.map(([t, ic, , d], i) => {
           const n = N_A[perfil][i]
           return (
-            <button key={t} className={`nr-tipo ${!n ? 'is-off' : ''}`} disabled={!n} onClick={() => onAbrir(r)}>
+            <button key={t} className={`nr-tipo ${!n ? 'is-off' : ''} ${t === tipo ? 'is-on' : ''}`} disabled={!n} onClick={() => onTipo(t)}>
               <span className="nr-tipo__cab">
                 <span className="nr-tile">
                   <Ic n={ic} size={20} />
@@ -660,7 +669,7 @@ function EscolhaAtiv({ perfil, tipo, onAbrir, onSel, onIr, nFiltros }: { perfil:
               <span className="nr-tipo__d">{d}</span>
               {n && (
                 <span className="nr-link">
-                  Ver relatório <ArrowRight size={14} />
+                  Escolher {t === 'Redação' ? 'proposta' : 'atividade'} <ArrowRight size={14} />
                 </span>
               )}
             </button>
@@ -1567,39 +1576,77 @@ function PopTipoAtiv({ ancora, celular, perfil, atual, onFechar, onEscolher }: {
   )
 }
 
+// Lista de atividades de um tipo: pode ter centenas (ex.: 1.284 tarefas na rede). Busca sempre visível,
+// filtro por status, agrupada por mês (mais recentes primeiro) e "Carregar mais" em lotes.
+const LOTE = 15
 function PopAtividade({ ancora, celular, perfil, tipo, atual, onFechar, onTrocarTipo, onAbrir, onFora }: { ancora: DOMRect | null; celular: boolean; perfil: Perfil; tipo: string; atual: string | null; onFechar: () => void; onTrocarTipo: () => void; onAbrir: (r: string) => void; onFora: () => void }) {
   const [q, setQ] = useState('')
+  const [st, setSt] = useState<'Todas' | 'Em progresso' | 'Finalizada'>('Todas')
+  const [qtd, setQtd] = useState(LOTE)
   const ic = TIPOS_A.find((t) => t[0] === tipo)?.[1] ?? 'list-checks'
-  const todas = ATIVIDADES_DO_TIPO(perfil, tipo)
-  const lista = todas.filter(([n]) => n.toLowerCase().includes(q.toLowerCase()))
-  const marcada = (n: string, r: string | null) => !!atual && !!r && (atual === n || RELS[r]?.ent[0] === atual)
+  const { total, itens } = useMemo(() => ATIVIDADES_DO_TIPO(perfil, tipo), [perfil, tipo])
+  const termo = q.trim().toLowerCase()
+  const filtrados = itens.filter((it) => (st === 'Todas' || it.status === st) && (!termo || `${it.nome} ${it.onde} ${it.autor ?? ''}`.toLowerCase().includes(termo)))
+  const vis = filtrados.slice(0, qtd)
+  const substantivo = tipo === 'Redação' ? ['proposta', 'propostas'] : ['atividade', 'atividades']
+  const marcada = (it: AtivItem) => !!atual && !!it.rel && RELS[it.rel]?.ent[0] === atual
+  const filtrando = !!termo || st !== 'Todas'
   return (
-    <Pop ancora={ancora} celular={celular} largura={420} onFechar={onFechar}>
+    <Pop ancora={ancora} celular={celular} largura={480} onFechar={onFechar}>
       <div className="nr-pop__tipo">
         <Ic n={ic} />
         <b>{tipo}</b>
+        <small>
+          {fmt(total)} {total === 1 ? substantivo[0] : substantivo[1]}
+        </small>
         <button className="nr-link" onClick={onTrocarTipo}>
           Trocar tipo
         </button>
       </div>
-      {todas.length > 4 && (
-        <label className="nr-busca is-cheia">
-          <Search size={15} />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={`Buscar ${tipo === 'Redação' ? 'proposta' : 'atividade'}...`} aria-label="Buscar atividade" />
-        </label>
-      )}
-      <p className="nr-pop__tit">Atividade</p>
-      <div className="nr-pop__rola">
-        {lista.map(([n, s, r]) => (
-          <button key={n} className={`nr-opcao ${marcada(n, r) ? 'is-on' : ''}`} onClick={() => (r ? onAbrir(r) : onFora())}>
-            <span>
-              <b>{n}</b>
-              {s && <small>{s}</small>}
-            </span>
-            {marcada(n, r) ? <Check size={16} /> : <ChevronRight size={16} />}
+      <label className="nr-busca is-cheia">
+        <Search size={15} />
+        <input autoFocus={!celular} value={q} onChange={(e) => (setQ(e.target.value), setQtd(LOTE))} placeholder={`Buscar ${substantivo[0]}, turma ou professor...`} aria-label={`Buscar ${substantivo[0]}`} />
+        {q && (
+          <button className="nr-icone-btn" onClick={() => setQ('')} aria-label="Limpar busca">
+            <X size={14} />
           </button>
+        )}
+      </label>
+      {total > 3 && (
+        <div className="nr-pop__chips" role="group" aria-label="Status">
+          {(['Todas', 'Em progresso', 'Finalizada'] as const).map((o) => (
+            <button key={o} className={`nr-fchip ${st === o ? 'is-on' : ''}`} onClick={() => (setSt(o), setQtd(LOTE))}>
+              {o === 'Finalizada' ? 'Finalizadas' : o}
+            </button>
+          ))}
+        </div>
+      )}
+      <div className="nr-pop__rola is-lista">
+        {vis.map((it, k) => (
+          <div key={it.nome + it.onde + it.data} className="nr-ativ-item">
+            {(k === 0 || vis[k - 1].mes !== it.mes) && <p className="nr-pop__mes">{it.mes}</p>}
+            <button className={`nr-opcao ${marcada(it) ? 'is-on' : ''}`} onClick={() => (it.rel ? onAbrir(it.rel) : onFora())}>
+              <span>
+                <b>{it.nome}</b>
+                <small>
+                  {it.onde} · {it.data}
+                  {perfil !== 'prof' && it.autor ? ` · ${it.autor}` : ''}
+                </small>
+              </span>
+              <Badge t={it.status} tom={it.status === 'Finalizada' ? 'suc' : 'inf'} />
+              {marcada(it) ? <Check size={16} /> : <ChevronRight size={16} />}
+            </button>
+          </div>
         ))}
-        {!lista.length && <small className="nr-pop__nota">Nenhuma atividade encontrada.</small>}
+        {!vis.length && <small className="nr-pop__nota">Nenhuma {substantivo[0]} encontrada. Tente outro nome, turma ou professor.</small>}
+      </div>
+      <div className="nr-pop__rodape is-entre">
+        <small>{filtrando ? `${filtrados.length} ${filtrados.length === 1 ? 'resultado' : 'resultados'}` : `Mostrando ${vis.length} de ${fmt(total)}, das mais recentes`}</small>
+        {filtrados.length > qtd && (
+          <button className="nr-btn is-contorno is-p" onClick={() => setQtd(qtd + LOTE)}>
+            Carregar mais
+          </button>
+        )}
       </div>
     </Pop>
   )
