@@ -44,7 +44,6 @@ import '../gamificacao-geniex-educadores/rgx.css'
 import {
   ATIVOS_5ANO,
   ATIVOS_PROF,
-  CATALOGO,
   DICA_KPI,
   E701,
   ESCOLAS_TODAS,
@@ -78,6 +77,7 @@ import {
   type Rel,
   type Tabela,
 } from './data'
+import { catalogoPainel, escopoDe, itemCat, podeAbrir, relDoEscopo, relPadrao, type Formato, type ItemCat } from './acesso'
 import { Badge, Bloco_, Cartao, Celula, Ic, Kpis, Linha, Segmento, Seletor, TabelaCard } from './pecas'
 import './nrl.css'
 
@@ -95,10 +95,10 @@ type Tela =
   | { id: 'estrutura' }
 type Modal =
   | null
-  | { id: 'onde' | 'tipoAtiv' | 'periodo' | 'tipo' | 'glossario' | 'filtros' | 'compartilhar' | 'exportar' | 'salvar' | 'excluir' | 'perfil' }
+  | { id: 'onde' | 'tipoAtiv' | 'periodo' | 'tipo' | 'glossario' | 'filtros' | 'compartilhar' | 'exportar' | 'excluir' | 'perfil' }
   | { id: 'atividade'; tipo: string }
   | { id: 'menuBloco'; bloco: string }
-  | { id: 'lista'; titulo: string; opcoes: [string, string?, string?][] }
+  | { id: 'lista'; titulo: string; opcoes: [string, string?, string?][]; atual?: string }
 type Toast = { tipo: 'ok' | 'info'; titulo: string; texto?: string }
 type Inicial = { tela: Tela; perfil: Perfil; modal?: Modal; toast?: Toast }
 
@@ -130,7 +130,6 @@ const SOBRE: Record<string, Modal> = {
   'o-filtros': { id: 'filtros' },
   'o-compartilhar': { id: 'compartilhar' },
   'o-exportar': { id: 'exportar' },
-  'o-salvar': { id: 'salvar' },
   'o-menu-bloco': { id: 'menuBloco', bloco: 'Distribuição de proficiência' },
   'o-perfil': { id: 'perfil' },
   'o-tipo': { id: 'tipo' },
@@ -141,15 +140,6 @@ ATALHOS['o-aviso'] = { tela: { id: 'painel' }, perfil: 'gestora', toast: { tipo:
 ATALHOS['o-atividade'] = { tela: { id: 'rel', rel: 'tarefa', aba: 'Visão geral' }, perfil: 'gestora', modal: { id: 'atividade', tipo: 'Tarefa' } }
 ATALHOS['o-tipo-atividade'] = { tela: { id: 'escolhaA' }, perfil: 'gestora', modal: { id: 'tipoAtiv' } }
 
-/** O que cada perfil pode abrir (institucionais por perfil; atividades para todos). */
-const podeAbrir = (pf: Perfil, rel: string) => {
-  const r = RELS[rel]
-  if (!r) return false
-  if (r.grupo === 'ativ') return true
-  if (pf === 'gestora') return true
-  if (pf === 'coord') return rel !== 'rede' && rel !== 'alf'
-  return rel === 'turma' || rel === 'est' || rel === 'est-todos'
-}
 /** Linhas de tabela que abrem outro relatório (só as que têm dados no protótipo). */
 const LINK_LINHA: Record<string, string> = { 'EM Jardim das Flores': 'escola', 'Turma 701': 'turma', 'Alice Moreira': 'est', 'Rafael Souza': 'prof' }
 
@@ -359,6 +349,7 @@ export default function NovosRelatorios({ startScreen }: PrototypeProps) {
               {tela.id === 'painel' && <PainelUso blocos={blocosPainel} onEditar={() => ir({ id: 'edicao' })} onCompartilhar={() => abrir({ id: 'compartilhar' })} onMenu={(b) => abrir({ id: 'menuBloco', bloco: b })} onPeriodo={() => abrir({ id: 'periodo' })} />}
               {tela.id === 'edicao' && (
                 <PainelEdicao
+                  perfil={perfil}
                   blocos={blocosPainel}
                   onSalvar={(b) => {
                     setBlocosPainel(b)
@@ -370,6 +361,7 @@ export default function NovosRelatorios({ startScreen }: PrototypeProps) {
               )}
               {tela.id === 'novo' && (
                 <PainelNovo
+                  perfil={perfil}
                   onSalvar={(nome, n) => {
                     setPaineis((ps) => [{ nome, sub: `Rede inteira · ${n} bloco${n === 1 ? '' : 's'} · editado agora`, comp: 'Só você' }, ...ps])
                     ir({ id: 'paineis' })
@@ -391,15 +383,23 @@ export default function NovosRelatorios({ startScreen }: PrototypeProps) {
   )
 }
 
-/** Lista de opções dos seletores de recorte (Escola, Turma, Professor, Estudante). */
+/** Lista de opções dos seletores de recorte (Escola, Turma, Professor, Estudante). A primeira é sempre "todos". */
+type Op = [string, string?, string?]
 function listaPara(rot: string, rel: Rel, perfil: Perfil): Modal {
-  if (rot === 'Escola') return { id: 'lista', titulo: 'Escola', opcoes: [['Todas as escolas', '18 escolas'] as [string, string]].concat(ESCOLAS_TODAS.slice().sort().map((e) => [e, e === 'EM Jardim das Flores' ? '9 turmas · 230 estudantes' : undefined] as any)).map(([t, s]) => [t, s, t === 'EM Jardim das Flores' ? 'escola' : undefined]) }
+  const atual = rel.cab.sel.find((x) => x[0] === rot)?.[1]
+  const esc = escopoDe(rel.id)
+  const L = (opcoes: Op[]): Modal => ({ id: 'lista', titulo: rot, opcoes, atual })
+  const JDF = 'EM Jardim das Flores'
+  if (rot === 'Escola') return L(([['Todas as escolas', '18 escolas', relDoEscopo(rel.tipo, 'rede', perfil)]] as Op[]).concat(ESCOLAS_TODAS.slice().sort().map((e): Op => [e, e === JDF ? '9 turmas · 230 estudantes' : undefined, e === JDF ? relDoEscopo(rel.tipo, 'escola', perfil) : undefined])))
   if (rot === 'Turma') {
-    const turmas = perfil === 'prof' ? ['701', '702', '801'] : TURMAS_ESCOLA
-    return { id: 'lista', titulo: 'Turma', opcoes: [[perfil === 'prof' ? 'Minhas turmas' : 'Todas as turmas', `${turmas.length} turmas`, rel.id === 'prof' ? 'prof' : undefined] as [string, string?, string?]].concat(turmas.map((t) => ['Turma ' + t, t === '701' ? '26 estudantes · Matemática com Rafael Souza' : undefined, t === '701' ? (rel.id.startsWith('est') ? rel.id : 'turma') : undefined])) }
+    const prof = perfil === 'prof'
+    const turmas = prof ? ['701', '702', '801'] : TURMAS_ESCOLA
+    const todas: Op = esc === 'rede' ? ['Todas as turmas', '142 turmas da rede', relDoEscopo(rel.tipo, 'rede', perfil)] : [prof ? 'Minhas turmas' : 'Todas as turmas', `${turmas.length} turmas`, relDoEscopo(rel.tipo, prof ? 'minhas' : 'escola', perfil)]
+    return L([todas].concat(turmas.map((t): Op => ['Turma ' + t, (esc === 'rede' ? JDF + (t === '701' ? ' · ' : '') : '') + (t === '701' ? '26 estudantes · Matemática com Rafael Souza' : ''), t === '701' ? relDoEscopo(rel.tipo, '701', perfil) : undefined])))
   }
-  if (rot === 'Professor') return { id: 'lista', titulo: 'Professor', opcoes: [['Todos os professores', '14 professores', 'prof-todos']].concat(PROFESSORES.map((p) => [p, p === 'Rafael Souza' ? 'Matemática · turmas 701, 702 e 801' : undefined] as any)).map(([t, s, a]) => [t, s, a ?? (t === 'Rafael Souza' ? 'prof' : undefined)]) }
-  return { id: 'lista', titulo: 'Estudante', opcoes: [['Todos os estudantes da turma', '26 estudantes', 'est-todos'] as [string, string?, string?]].concat(E701.map((e) => [e[0], e[0] === 'Alice Moreira' ? 'Turma 701 · Avançado' : 'Turma 701', e[0] === 'Alice Moreira' ? 'est' : undefined])) }
+  if (rot === 'Professor') return L(([['Todos os professores', esc === 'rede' ? '214 professores da rede' : '14 professores', relDoEscopo('Professores', esc === 'rede' ? 'rede' : 'escola', perfil)]] as Op[]).concat(PROFESSORES.map((x): Op => [x, x === 'Rafael Souza' ? 'Matemática · turmas 701, 702 e 801' : undefined, x === 'Rafael Souza' ? 'prof' : undefined])))
+  const nEst = { rede: '3.860 estudantes da rede', escola: '230 estudantes da escola', minhas: '77 estudantes das suas turmas', '701': '26 estudantes da Turma 701' }[esc]
+  return L(([['Todos os estudantes', nEst, relDoEscopo('Estudante', esc, perfil)]] as Op[]).concat(E701.map((e): Op => [e[0], e[0] === 'Alice Moreira' ? 'Turma 701 · Avançado' : 'Turma 701', e[0] === 'Alice Moreira' ? 'est' : undefined])))
 }
 
 /* ================================================================== casca */
@@ -505,9 +505,6 @@ function CabRel({ titulo, acesso, sub, acoes, onModal, children }: { titulo: str
             <button className="nr-btn is-contorno" onClick={() => onModal({ id: 'exportar' })}>
               <Download size={16} /> Exportar
             </button>
-            <button className="nr-btn is-contorno" onClick={() => onModal({ id: 'salvar' })}>
-              <LayoutGrid size={16} /> Salvar como painel
-            </button>
           </div>
         )}
       </div>
@@ -545,7 +542,7 @@ function EscolhaInst({ perfil, periodo, onAbrir, onSel, nFiltros }: { perfil: Pe
   const P = PERFIS[perfil]
   return (
     <>
-      <CabRel titulo="Relatórios institucionais" acesso={P.acesso} sub="Escolha o tipo de relatório e o recorte. O relatório abre com as abas Visão geral, Engajamento e Aprendizagem." onModal={onSel}>
+      <CabRel titulo="Relatórios institucionais" acesso={P.acesso} sub="Escolha o tipo de relatório. Ele abre com todos do seu acesso (escolas, turmas, professores ou estudantes); para ver um só, escolha no filtro." onModal={onSel}>
         <BarraSel nFiltros={nFiltros} onFiltros={() => onSel({ id: 'filtros' })}>
           <Seletor rot="Tipo de relatório" valor="Selecione o tipo" ic="list-checks" placeholder largura={240} onClick={() => onSel({ id: 'tipo' })} />
           <Seletor rot="Recorte" valor="Escolha o tipo primeiro" ic="map-pin" placeholder largura={300} onClick={() => onSel({ id: 'tipo' })} />
@@ -558,7 +555,7 @@ function EscolhaInst({ perfil, periodo, onAbrir, onSel, nFiltros }: { perfil: Pe
       </div>
       <div className="nr-tipos">
         {LIB_I[perfil].map(([t, n, off]) => (
-          <button key={t} className={`nr-tipo ${off ? 'is-off' : ''}`} disabled={off} onClick={() => onAbrir(TIPOS_I[t].rel)}>
+          <button key={t} className={`nr-tipo ${off ? 'is-off' : ''}`} disabled={off} onClick={() => onAbrir(relPadrao(t, perfil))}>
             <span className="nr-tipo__cab">
               <span className="nr-tile">
                 <Ic n={TIPOS_I[t].ic} size={20} />
@@ -930,7 +927,17 @@ function BlocoPainel({ nome, onMenu, prof }: { nome: string; onMenu?: (b: string
   if (nome === 'Distribuição de proficiência') return <Bloco_ onMenu={onMenu} b={(RELS.escola.T.Aprendizagem[1][1] as Bloco[])[0]} />
   if (nome === 'Evolução de aprendizagem') return <Bloco_ onMenu={onMenu} b={{ ...(RELS.escola.T.Aprendizagem[1][1] as Bloco[])[1], w: undefined }} />
   if (nome === 'Comparativo por entidade') return <Bloco_ onMenu={onMenu} b={(RELS.escola.T.Engajamento[3][1] as Bloco[])[0]} />
-  return null
+  // Qualquer outro item do catálogo: mostra a amostra do relatório de onde ele vem.
+  const it = itemCat(nome)
+  if (!it) return null
+  if (it.amostra.k === 'kpi') return <Kpis itens={[it.amostra.v]} dicas={DICA_KPI} />
+  if (it.amostra.k === 'tab')
+    return (
+      <div className="nr-painel-largo">
+        <TabelaCard t={it.amostra.v} onExportar={() => undefined} onFiltros={() => undefined} onIr={() => undefined} onMenu={onMenu} />
+      </div>
+    )
+  return <Bloco_ onMenu={onMenu} b={it.amostra.v} />
 }
 function PainelUso({ blocos, onEditar, onCompartilhar, onMenu, onPeriodo }: { blocos: string[]; onEditar: () => void; onCompartilhar: () => void; onMenu: (b: string) => void; onPeriodo: () => void }) {
   return (
@@ -963,64 +970,106 @@ function PainelUso({ blocos, onEditar, onCompartilhar, onMenu, onPeriodo }: { bl
   )
 }
 
-function Catalogo({ noPainel, onAdicionar }: { noPainel: string[]; onAdicionar: (b: string) => void }) {
-  const [cat, setCat] = useState('Todos')
+const semAcento = (t: string) => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+const TEMAS_CAT = ['Panorama', 'Engajamento', 'Aprendizagem']
+/** Catálogo de Meus painéis: TODOS os indicadores, gráficos e tabelas dos relatórios que o perfil abre. */
+function Catalogo({ perfil, noPainel, onAdicionar }: { perfil: Perfil; noPainel: string[]; onAdicionar: (b: string) => void }) {
+  const [grupo, setGrupo] = useState('Todos')
+  const [formato, setFormato] = useState<'Todos os formatos' | Formato>('Todos os formatos')
+  const [origem, setOrigem] = useState('Todos os relatórios')
   const [q, setQ] = useState('')
-  const itens = CATALOGO.filter(([n, d, c]) => (cat === 'Todos' || c === cat) && (n + d).toLowerCase().includes(q.toLowerCase()))
+  const base = useMemo(() => catalogoPainel(perfil), [perfil])
+  const origens = useMemo(() => {
+    const todas = [...new Set(base.flatMap((i) => i.em))]
+    return todas.filter((t) => TIPOS_I[t]).concat(todas.filter((t) => !TIPOS_I[t]))
+  }, [base])
+  const itens = base.filter((i) => (grupo === 'Todos' || i.grupo === grupo) && (formato === 'Todos os formatos' || i.formato === formato) && (origem === 'Todos os relatórios' || i.em.includes(origem)) && semAcento(i.nome + ' ' + i.em.join(' ')).includes(semAcento(q)))
+  const linha = (i: ItemCat) => {
+    const no = noPainel.includes(i.nome)
+    return (
+      <div key={i.nome + i.formato} className="nr-cat-item">
+        <GripVertical size={16} className="nr-mudo" />
+        <span className="nr-tile is-p">
+          <Ic n={i.ic} size={16} />
+        </span>
+        <div>
+          <b>{i.nome}</b>
+          <small>
+            {i.formato} · {i.em.slice(0, 3).join(', ')}
+            {i.em.length > 3 ? ` +${i.em.length - 3}` : ''}
+          </small>
+        </div>
+        {no ? (
+          <Badge t="No painel" tom="suc" icon={Check} />
+        ) : (
+          <button className="nr-btn is-contorno is-p" onClick={() => onAdicionar(i.nome)} aria-label={`Adicionar ${i.nome}`}>
+            <Plus size={14} /> Adicionar
+          </button>
+        )}
+      </div>
+    )
+  }
   return (
     <aside className="nr-catalogo">
       <div className="nr-catalogo__cab">
         <h3>
-          Catálogo de blocos <Badge t="23 blocos" tom="neutro" />
+          Catálogo de indicadores <Badge t={`${base.length} no seu acesso`} tom="neutro" />
         </h3>
-        <small>Só indicadores do glossário. Aparecem os blocos que funcionam no recorte e no seu acesso.</small>
+        <small>Todos os indicadores, gráficos e tabelas dos relatórios institucionais e de atividades que o seu acesso abre.</small>
       </div>
       <label className="nr-busca">
         <Search size={15} />
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar bloco ou indicador..." aria-label="Buscar bloco" />
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar indicador ou relatório..." aria-label="Buscar indicador" />
+        {q && (
+          <button className="nr-icone-btn" onClick={() => setQ('')} aria-label="Limpar busca">
+            <X size={14} />
+          </button>
+        )}
       </label>
       <div className="nr-chips">
-        {['Todos', 'Engajamento', 'Aprendizagem', 'Atividades', 'Avaliações', 'Eventos'].map((c) => (
-          <button key={c} className={c === cat ? 'is-on' : ''} onClick={() => setCat(c)}>
+        {['Todos', 'Institucionais', 'Atividades'].map((c) => (
+          <button key={c} className={c === grupo ? 'is-on' : ''} onClick={() => (setGrupo(c), setOrigem('Todos os relatórios'))}>
             {c}
           </button>
         ))}
       </div>
+      <div className="nr-cat-filtros">
+        <select value={formato} onChange={(e) => setFormato(e.target.value as Formato)} aria-label="Formato">
+          {['Todos os formatos', 'Indicador', 'Gráfico', 'Tabela'].map((f) => (
+            <option key={f}>{f}</option>
+          ))}
+        </select>
+        <select value={origem} onChange={(e) => setOrigem(e.target.value)} aria-label="Relatório de origem">
+          <option>Todos os relatórios</option>
+          {origens
+            .filter((o) => grupo === 'Todos' || base.some((i) => i.grupo === grupo && i.em.includes(o)))
+            .map((o) => (
+              <option key={o}>{o}</option>
+            ))}
+        </select>
+      </div>
       <div className="nr-catalogo__lista">
-        {itens.map(([n, d, , ic, rec, st]) => {
-          const no = st === 'no' || noPainel.includes(n)
-          const lock = st === 'lock'
+        {TEMAS_CAT.map((t) => {
+          const doTema = itens.filter((i) => i.tema === t)
+          if (!doTema.length) return null
           return (
-            <div key={n} className={`nr-cat-item ${lock ? 'is-lock' : ''}`}>
-              <GripVertical size={16} className="nr-mudo" />
-              <span className="nr-tile is-p">
-                <Ic n={ic} size={16} />
-              </span>
-              <div>
-                <b>{n}</b>
-                <small>{d}</small>
-                <small className="nr-mudo">{rec}</small>
-              </div>
-              {lock ? (
-                <span title="Fora do seu acesso ou do recorte">
-                  <Lock size={16} className="nr-mudo" />
-                </span>
-              ) : no ? (
-                <Badge t="No painel" tom="suc" icon={Check} />
-              ) : (
-                <button className="nr-btn is-contorno is-p" onClick={() => onAdicionar(n)}>
-                  <Plus size={14} /> Adicionar
-                </button>
-              )}
-            </div>
+            <section key={t} className="nr-cat-tema">
+              <p>
+                {t} <span>{doTema.length}</span>
+              </p>
+              {doTema.map(linha)}
+            </section>
           )
         })}
-        {itens.length === 0 && <p className="nr-vazio">Nenhum bloco para “{q}”.</p>}
+        {itens.length === 0 && <p className="nr-vazio">Nenhum indicador para “{q}”. Tente outro nome ou limpe os filtros.</p>}
       </div>
+      <small className="nr-mudo">
+        Mostrando {itens.length} de {base.length} · os números seguem o recorte do painel e o acesso de quem abre.
+      </small>
     </aside>
   )
 }
-function PainelEdicao({ blocos, onSalvar, onCancelar }: { blocos: string[]; onSalvar: (b: string[]) => void; onCancelar: () => void }) {
+function PainelEdicao({ perfil, blocos, onSalvar, onCancelar }: { perfil: Perfil; blocos: string[]; onSalvar: (b: string[]) => void; onCancelar: () => void }) {
   const [lista, setLista] = useState(blocos)
   const mover = (i: number, d: number) =>
     setLista((l) => {
@@ -1081,12 +1130,12 @@ function PainelEdicao({ blocos, onSalvar, onCancelar }: { blocos: string[]; onSa
             <Plus size={18} /> Solte o bloco aqui ou use “Adicionar” no catálogo
           </div>
         </div>
-        <Catalogo noPainel={lista} onAdicionar={(b) => setLista((l) => l.concat([b]))} />
+        <Catalogo perfil={perfil} noPainel={lista} onAdicionar={(b) => setLista((l) => l.concat([b]))} />
       </div>
     </>
   )
 }
-function PainelNovo({ onSalvar, onCancelar, onModelo }: { onSalvar: (nome: string, n: number) => void; onCancelar: () => void; onModelo: () => void }) {
+function PainelNovo({ perfil, onSalvar, onCancelar, onModelo }: { perfil: Perfil; onSalvar: (nome: string, n: number) => void; onCancelar: () => void; onModelo: () => void }) {
   const [nome, setNome] = useState('Painel sem título')
   const [lista, setLista] = useState<string[]>([])
   return (
@@ -1114,7 +1163,7 @@ function PainelNovo({ onSalvar, onCancelar, onModelo }: { onSalvar: (nome: strin
             <div className="nr-vazio-bloco is-grande">
               <LayoutGrid size={32} />
               <b>Seu painel está vazio</b>
-              <small>Arraste blocos do catálogo à direita ou comece por um modelo pronto. Cada bloco usa só indicadores do glossário.</small>
+              <small>Adicione indicadores, gráficos e tabelas do catálogo à direita ou comece por um modelo pronto. O catálogo tem tudo o que existe nos relatórios do seu acesso.</small>
               <span>
                 <button className="nr-btn is-contorno" onClick={onModelo}>
                   <Sparkles size={16} /> Usar um modelo
@@ -1136,12 +1185,12 @@ function PainelNovo({ onSalvar, onCancelar, onModelo }: { onSalvar: (nome: strin
                     </button>
                   </span>
                 </div>
-                {b === 'Indicador com meta' ? <Kpis itens={KPIS_PAINEL} dicas={DICA_KPI} /> : <BlocoPainel nome={b} />}
+                <BlocoPainel nome={b} />
               </div>
             ))
           )}
         </div>
-        <Catalogo noPainel={lista.concat(['__'])} onAdicionar={(b) => setLista((l) => l.concat([b]))} />
+        <Catalogo perfil={perfil} noPainel={lista} onAdicionar={(b) => setLista((l) => l.concat([b]))} />
       </div>
     </>
   )
@@ -1389,16 +1438,17 @@ function Sobrepostos(p: {
         <Pop key="tipo" ancora={ancora} celular={celular} largura={320} onFechar={fechar}>
           <p className="nr-pop__tit">Tipo de relatório</p>
           {Object.entries(TIPOS_I).map(([t, d]) => {
-            const ok = podeAbrir(perfil, d.rel) && !LIB_I[perfil].find((x) => x[0] === t)?.[2]
+            const alvo = relPadrao(t, perfil)
+            const ok = podeAbrir(perfil, alvo) && !LIB_I[perfil].find((x) => x[0] === t)?.[2]
             if (!LIB_I[perfil].some((x) => x[0] === t)) return null
             return (
-              <button key={t} className={`nr-opcao ${rel?.id === d.rel ? 'is-on' : ''}`} disabled={!ok} onClick={() => p.abrirRel(d.rel)}>
+              <button key={t} className={`nr-opcao ${rel?.tipo === t ? 'is-on' : ''}`} disabled={!ok} onClick={() => p.abrirRel(alvo)}>
                 <Ic n={d.ic} />
                 <span>
                   <b>{t}</b>
                   <small>{d.sub}</small>
                 </span>
-                {rel?.id === d.rel && <Check size={16} />}
+                {rel?.tipo === t && <Check size={16} />}
               </button>
             )
           })}
@@ -1439,12 +1489,12 @@ function Sobrepostos(p: {
           <p className="nr-pop__tit">{modal.titulo}</p>
           <div className="nr-pop__rola">
             {modal.opcoes.map(([t, s, alvo]) => (
-              <button key={t} className="nr-opcao" onClick={() => (alvo ? (p.abrirRel(alvo), fechar()) : aviso('Fora da amostra do protótipo', `Os dados existem para ${modal.titulo === 'Escola' ? 'EM Jardim das Flores' : modal.titulo === 'Turma' ? 'a Turma 701' : modal.titulo === 'Professor' ? 'Rafael Souza' : 'Alice Moreira'}.`, 'info'))}>
+              <button key={t} className={`nr-opcao ${modal.atual === t ? 'is-on' : ''}`} onClick={() => (alvo ? (p.abrirRel(alvo), fechar()) : aviso('Fora da amostra do protótipo', `Os dados existem para ${modal.titulo === 'Escola' ? 'EM Jardim das Flores' : modal.titulo === 'Turma' ? 'a Turma 701' : modal.titulo === 'Professor' ? 'Rafael Souza' : 'Alice Moreira'}.`, 'info'))}>
                 <span>
                   <b>{t}</b>
                   {s && <small>{s}</small>}
                 </span>
-                {alvo && <ChevronRight size={16} />}
+                {modal.atual === t ? <Check size={16} /> : alvo && <ChevronRight size={16} />}
               </button>
             ))}
           </div>
@@ -1459,19 +1509,6 @@ function Sobrepostos(p: {
       {modal?.id === 'filtros' && <Filtros key="filt" onFechar={fechar} n={p.nFiltros} onAplicar={(n) => (p.setNFiltros(n), aviso(n ? `${n} filtro${n > 1 ? 's' : ''} aplicado${n > 1 ? 's' : ''}` : 'Filtros limpos', 'Valem para todos os blocos desta tela.'))} />}
       {modal?.id === 'compartilhar' && <Compartilhar key="comp" onFechar={fechar} onCopiar={() => aviso('Link copiado', 'Quem abrir vê só os dados do próprio acesso.')} onConcluir={fechar} />}
       {modal?.id === 'exportar' && <Exportar key="exp" rel={rel} aba={p.tela.id === 'rel' ? p.tela.aba : 'Visão geral'} periodo={p.periodo} onFechar={fechar} onExportar={(f) => aviso(`Exportando em ${f}`, 'O download começa sozinho em alguns segundos.', 'info')} />}
-      {modal?.id === 'salvar' && (
-        <SalvarPainel
-          key="salvar"
-          rel={rel}
-          aba={p.tela.id === 'rel' ? p.tela.aba : 'Visão geral'}
-          paineis={p.paineis}
-          onFechar={fechar}
-          onSalvar={(nome, n, novo) => {
-            if (novo) p.setPaineis((ps) => [{ nome, sub: `${rel?.ent[0] ?? 'Rede inteira'} · ${n} blocos · editado agora`, comp: 'Só você' }, ...ps])
-            aviso('Painel salvo em Meus painéis', novo ? `“${nome}” com ${n} blocos.` : `${n} blocos adicionados a “${nome}”.`)
-          }}
-        />
-      )}
       {modal?.id === 'menuBloco' && (
         <Pop key="menu" ancora={ancora} celular={celular} largura={300} onFechar={fechar}>
           <MenuBloco bloco={modal.bloco} paineis={p.paineis.map((x) => x.nome)} onEscolher={(painel) => aviso(`Bloco adicionado a “${painel}”`, modal.bloco)} onAcao={(a) => (a === 'glossario' ? setModal({ id: 'glossario' }) : aviso(a === 'csv' ? 'Exportando em CSV' : 'Ampliar bloco', a === 'csv' ? modal.bloco : 'Neste protótipo, o bloco não abre em tela cheia.', 'info'))} />
@@ -1888,72 +1925,6 @@ function Exportar({ rel, aba, periodo, onFechar, onExportar }: { rel: Rel | null
       <button className={`nr-check ${nomes ? 'is-on' : ''}`} onClick={() => setNomes(!nomes)} aria-pressed={nomes}>
         <i>{nomes && <Check size={13} />}</i> Incluir nomes de estudantes
       </button>
-    </Dialogo>
-  )
-}
-
-/** Blocos do relatório atual (os mesmos que viram blocos do painel). */
-const blocosDe = (rel: Rel | null, aba: string): string[] => {
-  if (!rel) return ['Indicadores-chave']
-  const out: string[] = []
-  for (const it of rel.T[aba] ?? []) {
-    if (it[0] === 'kpis') out.push('Indicadores-chave')
-    if (it[0] === 'row') for (const b of it[1]) if (b.titulo && b.titulo !== 'Como ler os quadrantes') out.push(b.titulo)
-    if (it[0] === 'tab') out.push(it[1].titulo)
-  }
-  return out
-}
-function SalvarPainel({ rel, aba, paineis, onFechar, onSalvar }: { rel: Rel | null; aba: string; paineis: typeof PAINEIS; onFechar: () => void; onSalvar: (nome: string, n: number, novo: boolean) => void }) {
-  const blocos = blocosDe(rel, aba)
-  const [nome, setNome] = useState('Reunião da rede · dezembro')
-  const [onde, setOnde] = useState<'novo' | 'existente'>('novo')
-  const [existente, setExistente] = useState(paineis[1]?.nome ?? paineis[0]?.nome)
-  const [marcados, setMarcados] = useState<string[]>(blocos)
-  return (
-    <Dialogo
-      titulo="Salvar como painel"
-      sub={`O painel guarda o recorte atual (${rel?.ent[0] ?? 'Rede Municipal de Nova Esperança'}) e o período.`}
-      onFechar={onFechar}
-      largura={540}
-      rodape={<Rodape onCancelar={onFechar} ok="Salvar painel" desab={!marcados.length || (onde === 'novo' && !nome.trim())} onOk={() => onSalvar(onde === 'novo' ? nome.trim() : existente, marcados.length, onde === 'novo')} />}
-    >
-      <label className="nr-campo">
-        <b className="nr-rot">Nome do painel</b>
-        <input value={nome} onChange={(e) => setNome(e.target.value)} disabled={onde !== 'novo'} />
-      </label>
-      <b className="nr-rot">Onde salvar</b>
-      <div className="nr-radios is-linha">
-        <button className={`nr-radio ${onde === 'novo' ? 'is-on' : ''}`} onClick={() => setOnde('novo')}>
-          <i />
-          <b>Novo painel</b>
-        </button>
-        <button className={`nr-radio ${onde === 'existente' ? 'is-on' : ''}`} onClick={() => setOnde('existente')}>
-          <i />
-          <b>Painel existente</b>
-        </button>
-      </div>
-      {onde === 'existente' && (
-        <label className="nr-campo">
-          <select value={existente} onChange={(e) => setExistente(e.target.value)}>
-            {paineis.map((x) => (
-              <option key={x.nome}>{x.nome}</option>
-            ))}
-          </select>
-        </label>
-      )}
-      <b className="nr-rot">
-        Blocos deste relatório ({marcados.length} de {blocos.length})
-      </b>
-      <div className="nr-checks">
-        {blocos.map((b) => {
-          const on = marcados.includes(b)
-          return (
-            <button key={b} className={`nr-check ${on ? 'is-on' : ''}`} onClick={() => setMarcados((m) => (on ? m.filter((x) => x !== b) : m.concat([b])))} aria-pressed={on}>
-              <i>{on && <Check size={13} />}</i> {b}
-            </button>
-          )
-        })}
-      </div>
     </Dialogo>
   )
 }
