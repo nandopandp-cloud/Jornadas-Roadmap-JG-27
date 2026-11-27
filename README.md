@@ -153,11 +153,11 @@ Os planetas de massinha dos Exploradores viram modelos 3D de verdade: o planeta 
 
 ### Novos Relatórios
 
-**Plataforma Educadores** · Gestores de rede, unidades regionais, escolas, coordenação e professores · _em construção_
+**Plataforma Educadores** · Gestores de rede, coordenação e professores
 
-Relatórios da Educadores e BIs externos viram uma coisa só: fonte única de dados, as mesmas regras de cálculo e o mesmo permissionamento para todos os clientes. O menu Relatórios tem Institucionais (rede, unidade, escola, turma, professores e estudante, com acesso por perfil), Atividades (as mesmas telas para todos) e Meus painéis, montados com blocos de um catálogo único, como um lego. Todo relatório tem Resumo, Acompanhamento e Detalhada.
+Relatórios da Educadores e BIs externos viram uma coisa só, com indicadores reais unificados. O menu Relatórios tem Institucionais (rede, escola, turma, professores, estudante e alfabetização, com acesso por perfil), Atividades (Tarefa, Prova Genial, Desafio, Sala de Aula Invertida, Projeto, Raio-X, Campeonato, Redação, Olimpíadas e Liga das Estrelas, as mesmas telas para todos) e Meus painéis, montados com blocos de um catálogo único. Cada relatório abre nas abas Visão geral, Engajamento e Aprendizagem, com o Glossário ao lado.
 
-[Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/novos-relatorios) · [Branch `prototipo-novos-relatorios`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/prototipo-novos-relatorios)
+[Protótipo navegável](https://jornadas-roadmap-jg-27.vercel.app/#/p/novos-relatorios) · [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/novos-relatorios) · [Branch `prototipo-novos-relatorios`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/prototipo-novos-relatorios)
 
 <!-- jornadas:fim -->
 
