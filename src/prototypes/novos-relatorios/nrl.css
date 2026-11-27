@@ -343,6 +343,79 @@
 .nr-selbar__sels.is-painel {
   align-items: center;
 }
+.nr-selbar__alterna {
+  flex: none;
+  align-self: flex-end;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--nr-linha);
+  background: #fff;
+}
+.nr-selbar.is-recolhida .nr-selbar__alterna {
+  width: 34px;
+  height: 34px;
+}
+.nr-selbar.is-recolhida {
+  align-items: center;
+  gap: 12px;
+  padding: 8px 8px 8px 12px;
+}
+.nr-selbar.is-recolhida .nr-selbar__alterna {
+  align-self: center;
+}
+.nr-selbar.is-recolhida .nr-selbar__filtros {
+  height: 34px;
+}
+.nr-resumo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+.nr-resumo__item {
+  display: contents;
+}
+.nr-resumo__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 340px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--nr-linha);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--nr-tinta);
+  font-size: 13px;
+}
+.nr-resumo__chip:hover {
+  border-color: #c4b5d4;
+}
+.nr-resumo__chip svg {
+  flex: none;
+  color: var(--nr-suave);
+}
+.nr-resumo__chip small {
+  flex: none;
+  color: var(--nr-suave);
+  font-size: 12px;
+}
+.nr-resumo__chip > span {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+.nr-resumo__chip.is-ph > span {
+  color: var(--nr-suave);
+  font-weight: 400;
+}
+.nr-resumo__chip.is-travado {
+  background: var(--nr-cinza);
+  cursor: default;
+}
 .nr-selbar__filtros .nr-badge {
   height: 18px;
   padding: 0 6px;
@@ -1822,6 +1895,25 @@
   .nr-selbar {
     flex-direction: column;
     align-items: stretch;
+  }
+  .nr-selbar.is-recolhida {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .nr-selbar.is-recolhida .nr-resumo {
+    flex-basis: 100%;
+    order: -1;
+  }
+  .nr-selbar.is-recolhida .nr-selbar__filtros {
+    flex: 1;
+  }
+  .nr-selbar:not(.is-recolhida) .nr-selbar__alterna {
+    align-self: stretch;
+    width: 100%;
+  }
+  .nr-resumo__chip {
+    max-width: 100%;
   }
   .nr-sel {
     width: 100% !important;

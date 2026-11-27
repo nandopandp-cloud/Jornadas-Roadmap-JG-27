@@ -94,6 +94,11 @@ Para validar a experiência antes de Tablet e Celular. Está na plataforma (main
   - na escolha da atividade, "Atividade" fica travado até haver tipo.
   - Antes era um popover único de duas colunas (tipo e atividade específica). Se aprovado, o Figma (tela 8 e o sobreposto O2) é ajustado depois.
   - Em cada tipo, a primeira atividade da lista é a que tem dados; as outras mostram o aviso "fora da amostra".
+- **Barra de filtros recolhível (27/11, só no navegável, em validação):**
+  - o botão ⌃ ao lado de Filtros recolhe a barra numa linha de resumo (de 95 para 52 px no desktop);
+  - cada item do resumo continua abrindo o seu seletor, e ⌄ expande a barra de novo;
+  - a escolha vale para todos os relatórios e fica guardada no navegador.
+  - Se aprovado, entra no Figma junto com os outros ajustes.
 - **Sem tela no Figma:** as visões Turma e Ano escolar das Olimpíadas usam dados coerentes com as outras visões.
 
 | Atalho (`?screen=`) | Tela |
