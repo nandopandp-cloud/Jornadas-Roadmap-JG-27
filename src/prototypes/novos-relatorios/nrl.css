@@ -1408,6 +1408,26 @@
   max-height: 340px;
   overflow: auto;
 }
+.nr-pop__rola.is-alta {
+  max-height: 460px;
+}
+.nr-pop__tipo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px 10px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--nr-linha);
+  color: var(--nr-roxo);
+}
+.nr-pop__tipo b {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+}
+.nr-pop__tipo .nr-link {
+  font-size: 13px;
+}
 .nr-pop__duas {
   display: grid;
   grid-template-columns: 1fr 1fr;

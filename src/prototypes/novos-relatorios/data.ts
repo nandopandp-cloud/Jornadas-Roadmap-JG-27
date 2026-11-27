@@ -757,6 +757,58 @@ export const N_A: Record<Perfil, (string | null)[]> = {
   prof: ['6 nas suas turmas', '4 nas suas turmas', '2 nas suas turmas', '1 nas suas turmas', '1 concluído', '1 aplicação', '1 em andamento', null, 'Olimpíada de Matemática 2026', 'Temporada 2026 · semana 38'],
 }
 export const N_TIPO_A: Record<string, string> = { Tarefa: '1.284', 'Prova Genial': '386', Desafio: '612', 'Sala de Aula Invertida': '158', Projeto: '42', 'Raio-X': '80', Redação: '96', Campeonato: '18', Olimpíadas: '1', 'Liga das Estrelas': '1' }
+// Atividades de cada tipo (2º filtro): [nome, onde · data, relatório com dados ou null (fora da amostra), quem vê]
+// g = gestora, c = coordenadora, p = professor. A primeira de cada tipo é a que tem dados no protótipo.
+const ATIVS: Record<string, [string, string, string | null, string][]> = {
+  Tarefa: [
+    ['Todas as tarefas', '', 'tarefa', 'gcp'],
+    ['Razão e proporção', 'Turma 801 · 25/11', null, 'gcp'],
+    ['Revolução Industrial', 'EM Monteiro Lobato · 25/11', null, 'g'],
+    ['Frações equivalentes · lista 3', 'Turma 501 · 24/11', null, 'gc'],
+    ['Equações do 1º grau', 'Turma 702 · 21/11', null, 'gcp'],
+    ['Leitura de mapas', 'EM Castro Alves · 19/11', null, 'g'],
+  ],
+  'Prova Genial': [
+    ['Frações e decimais', 'Turma 701 · 18/11', 'prova', 'gcp'],
+    ['Geometria plana', 'Turma 702 · 11/11', null, 'gcp'],
+    ['Interpretação de texto', 'Turma 601 · 10/11', null, 'gc'],
+    ['Ciências da natureza · bimestral', 'EM Castro Alves · 06/11', null, 'g'],
+  ],
+  Desafio: [
+    ['Porcentagem no cotidiano', 'Turma 801 · 24/11', 'desafio', 'gcp'],
+    ['Tabuada relâmpago', 'Turma 502 · 20/11', null, 'gc'],
+    ['Sistema solar', 'EM Ana Néri · 18/11', null, 'g'],
+  ],
+  'Sala de Aula Invertida': [
+    ['Proporção', 'Turma 702 · 19/11', 'sala', 'gcp'],
+    ['Ecossistemas', 'EM Paulo Freire · 12/11', null, 'g'],
+  ],
+  Projeto: [
+    ['Horta escolar', 'Turmas 501 e 502 · 01/09 a 30/11', 'projeto', 'gcp'],
+    ['Feira de ciências', 'EM Cecília Meireles · 01/10 a 28/11', null, 'g'],
+  ],
+  'Raio-X': [
+    ['Matemática · 7º ano · 2ª aplicação', 'Rede · 06 a 10/10', 'raiox', 'gcp'],
+    ['Matemática · 7º ano · 1ª aplicação', 'Rede · 07 a 11/04', null, 'gc'],
+    ['Língua Portuguesa · 7º ano · 2ª aplicação', 'Rede · 06 a 10/10', null, 'g'],
+  ],
+  Campeonato: [
+    ['Campeonato de Matemática · 2º semestre', 'EM Jardim das Flores · 01/09 a 05/12', 'camp', 'gcp'],
+    ['Campeonato de Língua Portuguesa · 2º semestre', 'EM Castro Alves · 01/09 a 05/12', null, 'g'],
+  ],
+  Redação: [
+    ['Todas as propostas', '', 'redacao', 'gc'],
+    ['Carta de opinião · O celular na escola', '9º ano · 17/11', null, 'gc'],
+    ['Relato pessoal · Um dia marcante', '6º ano · 10/11', null, 'gc'],
+  ],
+  Olimpíadas: [['Olimpíada de Matemática 2026', 'Rede · 03 a 28/08', 'oli', 'gcp']],
+  'Liga das Estrelas': [['Temporada 2026', 'Rede · 02/03 a 18/12 · semana 38', 'liga', 'gcp']],
+}
+const LETRA: Record<Perfil, string> = { gestora: 'g', coord: 'c', prof: 'p' }
+export const ATIVIDADES_DO_TIPO = (pf: Perfil, tipo: string): [string, string, string | null][] => {
+  const i = TIPOS_A.findIndex((t) => t[0] === tipo)
+  return (ATIVS[tipo] ?? []).filter(([, , , q]) => q.includes(LETRA[pf])).map(([n, s, r]) => [n, s || (N_A[pf][i] ?? ''), r])
+}
 export const HIST_A = (pf: Perfil): Cel[][] =>
   ([['Razão e proporção', 'Tarefa', 'Turma 801', '25/11', '28/11', 'Em progresso', 'tarefa'], ['Porcentagem no cotidiano', 'Desafio', 'Turma 801', '24/11', '24/11', 'Finalizada', 'desafio'], ['Proporção', 'Sala de Aula Invertida', 'Turma 702', '19/11', '19/11', 'Finalizada', 'sala'], ['Frações e decimais', 'Prova Genial', 'Turma 701', '18/11', '18/11', 'Finalizada', 'prova'], ['Campeonato de Matemática', 'Campeonato', pf === 'prof' ? 'Turmas 701 a 801' : 'EM Jardim das Flores', '01/09', '05/12', 'Em progresso', 'camp'], ['Liga das Estrelas 2026', 'Liga das Estrelas', 'Rede inteira', '02/03', '18/12', 'Em progresso', 'liga']] as string[][]).map(([n, t, o, i, f, s, r]) => [n, t, o, i, f, { b: s, t: s === 'Finalizada' ? 'suc' : 'inf' }, { lk: 'Ver relatório', ir: r }])
 
