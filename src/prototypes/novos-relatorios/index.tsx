@@ -148,7 +148,7 @@ const podeAbrir = (pf: Perfil, rel: string) => {
   if (r.grupo === 'ativ') return true
   if (pf === 'gestora') return true
   if (pf === 'coord') return rel !== 'rede' && rel !== 'alf'
-  return rel === 'turma' || rel === 'est'
+  return rel === 'turma' || rel === 'est' || rel === 'est-todos'
 }
 /** Linhas de tabela que abrem outro relatório (só as que têm dados no protótipo). */
 const LINK_LINHA: Record<string, string> = { 'EM Jardim das Flores': 'escola', 'Turma 701': 'turma', 'Alice Moreira': 'est', 'Rafael Souza': 'prof' }
@@ -396,10 +396,10 @@ function listaPara(rot: string, rel: Rel, perfil: Perfil): Modal {
   if (rot === 'Escola') return { id: 'lista', titulo: 'Escola', opcoes: [['Todas as escolas', '18 escolas'] as [string, string]].concat(ESCOLAS_TODAS.slice().sort().map((e) => [e, e === 'EM Jardim das Flores' ? '9 turmas · 230 estudantes' : undefined] as any)).map(([t, s]) => [t, s, t === 'EM Jardim das Flores' ? 'escola' : undefined]) }
   if (rot === 'Turma') {
     const turmas = perfil === 'prof' ? ['701', '702', '801'] : TURMAS_ESCOLA
-    return { id: 'lista', titulo: 'Turma', opcoes: [[perfil === 'prof' ? 'Minhas turmas' : 'Todas as turmas', `${turmas.length} turmas`, rel.id === 'prof' ? 'prof' : undefined] as [string, string?, string?]].concat(turmas.map((t) => ['Turma ' + t, t === '701' ? '26 estudantes · Matemática com Rafael Souza' : undefined, t === '701' ? (rel.id === 'est' ? 'est' : 'turma') : undefined])) }
+    return { id: 'lista', titulo: 'Turma', opcoes: [[perfil === 'prof' ? 'Minhas turmas' : 'Todas as turmas', `${turmas.length} turmas`, rel.id === 'prof' ? 'prof' : undefined] as [string, string?, string?]].concat(turmas.map((t) => ['Turma ' + t, t === '701' ? '26 estudantes · Matemática com Rafael Souza' : undefined, t === '701' ? (rel.id.startsWith('est') ? rel.id : 'turma') : undefined])) }
   }
-  if (rot === 'Professor') return { id: 'lista', titulo: 'Professor', opcoes: [['Todos os professores', '14 professores']].concat(PROFESSORES.map((p) => [p, p === 'Rafael Souza' ? 'Matemática · turmas 701, 702 e 801' : undefined] as any)).map(([t, s]) => [t, s, t === 'Rafael Souza' ? 'prof' : undefined]) }
-  return { id: 'lista', titulo: 'Estudante', opcoes: [['Todos os estudantes da turma', '26 estudantes'] as [string, string?, string?]].concat(E701.map((e) => [e[0], e[0] === 'Alice Moreira' ? 'Turma 701 · Avançado' : 'Turma 701', e[0] === 'Alice Moreira' ? 'est' : undefined])) }
+  if (rot === 'Professor') return { id: 'lista', titulo: 'Professor', opcoes: [['Todos os professores', '14 professores', 'prof-todos']].concat(PROFESSORES.map((p) => [p, p === 'Rafael Souza' ? 'Matemática · turmas 701, 702 e 801' : undefined] as any)).map(([t, s, a]) => [t, s, a ?? (t === 'Rafael Souza' ? 'prof' : undefined)]) }
+  return { id: 'lista', titulo: 'Estudante', opcoes: [['Todos os estudantes da turma', '26 estudantes', 'est-todos'] as [string, string?, string?]].concat(E701.map((e) => [e[0], e[0] === 'Alice Moreira' ? 'Turma 701 · Avançado' : 'Turma 701', e[0] === 'Alice Moreira' ? 'est' : undefined])) }
 }
 
 /* ================================================================== casca */
