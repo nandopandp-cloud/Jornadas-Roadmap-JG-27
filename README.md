@@ -95,9 +95,9 @@ Para validar a experiência antes de Tablet e Celular. Está na plataforma (main
   - na tela de escolha, os cartões de tipo ("Escolher atividade") escolhem o tipo e abrem a lista de atividades;
   - em cada tipo, só a primeira atividade da lista tem dados; as outras mostram o aviso "fora da amostra".
   - Se aprovado, ajustar no Figma a tela 8, o sobreposto O2 e as telas 9 e 16 (Tarefa e Redação agregadas).
-- **Barra de filtros recolhida por padrão (27/11, aprovada pelo usuário):**
-  - resumo em uma linha (52 px), com setinha em cada item; cada item abre o seu seletor;
-  - ⌄ expande e ⌃ recolhe de novo; a escolha fica guardada no navegador.
+- **Barra de filtros compacta (27/11, aprovada pelo usuário):**
+  - sempre em uma linha (52 px), com rótulo, valor e setinha em cada item; cada item abre o seu seletor;
+  - não há versão expandida nem botão de expandir ou recolher.
 - **Sem tela no Figma:** as visões Turma e Ano escolar das Olimpíadas usam dados coerentes com as outras visões.
 
 | Atalho (`?screen=`) | Tela |
