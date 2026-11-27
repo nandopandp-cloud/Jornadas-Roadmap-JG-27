@@ -11,7 +11,6 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  ChevronUp,
   CircleHelp,
   Copy,
   Download,
@@ -39,7 +38,7 @@ import {
   FileSpreadsheet,
   type LucideIcon,
 } from 'lucide-react'
-import { Children, createContext, isValidElement, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { Children, isValidElement, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { PrototypeProps } from '../../platform/journeys'
 import '../gamificacao-geniex-educadores/rgx.css'
 import {
@@ -178,22 +177,6 @@ export default function NovosRelatorios({ startScreen }: PrototypeProps) {
   const [periodo, setPeriodo] = useState(PERIODO)
   const [nFiltros, setNFiltros] = useState(0)
   const [tipoAtiv, setTipoAtiv] = useState<string | null>(null)
-  // barra de filtros recolhida (padrão, aprovado em 27/11): preferência do visitante, vale para todas as telas
-  const [selRecolhida, setSelRecolhidaSt] = useState(() => {
-    try {
-      return localStorage.getItem('nr-filtros-recolhidos') !== '0'
-    } catch {
-      return true
-    }
-  })
-  const setSelRecolhida = (v: boolean) => {
-    setSelRecolhidaSt(v)
-    try {
-      localStorage.setItem('nr-filtros-recolhidos', v ? '1' : '0')
-    } catch {
-      /* sem armazenamento: só nesta sessão */
-    }
-  }
   const [paineis, setPaineis] = useState(PAINEIS)
   const [blocosPainel, setBlocosPainel] = useState<string[]>(['Prioridades pedagógicas', 'Ranking de aprendizagem', 'Desempenho × engajamento', 'Estudantes ativos por mês'])
   const ultimoClique = useRef<DOMRect | null>(null)
@@ -310,7 +293,6 @@ export default function NovosRelatorios({ startScreen }: PrototypeProps) {
     )
 
   return (
-    <SelRecolhida.Provider value={{ rec: selRecolhida, set: setSelRecolhida }}>
     <div className={`rx nr ${recolhida ? 'is-recolhida' : ''}`}>
       <AnimatePresence>{gaveta && <motion.div className="rx-veu" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setGaveta(false)} />}</AnimatePresence>
       <Sidebar
@@ -406,7 +388,6 @@ export default function NovosRelatorios({ startScreen }: PrototypeProps) {
       <Sobrepostos {...{ modal, setModal, ancora, celular, perfil, rel, tela, periodo, setPeriodo, nFiltros, setNFiltros, paineis, setPaineis, setToast, trocarPerfil, abrirRel, ir, tipoAtiv, setTipoAtiv, abrirNoSel }} />
       <ToastView toast={toast} onFechar={() => setToast(null)} />
     </div>
-    </SelRecolhida.Provider>
   )
 }
 
@@ -534,45 +515,26 @@ function CabRel({ titulo, acesso, sub, acoes, onModal, children }: { titulo: str
     </>
   )
 }
-const SelRecolhida = createContext<{ rec: boolean; set: (v: boolean) => void }>({ rec: false, set: () => {} })
 type SelProps = { rot: string; valor: string; ic: string; placeholder?: boolean; travado?: boolean; onClick: () => void }
-// Barra de seletores. Recolhida, vira uma linha com o resumo das escolhas; cada item ainda abre o seu seletor.
+// Barra de seletores sempre compacta (aprovada em 27/11): uma linha de itens com rótulo e valor; cada item abre o seu seletor.
 const BarraSel = ({ children, nFiltros, onFiltros }: { children: ReactNode; nFiltros: number; onFiltros: () => void }) => {
-  const { rec, set } = useContext(SelRecolhida)
-  const filtros = (
-    <button className="nr-btn is-contorno nr-selbar__filtros" onClick={onFiltros}>
-      <SlidersHorizontal size={16} /> Filtros{nFiltros > 0 && <Badge t={nFiltros} tom="p1" />}
-    </button>
-  )
-  if (rec) {
-    const sels = Children.toArray(children).filter(isValidElement).map((c) => c.props as SelProps)
-    return (
-      <div className="nr-selbar is-recolhida">
-        <div className="nr-resumo">
-          {sels.map((sp) => (
-            <span key={sp.rot} data-rot={sp.rot} className="nr-resumo__item">
-              <button className={`nr-resumo__chip ${sp.placeholder ? 'is-ph' : ''} ${sp.travado ? 'is-travado' : ''}`} onClick={sp.onClick} title={`${sp.rot}: ${sp.valor}`} aria-label={`${sp.rot}: ${sp.valor}`}>
-                <Ic n={sp.ic} size={14} />
-                <small>{sp.rot}</small>
-                <span>{sp.valor}</span>
-                {sp.travado ? <Lock size={13} /> : <ChevronDown size={14} />}
-              </button>
-            </span>
-          ))}
-        </div>
-        {filtros}
-        <button className="nr-icone-btn nr-selbar__alterna" onClick={() => set(false)} aria-label="Expandir filtros" title="Expandir filtros">
-          <ChevronDown size={18} />
-        </button>
-      </div>
-    )
-  }
+  const sels = Children.toArray(children).filter(isValidElement).map((c) => c.props as SelProps)
   return (
-    <div className="nr-selbar">
-      <div className="nr-selbar__sels">{children}</div>
-      {filtros}
-      <button className="nr-icone-btn nr-selbar__alterna" onClick={() => set(true)} aria-label="Recolher filtros" title="Recolher filtros">
-        <ChevronUp size={18} />
+    <div className="nr-selbar is-recolhida">
+      <div className="nr-resumo">
+        {sels.map((sp) => (
+          <span key={sp.rot} data-rot={sp.rot} className="nr-resumo__item">
+            <button className={`nr-resumo__chip ${sp.placeholder ? 'is-ph' : ''} ${sp.travado ? 'is-travado' : ''}`} onClick={sp.onClick} title={`${sp.rot}: ${sp.valor}`} aria-label={`${sp.rot}: ${sp.valor}`}>
+              <Ic n={sp.ic} size={14} />
+              <small>{sp.rot}</small>
+              <span>{sp.valor}</span>
+              {sp.travado ? <Lock size={13} /> : <ChevronDown size={14} />}
+            </button>
+          </span>
+        ))}
+      </div>
+      <button className="nr-btn is-contorno nr-selbar__filtros" onClick={onFiltros}>
+        <SlidersHorizontal size={16} /> Filtros{nFiltros > 0 && <Badge t={nFiltros} tom="p1" />}
       </button>
     </div>
   )
