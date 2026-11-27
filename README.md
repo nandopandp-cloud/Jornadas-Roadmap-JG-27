@@ -7,7 +7,7 @@ Protótipo da **Plataforma Educadores** que junta os relatórios da Educadores e
 - **Na plataforma:** https://jornadas-roadmap-jg-27.vercel.app/#/jornada/novos-relatorios
 - **Figma:** https://www.figma.com/design/A5hHDrpWbICZ1JfKpUiS2k/Novos-Relat%C3%B3rios
 - **PRD:** [PRD.md](PRD.md) (cópia de 26/11/2026) · documento vivo em https://claude.ai/artifact/YK2QFjJVHLy9BaXHc3o7oE
-- **Navegável (preview desta branch):** ver a seção "Navegável Desktop" abaixo
+- **Navegável:** https://jornadas-roadmap-jg-27.vercel.app/#/p/novos-relatorios (em validação; detalhes na seção "Navegável Desktop")
 - **Código:** `src/prototypes/novos-relatorios/`
 
 ## A ideia em uma frase
@@ -71,7 +71,7 @@ São 60 telas e 14 sobrepostos, com o protótipo ligado. Os pontos de partida s�
 
 ## Navegável Desktop (27/11/2026)
 
-Feito só nesta branch, para validar a experiência antes de Tablet e Celular. Fica fora da produção da plataforma até o OK.
+Para validar a experiência antes de Tablet e Celular. Está na plataforma (main, commit 6c03730) com a etapa "Navegável Desktop para validação" em andamento.
 
 - **Dados:** os mesmos das telas do Figma, portados dos módulos do kit `nrel` para `data.ts`.
 - **Perfis:** troca pelo rodapé da sidebar ("Ver como"): Mariana (gestora), Carla (coordenadora) e Rafael (professor). As permissões valem de verdade: a escolha de relatórios, o seletor de tipo e os links seguem o acesso de cada perfil.
