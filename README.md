@@ -155,7 +155,7 @@ Os planetas de massinha dos Exploradores viram modelos 3D de verdade: o planeta 
 
 **Plataforma Educadores** · Gestores de rede, unidades regionais, escolas, coordenação e professores · _em construção_
 
-Relatórios da Educadores e BIs externos viram uma coisa só: fonte única de dados, as mesmas regras de cálculo e o mesmo permissionamento para todos os clientes. Cada pessoa tem 3 visões prontas (Resumo, Acompanhamento e Detalhada) em qualquer recorte (rede, unidade regional, escola, turma, estudante, atividade ou evento) e pode montar os próprios painéis com blocos de um catálogo único, como um lego.
+Relatórios da Educadores e BIs externos viram uma coisa só: fonte única de dados, as mesmas regras de cálculo e o mesmo permissionamento para todos os clientes. O menu Relatórios tem Institucionais (rede, unidade, escola, turma, professores e estudante, com acesso por perfil), Atividades (as mesmas telas para todos) e Meus painéis, montados com blocos de um catálogo único, como um lego. Todo relatório tem Resumo, Acompanhamento e Detalhada.
 
 [Ver na plataforma](https://jornadas-roadmap-jg-27.vercel.app/#/jornada/novos-relatorios) · [Branch `prototipo-novos-relatorios`](https://github.com/nandopandp-cloud/Jornadas-Roadmap-JG-27/tree/prototipo-novos-relatorios)
 
