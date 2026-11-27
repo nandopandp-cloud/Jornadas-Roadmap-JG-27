@@ -55,7 +55,7 @@ import {
   MIGRACAO,
   MODELOS,
   N_A,
-  N_TIPO_A,
+  ATIVIDADES_DO_TIPO,
   OLI_VISOES,
   PAINEIS,
   PERFIS,
@@ -93,7 +93,8 @@ type Tela =
   | { id: 'estrutura' }
 type Modal =
   | null
-  | { id: 'onde' | 'atividade' | 'periodo' | 'tipo' | 'glossario' | 'filtros' | 'compartilhar' | 'exportar' | 'salvar' | 'excluir' | 'perfil' }
+  | { id: 'onde' | 'tipoAtiv' | 'periodo' | 'tipo' | 'glossario' | 'filtros' | 'compartilhar' | 'exportar' | 'salvar' | 'excluir' | 'perfil' }
+  | { id: 'atividade'; tipo: string }
   | { id: 'menuBloco'; bloco: string }
   | { id: 'lista'; titulo: string; opcoes: [string, string?, string?][] }
 type Toast = { tipo: 'ok' | 'info'; titulo: string; texto?: string }
@@ -122,7 +123,6 @@ for (const r of Object.values(RELS))
 const relRede = { tela: { id: 'rel', rel: 'rede', aba: 'Visão geral' } as Tela, perfil: 'gestora' as Perfil }
 const SOBRE: Record<string, Modal> = {
   'o-onde': { id: 'onde' },
-  'o-atividade': { id: 'atividade' },
   'o-periodo': { id: 'periodo' },
   'o-glossario': { id: 'glossario' },
   'o-filtros': { id: 'filtros' },
@@ -136,7 +136,8 @@ const SOBRE: Record<string, Modal> = {
 for (const [k, m] of Object.entries(SOBRE)) ATALHOS[k] = { ...relRede, modal: m }
 ATALHOS['o-excluir'] = { tela: { id: 'paineis' }, perfil: 'gestora', modal: { id: 'excluir' } }
 ATALHOS['o-aviso'] = { tela: { id: 'painel' }, perfil: 'gestora', toast: { tipo: 'ok', titulo: 'Painel salvo em Meus painéis' } }
-ATALHOS['o-atividade'] = { tela: { id: 'rel', rel: 'tarefa', aba: 'Visão geral' }, perfil: 'gestora', modal: { id: 'atividade' } }
+ATALHOS['o-atividade'] = { tela: { id: 'rel', rel: 'tarefa', aba: 'Visão geral' }, perfil: 'gestora', modal: { id: 'atividade', tipo: 'Tarefa' } }
+ATALHOS['o-tipo-atividade'] = { tela: { id: 'escolhaA' }, perfil: 'gestora', modal: { id: 'tipoAtiv' } }
 
 /** O que cada perfil pode abrir (institucionais por perfil; atividades para todos). */
 const podeAbrir = (pf: Perfil, rel: string) => {
@@ -173,6 +174,7 @@ export default function NovosRelatorios({ startScreen }: PrototypeProps) {
   const [recolhida, setRecolhida] = useState(false)
   const [periodo, setPeriodo] = useState(PERIODO)
   const [nFiltros, setNFiltros] = useState(0)
+  const [tipoAtiv, setTipoAtiv] = useState<string | null>(null)
   const [paineis, setPaineis] = useState(PAINEIS)
   const [blocosPainel, setBlocosPainel] = useState<string[]>(['Prioridades pedagógicas', 'Ranking de aprendizagem', 'Desempenho × engajamento', 'Estudantes ativos por mês'])
   const ultimoClique = useRef<DOMRect | null>(null)
@@ -201,7 +203,7 @@ export default function NovosRelatorios({ startScreen }: PrototypeProps) {
   useEffect(() => {
     // sobrepostos abertos por atalho: ancora no seletor correspondente
     if (!ini.modal) return
-    const sel: Record<string, string> = { perfil: '.nr-side-usuario', periodo: '.nr-sel:last-child .nr-sel__btn', tipo: '.nr-sel:first-child .nr-sel__btn', atividade: '.nr-sel:first-child .nr-sel__btn', onde: '.nr-sel:nth-child(2) .nr-sel__btn', menuBloco: '.nr-cartao__topo .nr-icone-btn' }
+    const sel: Record<string, string> = { perfil: '.nr-side-usuario', periodo: '.nr-sel:last-child .nr-sel__btn', tipo: '.nr-sel:first-child .nr-sel__btn', tipoAtiv: '[data-rot="Tipo de atividade"] .nr-sel__btn', atividade: '[data-rot="Atividade"] .nr-sel__btn', onde: '.nr-sel:nth-child(2) .nr-sel__btn', menuBloco: '.nr-cartao__topo .nr-icone-btn' }
     const t = setTimeout(() => {
       const alvo = document.querySelector(sel[ini.modal!.id] ?? '__') as HTMLElement | null
       if (alvo) setAncora(alvo.getBoundingClientRect())
@@ -217,6 +219,12 @@ export default function NovosRelatorios({ startScreen }: PrototypeProps) {
   }
   const abrir = (m: Modal) => {
     setAncora(ultimoClique.current)
+    setModal(m)
+  }
+  // abre um sobreposto ancorado no seletor de rótulo `rot` (ex.: tipo escolhido → abre "Atividade")
+  const abrirNoSel = (rot: string, m: Modal) => {
+    const el = document.querySelector(`[data-rot="${rot}"] .nr-sel__btn`) as HTMLElement | null
+    setAncora(el ? el.getBoundingClientRect() : ultimoClique.current)
     setModal(m)
   }
   const fora = (n: string, texto = 'Neste protótipo, use o menu Relatórios: Institucionais, Atividades ou Meus painéis.') => setToast({ tipo: 'info', titulo: `“${n}” não faz parte deste protótipo`, texto })
@@ -235,6 +243,7 @@ export default function NovosRelatorios({ startScreen }: PrototypeProps) {
   }
   const trocarPerfil = (p: Perfil) => {
     setPerfil(p)
+    setTipoAtiv(null)
     setModal(null)
     ir({ id: 'escolhaI' })
     setToast({ tipo: 'ok', titulo: `Vendo como ${PERFIS[p].nome}`, texto: PERFIS[p].papelLongo })
@@ -270,7 +279,7 @@ export default function NovosRelatorios({ startScreen }: PrototypeProps) {
     return (
       <div className="nr nr-interno">
         <Migracao onExportar={() => abrir({ id: 'exportar' })} onSair={() => ir({ id: 'escolhaI' })} />
-        <Sobrepostos {...{ modal, setModal, ancora, celular, perfil, rel, tela, periodo, setPeriodo, nFiltros, setNFiltros, paineis, setPaineis, setToast, trocarPerfil, abrirRel, ir }} />
+        <Sobrepostos {...{ modal, setModal, ancora, celular, perfil, rel, tela, periodo, setPeriodo, nFiltros, setNFiltros, paineis, setPaineis, setToast, trocarPerfil, abrirRel, ir, tipoAtiv, setTipoAtiv, abrirNoSel }} />
         <ToastView toast={toast} onFechar={() => setToast(null)} />
       </div>
     )
@@ -312,7 +321,7 @@ export default function NovosRelatorios({ startScreen }: PrototypeProps) {
           <AnimatePresence mode="wait" initial={false}>
             <motion.div key={JSON.stringify(tela) + perfil} className="rx-conteudo nr-conteudo" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, transition: { duration: 0.1 } }} transition={{ duration: 0.22 }}>
               {tela.id === 'escolhaI' && <EscolhaInst perfil={perfil} periodo={periodo} onAbrir={abrirRel} onSel={abrir} nFiltros={nFiltros} />}
-              {tela.id === 'escolhaA' && <EscolhaAtiv perfil={perfil} onAbrir={abrirRel} onSel={abrir} onIr={onIr} nFiltros={nFiltros} />}
+              {tela.id === 'escolhaA' && <EscolhaAtiv perfil={perfil} tipo={tipoAtiv} onAbrir={abrirRel} onSel={abrir} onIr={onIr} nFiltros={nFiltros} />}
               {tela.id === 'rel' && rel && (
                 <Relatorio
                   key={rel.id}
@@ -368,7 +377,7 @@ export default function NovosRelatorios({ startScreen }: PrototypeProps) {
           </AnimatePresence>
         </main>
       </div>
-      <Sobrepostos {...{ modal, setModal, ancora, celular, perfil, rel, tela, periodo, setPeriodo, nFiltros, setNFiltros, paineis, setPaineis, setToast, trocarPerfil, abrirRel, ir }} />
+      <Sobrepostos {...{ modal, setModal, ancora, celular, perfil, rel, tela, periodo, setPeriodo, nFiltros, setNFiltros, paineis, setPaineis, setToast, trocarPerfil, abrirRel, ir, tipoAtiv, setTipoAtiv, abrirNoSel }} />
       <ToastView toast={toast} onFechar={() => setToast(null)} />
     </div>
   )
@@ -566,15 +575,15 @@ function EscolhaInst({ perfil, periodo, onAbrir, onSel, nFiltros }: { perfil: Pe
 }
 
 /* ================================================================== 8 · escolha da atividade */
-function EscolhaAtiv({ perfil, onAbrir, onSel, onIr, nFiltros }: { perfil: Perfil; onAbrir: (r: string) => void; onSel: (m: Modal) => void; onIr: (r: string) => void; nFiltros: number }) {
+function EscolhaAtiv({ perfil, tipo, onAbrir, onSel, onIr, nFiltros }: { perfil: Perfil; tipo: string | null; onAbrir: (r: string) => void; onSel: (m: Modal) => void; onIr: (r: string) => void; nFiltros: number }) {
   const P = PERFIS[perfil]
   const hist: Tabela = { titulo: 'Histórico de atividades', busca: 'Pesquisar atividade...', pag: ['Mostrando 6 atividades mais recentes', 5], cols: [{ t: 'Nome', sort: true }, { t: 'Tipo', w: 170 }, { t: 'Onde', w: 220 }, { t: 'Início', w: 96, al: 'CENTER', sort: true }, { t: 'Término', w: 96, al: 'CENTER' }, { t: 'Status', w: 136 }, { t: 'Relatório', w: 130 }], rows: HIST_A(perfil) }
   return (
     <>
-      <CabRel titulo="Relatórios de atividades" acesso={P.acesso} sub="Escolha o tipo de atividade e, se quiser, uma atividade específica. As telas são as mesmas para gestão, coordenação e professores; os números seguem o seu acesso." onModal={onSel}>
+      <CabRel titulo="Relatórios de atividades" acesso={P.acesso} sub="Escolha o tipo de atividade e, em seguida, a atividade. As telas são as mesmas para gestão, coordenação e professores; os números seguem o seu acesso." onModal={onSel}>
         <BarraSel nFiltros={nFiltros} onFiltros={() => onSel({ id: 'filtros' })}>
-          <Seletor rot="Tipo de atividade" valor="Selecione o tipo" ic="list-checks" placeholder largura={240} onClick={() => onSel({ id: 'atividade' })} />
-          <Seletor rot="Atividade" valor="Todas do tipo" ic="file-text" placeholder largura={260} onClick={() => onSel({ id: 'atividade' })} />
+          <Seletor rot="Tipo de atividade" valor={tipo ?? 'Selecione o tipo'} ic={tipo ? (TIPOS_A.find((t) => t[0] === tipo)?.[1] ?? 'list-checks') : 'list-checks'} placeholder={!tipo} largura={240} onClick={() => onSel({ id: 'tipoAtiv' })} />
+          <Seletor rot="Atividade" valor={tipo ? 'Selecione a atividade' : 'Escolha o tipo primeiro'} ic="file-text" placeholder travado={!tipo} largura={280} onClick={() => (tipo ? onSel({ id: 'atividade', tipo }) : undefined)} />
           <Seletor rot={P.onde[0]} valor={P.onde[1]} ic="map-pin" largura={300} onClick={() => onSel({ id: 'onde' })} />
         </BarraSel>
       </CabRel>
@@ -618,7 +627,8 @@ function Relatorio(p: { rel: Rel; aba: string; seg?: string; perfil: Perfil; per
   const [ent, tipoEnt, icEnt, subEnt, badges] = rel.ent
   const clicaSel = (rot: string) => {
     if (rot === 'Tipo de relatório') return p.onModal({ id: 'tipo' })
-    if (rot === 'Tipo de atividade' || rot === 'Atividade') return p.onModal({ id: 'atividade' })
+    if (rot === 'Tipo de atividade') return p.onModal({ id: 'tipoAtiv' })
+    if (rot === 'Atividade') return p.onModal({ id: 'atividade', tipo: rel.tipo })
     if (rot === 'Período') return p.onModal({ id: 'periodo' })
     if (['Escola', 'Turma', 'Professor', 'Estudante'].includes(rot)) return p.onListaSel(rot)
     return p.onModal({ id: 'onde' })
@@ -1339,6 +1349,9 @@ function Sobrepostos(p: {
   trocarPerfil: (p: Perfil) => void
   abrirRel: (r: string, aba?: string) => void
   ir: (t: Tela) => void
+  tipoAtiv: string | null
+  setTipoAtiv: (t: string) => void
+  abrirNoSel: (rot: string, m: Modal) => void
 }) {
   const { modal, setModal, ancora, celular, perfil, rel } = p
   const fechar = () => setModal(null)
@@ -1368,7 +1381,34 @@ function Sobrepostos(p: {
           <small className="nr-pop__nota">Aparecem só os tipos que o seu perfil permite.</small>
         </Pop>
       )}
-      {modal?.id === 'atividade' && <PopAtividade key="ativ" ancora={ancora} celular={celular} rel={rel} onFechar={fechar} onAbrir={p.abrirRel} onFora={() => aviso('Fora da amostra do protótipo', 'Abra “Todas as tarefas” ou uma atividade dos cartões de Atividades.', 'info')} />}
+      {modal?.id === 'tipoAtiv' && (
+        <PopTipoAtiv
+          key="tipoAtiv"
+          ancora={ancora}
+          celular={celular}
+          perfil={perfil}
+          atual={p.tela.id === 'escolhaA' ? p.tipoAtiv : rel?.grupo === 'ativ' ? rel.tipo : null}
+          onFechar={fechar}
+          onEscolher={(t) => {
+            if (p.tela.id === 'escolhaA') p.setTipoAtiv(t)
+            p.abrirNoSel('Atividade', { id: 'atividade', tipo: t })
+          }}
+        />
+      )}
+      {modal?.id === 'atividade' && (
+        <PopAtividade
+          key={'ativ-' + modal.tipo}
+          ancora={ancora}
+          celular={celular}
+          perfil={perfil}
+          tipo={modal.tipo}
+          atual={rel?.grupo === 'ativ' && rel.tipo === modal.tipo ? rel.ent[0] : null}
+          onFechar={fechar}
+          onTrocarTipo={() => p.abrirNoSel('Tipo de atividade', { id: 'tipoAtiv' })}
+          onAbrir={(r) => (fechar(), p.abrirRel(r))}
+          onFora={() => aviso('Fora da amostra do protótipo', 'Em cada tipo, a primeira atividade da lista é a que tem dados.', 'info')}
+        />
+      )}
       {modal?.id === 'onde' && <PopOnde key="onde" ancora={ancora} celular={celular} perfil={perfil} onFechar={fechar} onAplicar={(e) => (e === 'EM Jardim das Flores' && rel?.grupo === 'inst' && podeAbrir(perfil, 'escola') ? p.abrirRel('escola') : aviso('Recorte aplicado', 'Neste protótipo, os números ficam os da tela do Figma.', 'info'))} />}
       {modal?.id === 'lista' && (
         <Pop key="lista" ancora={ancora} celular={celular} largura={340} onFechar={fechar}>
@@ -1451,47 +1491,62 @@ function Sobrepostos(p: {
   )
 }
 
-function PopAtividade({ ancora, celular, rel, onFechar, onAbrir, onFora }: { ancora: DOMRect | null; celular: boolean; rel: Rel | null; onFechar: () => void; onAbrir: (r: string) => void; onFora: () => void }) {
-  const [tipo, setTipo] = useState(rel?.grupo === 'ativ' ? rel.tipo : 'Tarefa')
-  const [q, setQ] = useState('')
-  const relTipo = TIPOS_A.find((t) => t[0] === tipo)?.[2] ?? 'tarefa'
-  const especificas: [string, string, string | null][] = tipo === 'Tarefa' ? [['Todas as tarefas', '', 'tarefa'], ['Revolução Industrial · 25/11', 'Monteiro Lobato', null], ['Frações equivalentes · lista 3 · 24/11', 'Jardim das Flores', null]] : [[RELS[relTipo].cab.sel[1][1], RELS[relTipo].ent[3].split(' · ')[0], relTipo]]
+function PopTipoAtiv({ ancora, celular, perfil, atual, onFechar, onEscolher }: { ancora: DOMRect | null; celular: boolean; perfil: Perfil; atual: string | null; onFechar: () => void; onEscolher: (t: string) => void }) {
   return (
-    <Pop ancora={ancora} celular={celular} largura={560} onFechar={onFechar}>
-      <label className="nr-busca is-cheia">
-        <Search size={15} />
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar atividade..." aria-label="Buscar atividade" />
-      </label>
-      <div className="nr-pop__duas">
-        <div>
-          <p className="nr-pop__tit">Tipo de atividade</p>
-          {TIPOS_A.filter(([t]) => t.toLowerCase().includes(q.toLowerCase()) || !q).map(([t, ic]) => (
-            <button key={t} className={`nr-opcao ${t === tipo ? 'is-on' : ''}`} onClick={() => setTipo(t)}>
+    <Pop ancora={ancora} celular={celular} largura={340} onFechar={onFechar}>
+      <p className="nr-pop__tit">Tipo de atividade</p>
+      <div className="nr-pop__rola is-alta">
+        {TIPOS_A.map(([t, ic], i) => {
+          const n = N_A[perfil][i]
+          return (
+            <button key={t} className={`nr-opcao ${t === atual ? 'is-on' : ''}`} disabled={!n} onClick={() => onEscolher(t)}>
               <Ic n={ic} />
               <span>
                 <b>{t}</b>
+                <small>{n ?? 'Nenhuma nas suas turmas'}</small>
               </span>
-              <small>{N_TIPO_A[t]}</small>
+              {t === atual ? <Check size={16} /> : <ChevronRight size={16} />}
             </button>
-          ))}
-        </div>
-        <div>
-          <p className="nr-pop__tit">Atividade específica</p>
-          {especificas.map(([t, s, alvo]) => (
-            <button key={t} className="nr-opcao" onClick={() => (alvo ? (onAbrir(alvo), onFechar()) : onFora())}>
-              <span>
-                <b>{t}</b>
-                {s && <small>{s}</small>}
-              </span>
-              <ChevronRight size={16} />
-            </button>
-          ))}
-          {tipo === 'Tarefa' && (
-            <button className="nr-link" onClick={onFora}>
-              Ver as 1.284 tarefas <ArrowRight size={14} />
-            </button>
-          )}
-        </div>
+          )
+        })}
+      </div>
+    </Pop>
+  )
+}
+
+function PopAtividade({ ancora, celular, perfil, tipo, atual, onFechar, onTrocarTipo, onAbrir, onFora }: { ancora: DOMRect | null; celular: boolean; perfil: Perfil; tipo: string; atual: string | null; onFechar: () => void; onTrocarTipo: () => void; onAbrir: (r: string) => void; onFora: () => void }) {
+  const [q, setQ] = useState('')
+  const ic = TIPOS_A.find((t) => t[0] === tipo)?.[1] ?? 'list-checks'
+  const todas = ATIVIDADES_DO_TIPO(perfil, tipo)
+  const lista = todas.filter(([n]) => n.toLowerCase().includes(q.toLowerCase()))
+  const marcada = (n: string, r: string | null) => !!atual && !!r && (atual === n || RELS[r]?.ent[0] === atual)
+  return (
+    <Pop ancora={ancora} celular={celular} largura={420} onFechar={onFechar}>
+      <div className="nr-pop__tipo">
+        <Ic n={ic} />
+        <b>{tipo}</b>
+        <button className="nr-link" onClick={onTrocarTipo}>
+          Trocar tipo
+        </button>
+      </div>
+      {todas.length > 4 && (
+        <label className="nr-busca is-cheia">
+          <Search size={15} />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={`Buscar ${tipo === 'Redação' ? 'proposta' : 'atividade'}...`} aria-label="Buscar atividade" />
+        </label>
+      )}
+      <p className="nr-pop__tit">Atividade</p>
+      <div className="nr-pop__rola">
+        {lista.map(([n, s, r]) => (
+          <button key={n} className={`nr-opcao ${marcada(n, r) ? 'is-on' : ''}`} onClick={() => (r ? onAbrir(r) : onFora())}>
+            <span>
+              <b>{n}</b>
+              {s && <small>{s}</small>}
+            </span>
+            {marcada(n, r) ? <Check size={16} /> : <ChevronRight size={16} />}
+          </button>
+        ))}
+        {!lista.length && <small className="nr-pop__nota">Nenhuma atividade encontrada.</small>}
       </div>
     </Pop>
   )

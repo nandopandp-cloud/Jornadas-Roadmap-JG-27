@@ -88,6 +88,12 @@ Para validar a experiência antes de Tablet e Celular. Está na plataforma (main
   - "Comparativo por unidade regional" saiu do Salvar como painel;
   - "Aba atual (Resumo)" virou o nome da aba atual.
   - Esses textos antigos ainda estão no Figma e são ajustados junto com Tablet e Celular.
+- **Seleção de atividades em dois passos (27/11, só no navegável, em validação):**
+  - o filtro "Tipo de atividade" abre a lista de tipos com a contagem do perfil; o tipo sem atividades no acesso aparece desabilitado (Redação para o professor);
+  - ao escolher o tipo, abre o filtro "Atividade" só com as atividades daquele tipo, com busca quando a lista é longa e o link "Trocar tipo";
+  - na escolha da atividade, "Atividade" fica travado até haver tipo.
+  - Antes era um popover único de duas colunas (tipo e atividade específica). Se aprovado, o Figma (tela 8 e o sobreposto O2) é ajustado depois.
+  - Em cada tipo, a primeira atividade da lista é a que tem dados; as outras mostram o aviso "fora da amostra".
 - **Sem tela no Figma:** as visões Turma e Ano escolar das Olimpíadas usam dados coerentes com as outras visões.
 
 | Atalho (`?screen=`) | Tela |
@@ -101,7 +107,7 @@ Para validar a experiência antes de Tablet e Celular. Está na plataforma (main
 | `liga`, `liga-eng` | 18 · Liga das Estrelas |
 | `paineis`, `painel`, `painel-edicao`, `painel-novo`, `painel-compartilhado` | 19 · Meus painéis |
 | `migracao` | 20 · Migração dos BIs |
-| `o-onde`, `o-atividade`, `o-periodo`, `o-glossario`, `o-filtros`, `o-compartilhar`, `o-exportar`, `o-salvar`, `o-menu-bloco`, `o-excluir`, `o-perfil`, `o-aviso`, `o-tipo` | 21 · Sobrepostos |
+| `o-onde`, `o-atividade`, `o-tipo-atividade`, `o-periodo`, `o-glossario`, `o-filtros`, `o-compartilhar`, `o-exportar`, `o-salvar`, `o-menu-bloco`, `o-excluir`, `o-perfil`, `o-aviso`, `o-tipo` | 21 · Sobrepostos |
 
 Verificação: `verificar.mjs` com 73 atalhos nas 3 larguras (219/219 ok) e um teste de fluxos clicando de ponta a ponta.
 

@@ -642,7 +642,7 @@ export function Segmento({ opcoes, valor, onTroca, extra }: { opcoes: string[]; 
 }
 
 export const Seletor = ({ rot, valor, ic, placeholder, travado, onClick, largura }: { rot: string; valor: string; ic: string; placeholder?: boolean; travado?: boolean; onClick: () => void; largura?: number }) => (
-  <label className="nr-sel" style={largura ? { width: largura } : undefined}>
+  <label className="nr-sel" data-rot={rot} style={largura ? { width: largura } : undefined}>
     <small>{rot}</small>
     <button className={`nr-sel__btn ${placeholder ? 'is-ph' : ''} ${travado ? 'is-travado' : ''}`} onClick={onClick} aria-label={`${rot}: ${valor}`}>
       <Ic n={ic} />
