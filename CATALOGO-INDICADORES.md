@@ -30,12 +30,20 @@ Tipos de relatório e acesso:
 | Tipo | Gestor | Coordenador | Professor | Fonte |
 | --- | --- | --- | --- | --- |
 | Rede | ✓ | — | — | E (network) + B |
-| Unidade regional | ✓ | — | — | B (filtro e entidade "Unidade regional") |
 | Escola | todas | a sua | — | E (institution) + B (Instituição) |
 | Turma | todas | da escola | as suas | E (class) + B |
 | Professores | todos | da escola | — | E (professor) + B (Pessoas › Professores) |
 | Estudante | todos | da escola | das suas turmas | E (student) + B (Pessoas › Estudantes) |
 | Alfabetização | ✓ | ✓ | as suas turmas | E (literacy) |
+
+**Hierarquia (decisão de 27/11):**
+- **Rede:** o nível mais macro, com todas as escolas da rede.
+- **Escola:** uma ou todas as escolas.
+- **Turma:** uma ou todas as turmas da escola.
+- **Professores e Estudantes:** escolhe-se um ou vê-se a lista de todos.
+  - Para achar a pessoa, os filtros vêm em cadeia: Escola, depois Turma, depois a pessoa.
+
+A "Unidade regional" do BI equivale à rede e **não** vira um nível próprio.
 
 ### Indicadores-chave (cards com meta e % de atingimento)
 - Estudantes ativos (%) · E+B

@@ -13,6 +13,61 @@ Protótipo da **Plataforma Educadores** que junta os relatórios da Educadores e
 
 Uma fonte única de dados, as mesmas regras de cálculo e o mesmo acesso para todos. O menu Relatórios tem **Institucionais**, **Atividades** e **Meus painéis**. Todo relatório tem 3 abas (**Resumo**, **Acompanhamento** e **Detalhada**), e cada pessoa monta **os próprios painéis** com blocos de um catálogo único, como um lego.
 
+## Estrutura atual (27/11/2026)
+
+**Menu Relatórios:** Institucionais · Atividades · Meus painéis.
+
+**Como se abre um relatório:**
+1. Escolhe-se o tipo de relatório ou de atividade.
+2. Escolhe-se o recorte: Escola → Turma → Professor ou Estudante, ou a atividade específica.
+3. O relatório abre com as abas **Visão geral · Engajamento · Aprendizagem**, com o link **Glossário** ao lado.
+
+**Exceções de abas, iguais às da Educadores:**
+- **Projeto:** ganha também a aba "Projetos enviados".
+- **Liga das Estrelas:** só Visão geral e Engajamento.
+- **Olimpíadas:** só a Visão geral, com rankings.
+
+**Indicadores:** só os reais, unificando Educadores e BI ([CATALOGO-INDICADORES.md](CATALOGO-INDICADORES.md)). Os valores são fictícios.
+
+**Hierarquia institucional:**
+- **Rede:** todas as escolas.
+- **Escola:** uma ou todas.
+- **Turma:** uma ou todas.
+- **Professores e Estudantes:** filtro Escola → Turma → pessoa.
+
+**Sem unidade regional:** no BI ela equivale à rede.
+
+**Seções da página 05 · Desktop**
+
+| Seção | Telas |
+| --- | --- |
+| 0 | Estrutura e permissões |
+| 1 | Escolha do relatório institucional, uma tela por perfil |
+| 2 | Rede (gestora) |
+| 3 | Escola (coordenadora) |
+| 4 | Turma (professor) |
+| 5 | Professores (coordenadora) |
+| 6 | Estudante (professor) |
+| 7 | Alfabetização (gestora) |
+| 8 | Escolha da atividade, uma tela por perfil |
+| 9 | Tarefa (gestora) |
+| 10 | Prova Genial (professor) |
+| 11 | Desafio (coordenadora) |
+| 12 | Sala de Aula Invertida (professor) |
+| 13 | Projeto (coordenadora) |
+| 14 | Raio-X (gestora) |
+| 15 | Campeonato (coordenadora) |
+| 16 | Redação (coordenadora) |
+| 17 | Olimpíadas (gestora) |
+| 18 | Liga das Estrelas (gestora) |
+| 19 | Meus painéis |
+| 20 | Migração dos BIs |
+| 21 | Sobrepostos O1 a O14 |
+
+São 60 telas e 14 sobrepostos, com o protótipo ligado. Os pontos de partida são 1.1 (gestora), 1.2 (coordenadora), 1.3 (professor) e 19.1 (Meus painéis).
+
+**Pendente:** o nome das rubricas. A Educadores usa Proficiente e Insuficiente; o BI usa Adequado e Abaixo do Básico. Por enquanto as telas usam os nomes da Educadores.
+
 ## Decisões (26/11/2026)
 
 - **Escopo:** o PRD inteiro no protótipo.
