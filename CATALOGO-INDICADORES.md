@@ -122,9 +122,10 @@ Códigos: ASSIGNMENT = Tarefa · SUMMATIVE = Prova Genial · CHALLENGE = Desafio
 | Campeonato | E | ranking por batalhas, vitórias e derrotas |
 | Projeto | E | a análise detalhada de questão não funciona em projeto |
 | Raio-X | E | |
+| Sala de Aula Invertida | E (FLIPPED_CLASSROOM, usa os serviços da Prova Genial) | não estava no inventário; confirmada no código |
 | Redação | B | |
-| Competições (Olimpíadas, Liga das Estrelas) | B (Ranking de Competições) | a E não tem indicadores de Olimpíadas |
-| Aula Invertida | — | **sem indicadores hoje**: não entra até existir |
+| Olimpíadas | E (relatório de eventos: rankings) + B (Competições) | |
+| Liga das Estrelas | E (relatório de eventos) + B (Competições) | |
 
 ### Comum a todos os tipos (E)
 - Cabeçalho: nome, status e datas
@@ -177,6 +178,43 @@ Códigos: ASSIGNMENT = Tarefa · SUMMATIVE = Prova Genial · CHALLENGE = Desafio
 - **Competições (B):**
   - Participantes, pontuação do líder, pontos distribuídos e média de pontos.
   - Ranking atual: posição, estudante, turma, instituição, unidade regional, ano escolar, pontos e última pontuação.
+
+### Abas oficiais por tipo (configuração de exportação da Educadores)
+Todo relatório usa as abas **Visão Geral · Engajamento · Aprendizagem**, com o **Glossário** ao lado.
+- **Institucional:**
+  - Visão Geral: desempenho × engajamento e informações gerais.
+  - Engajamento: indicadores de engajamento, atividades criadas e ranking de engajamento.
+  - Aprendizagem: indicadores de aprendizagem, rubricas, evolução, distribuição de rubricas e ranking de aprendizagem.
+- **Prova Genial:**
+  - Visão Geral: histograma de pontos, tabela de engajamento e tabela de tópicos.
+  - Engajamento: principais indicadores e progresso na atividade.
+  - Aprendizagem: principais indicadores, rubricas e ranking de estudantes, de tópicos e de habilidades.
+- **Tarefa e Sala de Aula Invertida:**
+  - Visão Geral: tabela de engajamento, tabela de tópicos e desempenho × engajamento.
+  - Engajamento: principais indicadores e progresso.
+  - Aprendizagem: principais indicadores, rubricas e ranking de estudantes, de tópicos e de habilidades.
+- **Desafio:**
+  - Visão Geral: desempenho × engajamento e tabela de engajamento.
+  - Engajamento: indicadores, progresso, ranking de tópicos e de estudantes.
+  - Aprendizagem: indicadores, rubricas e rankings.
+- **Campeonato:**
+  - Visão Geral: desempenho × engajamento, tabela de engajamento e de tópicos.
+  - Engajamento: indicadores, progresso e ranking de batalhas (estudantes e tópicos).
+  - Aprendizagem: indicadores, rubricas e ranking de estudantes.
+- **Diagnóstico (Raio-X):**
+  - Visão Geral: tabela de engajamento e de tópicos.
+  - Engajamento: indicadores e progresso.
+  - Aprendizagem: indicadores, rubricas e rankings.
+- **Projeto:** as mesmas três abas e mais a aba "Projetos enviados".
+- **Liga das Estrelas** (só Visão Geral e Engajamento):
+  - Visão Geral: estudantes ativos, média de missões realizadas por estudante e ranking dos estudantes por estrelas.
+  - Engajamento: estudantes ativos ao longo do tempo × meta e ranking de engajamento (missões realizadas, taxa de adesão).
+  - Por estudante: estrelas, semanas completas, missões realizadas, taxa de adesão e missões concluídas × meta.
+- **Olimpíadas** (só Visão Geral):
+  - Rankings das Nações, Escolas, Turma e Ano escolar.
+  - Pódio, posição, estudante, nação e pontos.
+  - Status (Agendado, Em progresso, Finalizado), aviso de atualização e "Exportar ranking".
+- **No BI (Competições):** participantes, pontuação do líder, pontos distribuídos e média de pontos.
 
 ## Filtros e saídas
 - **Período:** E+B.
