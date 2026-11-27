@@ -105,6 +105,13 @@ Para validar a experiência antes de Tablet e Celular. Está na plataforma (main
   - Nos seletores, a 1ª opção é sempre "Todas/Todos" e a opção atual aparece marcada. Regras em `acesso.ts` (`relPadrao`, `relDoEscopo`, `podeAbrir`).
 - **Sem "Salvar como painel" (27/11, pedido do usuário):** o botão saiu dos relatórios institucionais e de atividades (fica Compartilhar e Exportar).
 - **Catálogo de Meus painéis com todos os indicadores (27/11):** gerado dos próprios relatórios (`CATALOGO_TODOS` em `acesso.ts`): cada indicador, gráfico e tabela que existe em algum relatório, sem repetição, filtrado pelo acesso (gestora 159, coordenadora 141, professor 104). Busca, filtro Institucionais/Atividades, formato (Indicador, Gráfico, Tabela), relatório de origem e grupos Panorama/Engajamento/Aprendizagem; qualquer item adicionado aparece no painel com a amostra do relatório de origem.
+- **Figma atualizado (27/11, pedido do usuário):** página 05 · Desktop agora com 90 telas + 14 sobrepostos.
+  - Barra de filtros compacta em todas as telas e "Salvar como painel" removido (sobreposto O8 excluído).
+  - Seções novas das visões "todos": 3.1, 4.1, 4.2, 4.3, 5.1, 5.2, 6.1, 6.2, 6.3 e 6.4 (3 abas cada); as individuais viraram 3.2, 4.4, 5.3 e 6.5.
+  - Tela 8 em dois passos (Atividade travada até escolher o tipo; cartões com "Escolher atividade/proposta"); O2 = seletor de tipo; O15 = lista de atividades com busca, status, meses e "Carregar mais".
+  - Tarefa (9) e Redação (16) refeitas como UMA atividade, com os dados do navegável.
+  - Meus painéis (19.3 e 19.4): catálogo de indicadores completo (159 no acesso da gestora), com busca, grupos, formato e relatório de origem.
+  - Kit: módulos `compacta` (barra compacta) e `todos` (configs das visões "todos", `K.navCfg` converte um relatório do navegável para o kit, `K.navSecaoCfg` monta a seção).
 - **Sem tela no Figma:** as visões Turma e Ano escolar das Olimpíadas usam dados coerentes com as outras visões.
 
 | Atalho (`?screen=`) | Tela |
